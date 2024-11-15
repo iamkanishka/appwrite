@@ -14,6 +14,7 @@ defmodule Permission do
       iex> Permission.read("user")
       "read(\"user\")"
   """
+  @spec read(String.t()) :: String.t()
   def read(role) when is_binary(role) do
     "read(\"#{role}\")"
   end
@@ -32,6 +33,7 @@ defmodule Permission do
       iex> Permission.write("admin")
       "write(\"admin\")"
   """
+  @spec write(String.t()) :: String.t()
   def write(role) when is_binary(role) do
     "write(\"#{role}\")"
   end
@@ -47,6 +49,7 @@ defmodule Permission do
       iex> Permission.create("editor")
       "create(\"editor\")"
   """
+  @spec create(String.t()) :: String.t()
   def create(role) when is_binary(role) do
     "create(\"#{role}\")"
   end
@@ -62,6 +65,7 @@ defmodule Permission do
       iex> Permission.update("moderator")
       "update(\"moderator\")"
   """
+  @spec update(String.t()) :: String.t()
   def update(role) when is_binary(role) do
     "update(\"#{role}\")"
   end
@@ -77,6 +81,7 @@ defmodule Permission do
       iex> Permission.delete("admin")
       "delete(\"admin\")"
   """
+  @spec delete(String.t()) :: String.t()
   def delete(role) when is_binary(role) do
     "delete(\"#{role}\")"
   end

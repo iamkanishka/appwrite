@@ -6,7 +6,6 @@ defmodule OAuthProvider do
   Helper functions are included to validate these provider values, ensuring only recognized OAuth providers are used.
   """
 
-
   @amazon "amazon"
   @apple "apple"
   @auth0 "auth0"
@@ -89,8 +88,6 @@ defmodule OAuthProvider do
     @mock
   ]
 
-
-
   @doc """
   Guard clause to check if a given `provider` is a valid  image gravity code.
 
@@ -104,9 +101,6 @@ defmodule OAuthProvider do
   """
   @spec valid_provider(String.t()) :: boolean()
   defguard valid_provider(provider) when provider in @all_providers
-
-
-
 
   @doc """
   Returns true if the given `provider` is a valid OAuth provider.

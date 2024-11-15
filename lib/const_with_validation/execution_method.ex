@@ -34,6 +34,7 @@ defmodule ExecutionMethod do
       iex> ExecutionMethod.valid_method("UNKNOWN")
       false
   """
+  @spec valid_method(String.t()) :: boolean()
   defguard valid_method(method) when method in @all_methods
 
   @doc """
@@ -48,6 +49,7 @@ defmodule ExecutionMethod do
       iex> ExecutionMethod.validate_method("UNKNOWN")
       {:error, "Invalid HTTP method"}
   """
+  @spec validate_method(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def validate_method(method) when valid_method(method), do: {:ok, method}
   def validate_method(_method), do: {:error, "Invalid HTTP method"}
 
@@ -62,6 +64,7 @@ defmodule ExecutionMethod do
       iex> ExecutionMethod.is_valid_method?("UNKNOWN")
       false
   """
+  @spec is_valid_method?(String.t()) :: boolean()
   def is_valid_method?(method), do: method in @all_methods
 
   @doc """
@@ -76,6 +79,7 @@ defmodule ExecutionMethod do
       iex> ExecutionMethod.validate_method!("UNKNOWN")
       ** (ArgumentError) Invalid HTTP method: "UNKNOWN"
   """
+  @spec validate_method!(String.t()) :: String.t()
   def validate_method!(method) do
     if method in @all_methods do
       method

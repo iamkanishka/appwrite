@@ -6,6 +6,7 @@ defmodule OAuthProvider do
   Helper functions are included to validate these provider values, ensuring only recognized OAuth providers are used.
   """
 
+
   @amazon "amazon"
   @apple "apple"
   @auth0 "auth0"
@@ -88,6 +89,25 @@ defmodule OAuthProvider do
     @mock
   ]
 
+
+
+  @doc """
+  Guard clause to check if a given `provider` is a valid  image gravity code.
+
+  ## Examples
+
+      iex> OAuthProvider.valid_provider("google")
+      true
+
+      iex> OAuthProvider.valid_provider("xxx")
+      false
+  """
+  @spec valid_provider(String.t()) :: boolean()
+  defguard valid_provider(provider) when provider in @all_providers
+
+
+
+
   @doc """
   Returns true if the given `provider` is a valid OAuth provider.
 
@@ -99,6 +119,7 @@ defmodule OAuthProvider do
       iex> OAuthProvider.is_valid_provider?("example")
       false
   """
+  @spec is_valid_provider?(String.t()) :: boolean()
   def is_valid_provider?(provider), do: provider in @all_providers
 
   @doc """
@@ -113,6 +134,7 @@ defmodule OAuthProvider do
       iex> OAuthProvider.validate_provider("example")
       {:error, "Invalid OAuth provider"}
   """
+  @spec valid_provider(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def validate_provider(provider) when provider in @all_providers, do: {:ok, provider}
   def validate_provider(_provider), do: {:error, "Invalid OAuth provider"}
 
@@ -128,6 +150,7 @@ defmodule OAuthProvider do
       iex> OAuthProvider.validate_provider!("example")
       ** (ArgumentError) Invalid OAuth provider: "example"
   """
+  @spec validate_provider!(String.t()) :: String.t()
   def validate_provider!(provider) do
     if provider in @all_providers do
       provider

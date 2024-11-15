@@ -28,6 +28,24 @@ defmodule ImageGravity do
     @bottom_right
   ]
 
+
+
+  @doc """
+  Guard clause to check if a given `image gravity` is a valid  image gravity code.
+
+  ## Examples
+
+      iex> ImageGravity.valid_gravity("center")
+      true
+
+      iex> ImageGravity.valid_gravity("down_right")
+      false
+  """
+  @spec valid_gravity(String.t()) :: boolean()
+  defguard valid_gravity(image_gravity) when image_gravity in @all_gravities
+
+
+
   @doc """
   Returns true if the given `gravity` is a valid image gravity value.
 
@@ -39,6 +57,7 @@ defmodule ImageGravity do
       iex> ImageGravity.is_valid_gravity?("middle")
       false
   """
+  @spec is_valid_gravity?(String.t()) :: boolean()
   def is_valid_gravity?(gravity), do: gravity in @all_gravities
 
   @doc """
@@ -53,6 +72,7 @@ defmodule ImageGravity do
       iex> ImageGravity.validate_gravity("middle")
       {:error, "Invalid image gravity"}
   """
+  @spec validate_gravity(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def validate_gravity(gravity) when gravity in @all_gravities, do: {:ok, gravity}
   def validate_gravity(_gravity), do: {:error, "Invalid image gravity"}
 
@@ -68,6 +88,7 @@ defmodule ImageGravity do
       iex> ImageGravity.validate_gravity!("middle")
       ** (ArgumentError) Invalid image gravity: "middle"
   """
+  @spec validate_gravity!(String.t()) :: String.t()
   def validate_gravity!(gravity) do
     if gravity in @all_gravities do
       gravity

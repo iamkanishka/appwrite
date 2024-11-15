@@ -25,6 +25,7 @@ defmodule AuthenticationFactor do
       iex> AuthenticationFactor.valid_factor("unknown")
       false
   """
+  @spec valid_factor(String.t()) :: boolean()
   defguard valid_factor(factor) when factor in @all_factors
 
   @doc """
@@ -39,6 +40,7 @@ defmodule AuthenticationFactor do
       iex> AuthenticationFactor.validate_factor("unknown")
       {:error, "Invalid authentication factor"}
   """
+  @spec validate_factor(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def validate_factor(factor) when valid_factor(factor), do: {:ok, factor}
   def validate_factor(_factor), do: {:error, "Invalid authentication factor"}
 
@@ -53,6 +55,7 @@ defmodule AuthenticationFactor do
       iex> AuthenticationFactor.is_valid_factor?("unknown")
       false
   """
+  @spec is_valid_factor?(String.t()) :: boolean()
   def is_valid_factor?(factor), do: factor in @all_factors
 
   @doc """
@@ -67,6 +70,7 @@ defmodule AuthenticationFactor do
       iex> AuthenticationFactor.validate_factor!("unknown")
       ** (ArgumentError) Invalid authentication factor: "unknown"
   """
+  @spec validate_factor!(String.t()) :: String.t()
   def validate_factor!(factor) do
     if factor in @all_factors do
       factor

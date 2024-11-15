@@ -49,6 +49,7 @@ defmodule Browser do
       iex> Browser.valid_browser("unknown")
       false
   """
+  @spec valid_browser(String.t()) :: boolean()
   defguard valid_browser(browser) when browser in @all_browsers
 
   @doc """
@@ -63,6 +64,7 @@ defmodule Browser do
       iex> Browser.validate_browser("unknown")
       {:error, "Invalid browser type"}
   """
+  @spec validate_browser(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def validate_browser(browser) when valid_browser(browser), do: {:ok, browser}
   def validate_browser(_browser), do: {:error, "Invalid browser type"}
 
@@ -77,6 +79,7 @@ defmodule Browser do
       iex> Browser.is_valid_browser?("unknown")
       false
   """
+  @spec is_valid_browser?(String.t()) :: boolean()
   def is_valid_browser?(browser), do: browser in @all_browsers
 
   @doc """
@@ -91,6 +94,7 @@ defmodule Browser do
       iex> Browser.validate_browser!("unknown")
       ** (ArgumentError) Invalid browser type: "unknown"
   """
+  @spec validate_browser!(String.t()) :: String.t()
   def validate_browser!(browser) do
     if browser in @all_browsers do
       browser

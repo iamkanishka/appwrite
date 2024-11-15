@@ -53,6 +53,7 @@ defmodule CreditCard do
       iex> CreditCard.valid_credit_card("unknown")
       false
   """
+  @spec valid_credit_card(String.t()) :: boolean()
   defguard valid_credit_card(card) when card in @all_credit_cards
 
   @doc """
@@ -67,6 +68,7 @@ defmodule CreditCard do
       iex> CreditCard.validate_credit_card("unknown")
       {:error, "Invalid credit card type"}
   """
+  @spec validate_credit_card(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def validate_credit_card(card) when valid_credit_card(card), do: {:ok, card}
   def validate_credit_card(_card), do: {:error, "Invalid credit card type"}
 
@@ -81,6 +83,7 @@ defmodule CreditCard do
       iex> CreditCard.is_valid_credit_card?("unknown")
       false
   """
+  @spec is_valid_credit_card?(String.t()) :: boolean()
   def is_valid_credit_card?(card), do: card in @all_credit_cards
 
   @doc """
@@ -95,6 +98,7 @@ defmodule CreditCard do
       iex> CreditCard.validate_credit_card!("unknown")
       ** (ArgumentError) Invalid credit card type: "unknown"
   """
+  @spec validate_credit_card!(String.t()) :: String.t()
   def validate_credit_card!(card) do
     if card in @all_credit_cards do
       card

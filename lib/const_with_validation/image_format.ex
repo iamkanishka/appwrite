@@ -21,6 +21,20 @@ defmodule ImageFormat do
   ]
 
   @doc """
+  Guard clause to check if a given `image format` is a valid  image format code.
+
+  ## Examples
+
+      iex> ImageFormat.valid_format("jpg")
+      true
+
+      iex> ImageFormat.valid_format("bmp")
+      false
+  """
+  @spec valid_format(String.t()) :: boolean()
+  defguard valid_format(image_format) when image_format in @all_formats
+
+  @doc """
   Returns true if the given `format` is a valid image format.
 
   ## Examples
@@ -31,6 +45,7 @@ defmodule ImageFormat do
       iex> ImageFormat.is_valid_format?("bmp")
       false
   """
+  @spec is_valid_format?(String.t()) :: boolean()
   def is_valid_format?(format), do: format in @all_formats
 
   @doc """
@@ -45,6 +60,7 @@ defmodule ImageFormat do
       iex> ImageFormat.validate_format("bmp")
       {:error, "Invalid image format"}
   """
+  @spec validate_format(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def validate_format(format) when format in @all_formats, do: {:ok, format}
   def validate_format(_format), do: {:error, "Invalid image format"}
 
@@ -60,6 +76,7 @@ defmodule ImageFormat do
       iex> ImageFormat.validate_format!("bmp")
       ** (ArgumentError) Invalid image format: "bmp"
   """
+  @spec validate_format!(String.t()) :: String.t()
   def validate_format!(format) do
     if format in @all_formats do
       format

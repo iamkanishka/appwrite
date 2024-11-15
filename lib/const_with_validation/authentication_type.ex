@@ -22,6 +22,7 @@ defmodule AuthenticatorType do
       iex> AuthenticatorType.valid_type("unknown")
       false
   """
+  @spec valid_type(String.t()) :: boolean()
   defguard valid_type(type) when type in @all_types
 
   @doc """
@@ -36,6 +37,7 @@ defmodule AuthenticatorType do
       iex> AuthenticatorType.validate_type("unknown")
       {:error, "Invalid authenticator type"}
   """
+  @spec validate_type(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def validate_type(type) when valid_type(type), do: {:ok, type}
   def validate_type(_type), do: {:error, "Invalid authenticator type"}
 
@@ -50,6 +52,7 @@ defmodule AuthenticatorType do
       iex> AuthenticatorType.is_valid_type?("unknown")
       false
   """
+  @spec is_valid_type?(String.t()) :: boolean()
   def is_valid_type?(type), do: type in @all_types
 
   @doc """
@@ -64,6 +67,7 @@ defmodule AuthenticatorType do
       iex> AuthenticatorType.validate_type!("unknown")
       ** (ArgumentError) Invalid authenticator type: "unknown"
   """
+  @spec validate_type!(String.t()) :: String.t()
   def validate_type!(type) do
     if type in @all_types do
       type

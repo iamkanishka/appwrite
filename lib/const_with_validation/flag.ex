@@ -401,6 +401,20 @@ defmodule Flag do
   ]
 
   @doc """
+  Guard clause to check if a given `flag` is a valid country flag code.
+
+  ## Examples
+
+      iex> Flag.valid_flag("in")
+      true
+
+      iex> Flag.valid_flag("xx")
+      false
+  """
+  @spec valid_flag(String.t()) :: boolean()
+  defguard valid_flag(flag) when flag in @all_flags
+
+  @doc """
   Returns true if the given `flag` is a valid country flag code.
 
   ## Examples
@@ -411,6 +425,8 @@ defmodule Flag do
       iex> Flag.is_valid_flag?("xx")
       false
   """
+
+  @spec is_valid_flag?(String.t()) :: boolean()
   def is_valid_flag?(flag), do: flag in @all_flags
 
   @doc """
@@ -425,6 +441,7 @@ defmodule Flag do
       iex> Flag.validate_flag("xx")
       {:error, "Invalid country flag code"}
   """
+  @spec validate_flag(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def validate_flag(flag) when flag in @all_flags, do: {:ok, flag}
   def validate_flag(_flag), do: {:error, "Invalid country flag code"}
 
@@ -440,6 +457,7 @@ defmodule Flag do
       iex> Flag.validate_flag!("xx")
       ** (ArgumentError) Invalid country flag code: "xx"
   """
+  @spec validate_flag!(String.t()) :: String.t()
   def validate_flag!(flag) do
     if flag in @all_flags do
       flag

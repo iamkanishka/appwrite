@@ -1,4 +1,4 @@
-defmodule CreditCard do
+defmodule Appwrite.Consts.CreditCard do
   @moduledoc """
   Provides constants and validation functions for different credit card types.
 

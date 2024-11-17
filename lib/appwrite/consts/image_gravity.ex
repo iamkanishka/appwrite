@@ -1,4 +1,4 @@
-defmodule ImageGravity do
+defmodule Appwrite.Consts.ImageGravity do
   @moduledoc """
   Provides constants and validation functions for image gravity (positioning) values.
 

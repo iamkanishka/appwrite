@@ -1,4 +1,4 @@
-defmodule ImageFormat do
+defmodule Appwrite.Consts.ImageFormat do
   @moduledoc """
   Provides constants and validation functions for image formats.
 

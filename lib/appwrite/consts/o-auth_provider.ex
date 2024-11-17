@@ -1,4 +1,4 @@
-defmodule OAuthProvider do
+defmodule Appwrite.Consts.OAuthProvider do
   @moduledoc """
   Provides constants and validation functions for OAuth providers.
 

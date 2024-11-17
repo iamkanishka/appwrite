@@ -1,4 +1,4 @@
-defmodule Flag do
+defmodule Appwrite.Consts.Flag do
   @moduledoc """
   Provides constants and validation functions for country flags.
 

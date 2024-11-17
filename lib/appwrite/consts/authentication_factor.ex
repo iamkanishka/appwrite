@@ -1,5 +1,5 @@
-defmodule AuthenticationFactor do
-  @moduledoc """
+defmodule Appwrite.Consts.AuthenticationFactor do
+ @moduledoc """
   Provides constants and validation functions for different authentication factors.
 
   This module defines the allowed authentication factors and provides helper functions

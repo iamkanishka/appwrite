@@ -1,4 +1,4 @@
-defmodule Browser do
+defmodule Appwrite.Consts.Browsers do
   @moduledoc """
   Provides constants and validation functions for different browser types.
 

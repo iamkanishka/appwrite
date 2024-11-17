@@ -1,4 +1,4 @@
-defmodule AuthenticatorType do
+defmodule Appwrite.Consts.AuthenticationType do
   @moduledoc """
   Provides constants and validation functions for different types of authenticators.
 

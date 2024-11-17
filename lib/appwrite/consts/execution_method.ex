@@ -1,4 +1,4 @@
-defmodule ExecutionMethod do
+defmodule Appwrite.Consts.ExecutionMethod do
   @moduledoc """
   Provides constants and validation functions for different HTTP methods.
 

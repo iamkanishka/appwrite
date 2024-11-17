@@ -1,4 +1,4 @@
-defmodule FileList do
+defmodule Appwrite.Types.FileList do
   @moduledoc """
   Represents a list of files.
 

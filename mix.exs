@@ -2,7 +2,7 @@ defmodule Appwrite.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/iamkanishka/appwrite"
-  @version "0.1.2"
+  @version "0.1.3"
 
   def project do
     [
@@ -44,114 +44,121 @@ defmodule Appwrite.MixProject do
       # License, e.g., MIT, Apache 2.0
       licenses: ["MIT"],
       links: %{
-        "GitHub" => @source_url
+        GitHub: @source_url,
+        Website: "https://kanishkanaik.dev/",
+        Changelog: "#{@source_url}/blob/main/CHANGELOG.md",
+        GitHub: @source_url,
+        Docs: "https://hexdocs.pm/appwrite",
+        Twitter: "https://x.com/home",
+        Medium: "https://medium.com/@kanishkanaik97",
+        Linkedin: "https://www.linkedin.com/in/kanishka-naik-kannu-6b5180191/"
       },
       maintainers: ["Kanishka Naik"]
     ]
   end
 
   defp docs do
-    # [
-    #   extras: [
-    #     "LICENSE.md": [title: "License"],
-    #     "README.md": [title: "Overview"],
-    #     "parameters.md": [],
-    #     "CHANGELOG.md": []
-    #   ],
-    #   main: "readme",
-    #   logo: "assets/plaid-logo.png",
-    #   source_url: @source_url,
-    #   source_ref: "master",
-    #   formatters: ["html"]
-    # ]
     [
-      main: "appwrite",
-      # api_reference: false,
+      main: "Appwrite",
+      api_reference: false,
       # logo: "assets/oban-logo.svg",
       source_ref: "v#{@version}",
       source_url: @source_url,
       extra_section: "GUIDES",
       formatters: ["html"],
       extras: extras(),
-      # groups_for_extras: groups_for_extras(),
-      groups_for_modules: groups_for_modules()
-      # skip_undefined_reference_warnings_on: ["CHANGELOG.md"]
+      groups_for_extras: groups_for_extras(),
+      groups_for_modules: groups_for_modules(),
+      skip_undefined_reference_warnings_on: ["CHANGELOG.md"]
     ]
   end
 
   defp extras do
     [
       # Introduction
-      "guides/introduction/installation.md"
+      "guides/introduction/installation.md",
+      "CHANGELOG.md": [title: "Changelog"]
+    ]
+  end
+
+  defp groups_for_extras do
+    [
+      Introduction: ~r{guides/introduction/[^\/]+\.md}
+      # Learning: ~r{guides/learning/[^\/]+\.md},
+      # Advanced: ~r{guides/advanced/[^\/]+\.md},
+      # Recipes: ~r{guides/recipes/.?},
+      # Testing: ~r{guides/testing/.?},
+      # "Upgrade Guides": ~r{guides/upgrading/.*}
     ]
   end
 
   defp groups_for_modules do
     [
+      Helpers: [
+        Appwrite.Helpers.IdGenerator,
+        Appwrite.Helpers.Permission,
+        Appwrite.Helpers.Query,
+        Appwrite.Helpers.Role
+      ],
       Consts: [
-       Appwrite.Consts.AuthenticationFactor,
-       Appwrite.Consts.AuthenticationType,
-       Appwrite.Consts.Browsers,
-       Appwrite.Consts.CreditCard,
-       Appwrite.Consts.ExecutionMethod,
-       Appwrite.Consts.Flag,
-       Appwrite.Consts.ImageFormat,
-       Appwrite.Consts.ImageGravity,
-       Appwrite.Consts.OAuthProvider
-
+        Appwrite.Consts.AuthenticationFactor,
+        Appwrite.Consts.AuthenticationType,
+        Appwrite.Consts.Browsers,
+        Appwrite.Consts.CreditCard,
+        Appwrite.Consts.ExecutionMethod,
+        Appwrite.Consts.Flag,
+        Appwrite.Consts.ImageFormat,
+        Appwrite.Consts.ImageGravity,
+        Appwrite.Consts.OAuthProvider
       ],
       Types: [
-       Appwrite.Types.AlgoArgon2,
-       Appwrite.Types.AlgoBcrypt,
-       Appwrite.Types.AlgoMd5,
-       Appwrite.Types.AlgoPhpass,
-       Appwrite.Types.AlgoScryptModified,
-       Appwrite.Types.AlgoSha,
-       Appwrite.Types.Continent,
-       Appwrite.Types.ContinentList,
-       Appwrite.Types.Country,
-       Appwrite.Types.CountryList,
-       Appwrite.Types.Currency,
-       Appwrite.Types.CurrencyList,
-       Appwrite.Types.Document,
-       Appwrite.Types.DocumentList,
-       Appwrite.Types.Execution,
-       Appwrite.Types.ExecutionList,
-       Appwrite.Types.File,
-       Appwrite.Types.FileList,
-       Appwrite.Types.Headers,
-       Appwrite.Types.Headers,
-       Appwrite.Types.Identity,
-       Appwrite.Types.IdentityList,
-       Appwrite.Types.Jwt,
-       Appwrite.Types.Language,
-       Appwrite.Types.LanguageList,
-       Appwrite.Types.LocaleCode,
-       Appwrite.Types.LocaleCodeList,
-       Appwrite.Types.Locale,
-       Appwrite.Types.Log,
-       Appwrite.Types.LogList,
-       Appwrite.Types.Membership,
-       Appwrite.Types.MembershipList,
-       Appwrite.Types.MfaChallenge,
-       Appwrite.Types.MfaFactors,
-       Appwrite.Types.MfaRecoveryCodes,
-       Appwrite.Types.MfaType,
-       Appwrite.Types.Phone,
-       Appwrite.Types.PhoneList,
-       Appwrite.Types.Preference,
-       Appwrite.Types.Session,
-       Appwrite.Types.SessionList,
-       Appwrite.Types.Target,
-       Appwrite.Types.Team,
-       Appwrite.Types.TeamList,
-       Appwrite.Types.Token,
-       Appwrite.Types.User
-
-
-
-      ],
-
+        Appwrite.Types.AlgoArgon2,
+        Appwrite.Types.AlgoBcrypt,
+        Appwrite.Types.AlgoMd5,
+        Appwrite.Types.AlgoPhpass,
+        Appwrite.Types.AlgoScryptModified,
+        Appwrite.Types.AlgoSha,
+        Appwrite.Types.Continent,
+        Appwrite.Types.ContinentList,
+        Appwrite.Types.Country,
+        Appwrite.Types.CountryList,
+        Appwrite.Types.Currency,
+        Appwrite.Types.CurrencyList,
+        Appwrite.Types.Document,
+        Appwrite.Types.DocumentList,
+        Appwrite.Types.Execution,
+        Appwrite.Types.ExecutionList,
+        Appwrite.Types.File,
+        Appwrite.Types.FileList,
+        Appwrite.Types.Headers,
+        Appwrite.Types.Headers,
+        Appwrite.Types.Identity,
+        Appwrite.Types.IdentityList,
+        Appwrite.Types.Jwt,
+        Appwrite.Types.Language,
+        Appwrite.Types.LanguageList,
+        Appwrite.Types.LocaleCode,
+        Appwrite.Types.LocaleCodeList,
+        Appwrite.Types.Locale,
+        Appwrite.Types.Log,
+        Appwrite.Types.LogList,
+        Appwrite.Types.Membership,
+        Appwrite.Types.MembershipList,
+        Appwrite.Types.MfaChallenge,
+        Appwrite.Types.MfaFactors,
+        Appwrite.Types.MfaRecoveryCodes,
+        Appwrite.Types.MfaType,
+        Appwrite.Types.Phone,
+        Appwrite.Types.PhoneList,
+        Appwrite.Types.Preference,
+        Appwrite.Types.Session,
+        Appwrite.Types.SessionList,
+        Appwrite.Types.Target,
+        Appwrite.Types.Team,
+        Appwrite.Types.TeamList,
+        Appwrite.Types.Token,
+        Appwrite.Types.User
+      ]
     ]
   end
 end

@@ -1,4 +1,4 @@
-defmodule ID do
+defmodule Appwrite.Helpers.IdGenerator do
   @moduledoc """
   Helper module to generate ID strings for resources. This module provides functions
   to generate unique ID strings, either based on a timestamp or with custom or Appwrite-like generation methods.

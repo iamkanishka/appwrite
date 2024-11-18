@@ -1,4 +1,4 @@
-defmodule Permission do
+defmodule Appwrite.Helpers.Permission do
   @moduledoc """
   A helper module for generating permission strings for resources.
   """

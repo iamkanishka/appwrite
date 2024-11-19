@@ -1,31 +1,45 @@
-defmodule Appwrite.AppwriteException do
+defmodule Appwrite.Exceptions.AppwriteException do
   @moduledoc """
-  Exception thrown by the Appwrite package.
+  Represents an exception in the Appwrite library.
+
+  This exception is raised when errors occur during API calls, such as invalid responses or request failures.
   """
-  defexception [:message, :code, :type, :response]
 
   @type t :: %__MODULE__{
           message: String.t(),
           code: non_neg_integer(),
           type: String.t(),
-          response: String.t()
+          response: any()
         }
 
+  defstruct [
+    :message,
+    :code,
+    :type,
+    :response
+  ]
+
   @doc """
-  Initializes a new AppwriteException.
+  Creates a new `Appwrite.Exception` struct.
 
   ## Parameters
-  - `message`: The error message.
-  - `code`: The error code (default: 0).
-  - `type`: The error type (default: an empty string).
-  - `response`: The response string (default: an empty string).
+  - `message` - The error message (default: `"An error occurred"`).
+  - `code` - The error code (default: `0`).
+  - `type` - The type of the error (default: an empty string).
+  - `response` - Additional response data (default: `nil`).
+
+  ## Examples
+
+      iex> Appwrite.Exception.new("Unauthorized access", 401, "auth_error", %{"details" => "Invalid token"})
+      %Appwrite.Exception{
+        message: "Unauthorized access",
+        code: 401,
+        type: "auth_error",
+        response: %{"details" => "Invalid token"}
+      }
   """
-  def exception(%{
-        message: message,
-        code: code,
-        type: type,
-        response: response
-      }) do
+  @spec new(String.t(), non_neg_integer(), String.t(), any()) :: t()
+  def new(message \\ "An error occurred", code \\ 0, type \\ "", response \\ nil) do
     %__MODULE__{
       message: message,
       code: code,
@@ -33,8 +47,18 @@ defmodule Appwrite.AppwriteException do
       response: response
     }
   end
+
+  @doc """
+  Converts the exception into a readable string format.
+
+  ## Examples
+
+      iex> exception = Appwrite.Exception.new("Not found", 404, "not_found", %{})
+      iex> Appwrite.Exception.to_string(exception)
+      "[404] not_found: Not found"
+  """
+  @spec to_string(t()) :: String.t()
+  def to_string(%__MODULE__{message: message, code: code, type: type}) do
+    "[#{code}] #{type}: #{message}"
+  end
 end
-
-
-# You can raise the exception in Elixir using raise:
-# raise Appwrite.AppwriteException, message: "An error occurred", code: 500

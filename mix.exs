@@ -94,6 +94,17 @@ defmodule Appwrite.MixProject do
 
   defp groups_for_modules do
     [
+      Services: [
+        Appwrite.Services.Accounts,
+        Appwrite.Services.Avatars,
+        Appwrite.Services.Database,
+        Appwrite.Services.Functions,
+        Appwrite.Services.Locale,
+        Appwrite.Services.Messaging,
+        Appwrite.Services.Storage,
+        Appwrite.Services.Teams,
+
+      ],
       Helpers: [
         Appwrite.Helpers.IdGenerator,
         Appwrite.Helpers.Permission,

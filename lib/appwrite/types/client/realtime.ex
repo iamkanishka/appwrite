@@ -1,4 +1,4 @@
-defmodule Appwrite.Realtime do
+defmodule Appwrite.Types.Client.Realtime do
   @moduledoc """
   Struct representing the structure of a realtime communication object.
   """

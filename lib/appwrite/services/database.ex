@@ -14,6 +14,6 @@ Using Appwrite permissions architecture,
 you can assign read or write access to each document in your project for either a specific user,
 team, user role, or even grant it with public access (*).
 
-Coming Soon
+Status: In Progress
 """
 end

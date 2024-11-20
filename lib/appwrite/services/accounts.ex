@@ -7,6 +7,7 @@ defmodule Appwrite.Services.Accounts do
   You can authenticate the user account by using multiple sign-in methods available.
   Once the user is authenticated, a new session object will be created to allow the user to access his or her private data and settings.
 
+  Status: In Testing
   """
 
   alias Appwrite.Consts.AuthenticationFactor

@@ -7,6 +7,6 @@ defmodule Appwrite.Services.Functions do
   or by setting it to be executed in a predefined schedule.
   Your code is stored in a secure way on your Appwrite instance and is executed in an isolated environment.
 
-  Coming Soon
+  Status: Coming Soon
   """
 end

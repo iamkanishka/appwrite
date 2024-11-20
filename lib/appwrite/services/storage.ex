@@ -9,6 +9,6 @@ defmodule Appwrite.Services.Storage do
   The preview endpoint allows you to generate preview images for your files.
   Using the preview endpoint, you can also manipulate the resulting image so that it will fit perfectly inside your app in terms of dimensions, file size, and style. The preview endpoint also allows you to change the resulting image file format for better compression or image quality for better delivery over the network.
 
-  Coming Soon
+  Status: Coming Soon
   """
 end

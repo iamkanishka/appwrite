@@ -4,6 +4,6 @@ defmodule Appwrite.Services.Messaging do
   Sending personalized communication for marketing, updates, and realtime alerts can increase user engagement and retention.
   You can also use Appwrite Messaging to implement security checks and custom authentication flows.
 
-  Coming Soon
+  Status: Coming Soon
   """
 end

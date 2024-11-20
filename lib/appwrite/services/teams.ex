@@ -5,6 +5,6 @@ defmodule Appwrite.Services.Teams do
   Each user who creates a team becomes the team owner and can delegate the ownership role by inviting a new team member.
   Only team owners can invite new users to their team.
 
-  Coming Soon
+  Status: Coming Soon
   """
 end

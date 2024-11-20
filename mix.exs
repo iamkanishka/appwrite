@@ -1,4 +1,5 @@
 defmodule Appwrite.MixProject do
+  alias Appwrite.Helpers.Client
   use Mix.Project
 
   @source_url "https://github.com/iamkanishka/appwrite"
@@ -109,7 +110,10 @@ defmodule Appwrite.MixProject do
         Appwrite.Helpers.IdGenerator,
         Appwrite.Helpers.Permission,
         Appwrite.Helpers.Query,
-        Appwrite.Helpers.Role
+        Appwrite.Helpers.Role,
+        Appwrite.Helpers.Client,
+
+
       ],
       Consts: [
         Appwrite.Consts.AuthenticationFactor,
@@ -168,7 +172,19 @@ defmodule Appwrite.MixProject do
         Appwrite.Types.Team,
         Appwrite.Types.TeamList,
         Appwrite.Types.Token,
-        Appwrite.Types.User
+        Appwrite.Types.User,
+        Appwrite.Types.Client.Headers,
+        Appwrite.Types.Client.Payload,
+        Appwrite.Types.Client.Realtime,
+        Appwrite.Types.Client.RealtimeRequest,
+        Appwrite.Types.Client.RealtimeRequestAuthenticate,
+        Appwrite.Types.Client.RealtimeResponse,
+        Appwrite.Types.Client.RealtimeResponseAuthenticated,
+        Appwrite.Types.Client.RealtimeResponseConnected,
+        Appwrite.Types.Client.RealtimeResponseError,
+        Appwrite.Types.Client.RealtimeResponseEvent,
+        Appwrite.Types.Client.UploadProgress,
+
       ]
     ]
   end

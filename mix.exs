@@ -1,9 +1,8 @@
 defmodule Appwrite.MixProject do
-  alias Appwrite.Helpers.Client
   use Mix.Project
 
   @source_url "https://github.com/iamkanishka/appwrite"
-  @version "0.1.3"
+  @version "0.1.4"
 
   def project do
     [

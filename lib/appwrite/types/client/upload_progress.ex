@@ -1,4 +1,4 @@
-defmodule Appwrite.UploadProgress do
+defmodule Appwrite.Types.Client.UploadProgress do
   @moduledoc """
   Type representing upload progress information.
   """

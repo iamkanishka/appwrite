@@ -46,7 +46,7 @@ defmodule Appwrite.MixProject do
       links: %{
         GitHub: @source_url,
         Website: "https://kanishkanaik.dev/",
-        Changelog: "#{@source_url}/blob/main/CHANGELOG.md",
+        Changelog: "#{@source_url}/blob/master/CHANGELOG.md",
         GitHub: @source_url,
         Docs: "https://hexdocs.pm/appwrite",
         Twitter: "https://x.com/home",

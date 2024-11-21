@@ -7,9 +7,10 @@ defmodule Appwrite.Services.Functions do
   or by setting it to be executed in a predefined schedule.
   Your code is stored in a secure way on your Appwrite instance and is executed in an isolated environment.
 
-  Status: Coming Soon
+  Status: In Testing
   """
 
+  alias Appwrite.Helpers.Client
   alias Appwrite.Consts.ExecutionMethod
   alias Appwrite.Types.{Execution, ExecutionList }
 

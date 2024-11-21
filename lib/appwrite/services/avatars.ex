@@ -8,7 +8,7 @@ defmodule Appwrite.Services.Avatars do
   All endpoints in this service allow you to resize, crop, and
   change the output image quality for maximum performance and visibility in your app.
 
-  Coming Soon
+ Status: In Testing
   """
 
   alias Appwrite.Types.Client

@@ -27,3 +27,5 @@ appwrite-*.tar
 
 
 /.vscode
+
+/config

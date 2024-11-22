@@ -23,7 +23,6 @@ defmodule Appwrite.Services.Accounts do
     MfaChallenge,
     MfaRecoveryCodes,
     MfaFactors,
-    User,
     Preferences,
     Token,
     Session,

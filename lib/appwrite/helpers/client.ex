@@ -329,6 +329,37 @@ defmodule Appwrite.Helpers.Client do
 
 
 
+  defp get_base_url(config) do
+    case config[:root_uri] || Application.get_env(:appwrite, :root_uri) do
+      nil ->
+        raise Appwrite.MissingRootUriError
+
+      root_uri ->
+        root_uri
+    end
+  end
+
+  defp get_project_id(config) do
+    case config[:project_id] || Application.get_env(:appwrite, :project_id) do
+      nil ->
+        raise Appwrite.MissingProjectIdError
+
+      project_id ->
+        project_id
+    end
+  end
+
+  defp get_secret(config) do
+    case config[:secret] || Application.get_env(:appwrite, :secret) do
+      nil ->
+        raise Appwrite.MissingSecretError
+
+      secret ->
+        secret
+    end
+  end
+
+
 
 
 

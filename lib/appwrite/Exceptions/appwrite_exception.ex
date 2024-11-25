@@ -12,7 +12,7 @@ defmodule Appwrite.Exceptions.AppwriteException do
           response: any()
         }
 
-  defstruct [
+  defexception [
     :message,
     :code,
     :type,

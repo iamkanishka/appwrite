@@ -3,114 +3,52 @@ defmodule Appwrite.Helpers.Client do
   Client module for handling requests to Appwrite.
   """
 
+  alias Appwrite.Types.Session
+  alias Appwrite.Types.User
+  alias Appwrite.Types.Client.Payload
+  alias Appwrite.Types.Client.Headers
   alias Appwrite.Exceptions.AppwriteException
   alias Appwrite.Types.Client.UploadProgress
-
+  alias Multipart
+  alias HTTPoison
 
   @chunk_size 1024 * 1024 * 5
 
-  defstruct [
-    :endpoint,
-    :endpoint_realtime,
-    :project,
-    :jwt,
-    :locale,
-    :session,
-    headers: %{
-      "x-sdk-name" => "Web",
-      "x-sdk-platform" => "client",
-      "x-sdk-language" => "web",
-      "x-sdk-version" => "16.0.2",
-      "X-Appwrite-Response-Format" => "1.6.0"
-    }
-  ]
+  @headers %{
+    "x-sdk-name" => "Web",
+    "x-sdk-platform" => "client",
+    "x-sdk-language" => "web",
+    "x-sdk-version" => "16.0.2",
+    "X-Appwrite-Response-Format" => "1.6.0",
+    "X-Appwrite-Session" =>
+      "eyJpZCI6IjliMWRlYjRkM2I3ZDRiYWQ5YmRkMmIwZDdiNHR5dTYiLCJzZWNyZXQiOiI4ZDhlN2I3N2FlY2FlNjM2MWJmYzAxYmI4ZTA4NGEzMzYxYTY5M2JlZDczZmM1OTFiMjVhNTVjZDZlMWI1MGU4Yzg0ZDZmYWI1ZDUyMDcyMjg2MWIzZWYwM2NjMTlkYjM2ZjcwYjEzNDNjN2RhNTg3NDY1ODIzYzU2OGI2YTI1YWJkZjBmMWUyOWZhZmM0OTM4NGUyZmMyZmVhMzIzMjc5OWJjNWRlMTJiNDlmMDlhMzFlOTUwZGExNmI4ZGU2YWU2OWZiMWQ5MWJlYWZlZmFiNWUzYmFlNTlhY2QzNWMxM2I0MDRhOTFlMjk4NmUzMWMwODk2N2VhYmZhMTM3M2M3In0="
+  }
 
-  @type t :: %__MODULE__{
-          endpoint: String.t() | nil,
-          endpoint_realtime: String.t() | nil,
-          project: String.t() | nil,
-          jwt: String.t() | nil,
-          locale: String.t() | nil,
-          session: String.t() | nil,
-          headers: %{String.t() => String.t()}
-        }
+  @config %{
+    endpoint: "https://cloud.appwrite.io/v1",
+    endpoint_realtime: "wss://cloud.appwrite.io/v1",
+    project: nil,
+    jwt: nil,
+    locale: nil,
+    session: nil
+  }
 
-  @doc """
-  Creates a new client instance with default configuration.
-  """
-  def new() do
-    %__MODULE__{
-      endpoint: "https://cloud.appwrite.io/v1",
-      endpoint_realtime: nil,
-      project: nil,
-      jwt: nil,
-      locale: nil,
-      session: nil
-    }
-  end
-
-  @doc """
-  Sets the API endpoint.
-
-  ## Parameters
-    - `client`: The current client instance.
-    - `endpoint`: The API endpoint.
-
-  ## Returns
-    - Updated client instance.
-  """
-  def set_endpoint(%__MODULE__{} = client, endpoint) when is_binary(endpoint) do
-    endpoint_realtime =
-      client.endpoint_realtime ||
-        endpoint
-        |> String.replace("https://", "wss://")
-        |> String.replace("http://", "ws://")
-
-    %{client | endpoint: endpoint, endpoint_realtime: endpoint_realtime}
-  end
-
-  @doc """
-  Sets the realtime endpoint.
-
-  ## Parameters
-    - `client`: The current client instance.
-    - `endpoint_realtime`: The realtime endpoint.
-
-  ## Returns
-    - Updated client instance.
-  """
-  def set_endpoint_realtime(%__MODULE__{} = client, endpoint_realtime) when is_binary(endpoint_realtime) do
-    %{client | endpoint_realtime: endpoint_realtime}
-  end
-
-  @doc """
-  Sets the project ID.
-
-  ## Parameters
-    - `client`: The current client instance.
-    - `project`: The project ID.
-
-  ## Returns
-    - Updated client instance.
-  """
-  def set_project(%__MODULE__{} = client, project) when is_binary(project) do
-    headers = Map.put(client.headers, "X-Appwrite-Project", project)
-    %{client | project: project, headers: headers}
-  end
+  @type response_type :: String.t()
+  @type response :: {:ok, any()} | {:error, any()}
 
   @doc """
   Sets the JWT.
 
   ## Parameters
-    - `client`: The current client instance.
+
     - `jwt`: The JSON Web Token.
 
   ## Returns
-    - Updated client instance.
+    - Updated Header map.
   """
-  def set_jwt(%__MODULE__{} = client, jwt) when is_binary(jwt) do
-    headers = Map.put(client.headers, "X-Appwrite-JWT", jwt)
-    %{client | jwt: jwt, headers: headers}
+  @spec set_locale(String.t()) :: Headers.t()
+  def set_jwt(jwt) when is_binary(jwt) do
+    Map.put(@headers, "X-Appwrite-JWT", jwt)
   end
 
   @doc """
@@ -123,9 +61,9 @@ defmodule Appwrite.Helpers.Client do
   ## Returns
     - Updated client instance.
   """
-  def set_locale(%__MODULE__{} = client, locale) when is_binary(locale) do
-    headers = Map.put(client.headers, "X-Appwrite-Locale", locale)
-    %{client | locale: locale, headers: headers}
+  @spec set_locale(String.t()) :: Headers.t()
+  def set_locale(locale) when is_binary(locale) do
+    Map.put(@headers, "X-Appwrite-Locale", locale)
   end
 
   @doc """
@@ -138,20 +76,10 @@ defmodule Appwrite.Helpers.Client do
   ## Returns
     - Updated client instance.
   """
-  def set_session(%__MODULE__{} = client, session) when is_binary(session) do
-    headers = Map.put(client.headers, "X-Appwrite-Session", session)
-    %{client | session: session, headers: headers}
+  @spec set_session(String.t()) :: Headers.t()
+  def set_session(session) when is_binary(session) do
+    Map.put(@headers, "X-Appwrite-Session", session)
   end
-
-
-
-
-  @type method :: String.t()
-  @type url :: String.t()
-  @type headers :: %{optional(String.t()) => String.t()}
-  @type params :: %{optional(String.t()) => any()}
-  @type response_type :: String.t()
-  @type response :: {:ok, any()} | {:error, any()}
 
   @doc """
   Prepares an HTTP request with the specified method, URL, headers, and parameters.
@@ -165,8 +93,9 @@ defmodule Appwrite.Helpers.Client do
   ## Returns
     - Tuple containing the URI and options for the request.
   """
-  @spec prepare_request(method, url, headers, params) :: {String.t(), map()}
-  def prepare_request(method, url, headers \\ %{}, params \\ %{}) do
+  @spec prepare_request(String.t(), String.t(), Headers.t(), Payload.t()) :: {String.t(), map()}
+  def prepare_request(method, api_path, headers \\ %{}, params \\ %{}) do
+    url = URI.merge(@config.endpoint, api_path)
     method = String.upcase(method)
 
     headers =
@@ -176,118 +105,71 @@ defmodule Appwrite.Helpers.Client do
     options = %{
       method: method,
       headers: headers,
-      hackney: [cookie: :default]
+      credentials: "include",
+      body: %{} |> Jason.encode!()
     }
 
     {uri, options} =
       if method == "GET" do
-        query = URI.encode_query(params)
-        {url <> "?" <> query, options}
+        # IO.inspect(method, label: "method")
+
+        # query = URI.encode_query(params)
+        # {url <> "?" <> query, options}
+
+        # flattened_params = flatten(params)
+        # IO.inspect(flattened_params, label: "flattened_params")
+
+        # Append each key-value pair to the URL's query string
+        query_string = URI.encode_query(flatten(params))
+        {to_string(url) <> "?" <> query_string, options}
+
+        # if query_string != "" and Map.keys(options) != [] do
+        #   {to_string(url) <> "?" <> query_string, options}
+        # else
+        #   {to_string(url)}
+        # end
       else
         options =
-          case Map.get(headers, "content-type") do
+          case headers["content-type"] do
             "application/json" ->
               Map.put(options, :body, Jason.encode!(params))
 
             "multipart/form-data" ->
-              {headers, body} = build_multipart_form(params, headers)
-              {headers, Map.put(options, :body, body)}
+              IO.inspect(label: "multipart/form-data")
+
+              form_data =
+                params
+                |> Enum.reduce(Multipart.new(), fn {key, value}, form ->
+                  cond do
+                    # If value is a file
+                    is_map(value) and Map.has_key?(value, :path) and
+                        Map.has_key?(value, :filename) ->
+                      Multipart.add_part(form, value.path, name: key, filename: value.filename)
+
+                    # If value is a list
+                    is_list(value) ->
+                      Enum.reduce(value, form, fn nested_value, acc ->
+                        Multipart.add_field(acc, "#{key}[]", nested_value)
+                      end)
+
+                    # Otherwise, treat as a single value
+                    true ->
+                      Multipart.add_field(form, key, value)
+                  end
+                end)
+
+              options = Map.put(options, :body, Multipart.body(form_data))
+              headers = Map.delete(headers, "content-type")
 
             _ ->
+              # Default case if `content-type` doesn't match
               options
           end
 
-        {url, options}
+        {to_string(url), options}
       end
 
     {uri, options}
-  end
-
-  @spec maybe_add_fallback_cookie(headers) :: headers
-  defp maybe_add_fallback_cookie(headers) do
-    case System.get_env("FALLBACK_COOKIE") do
-      nil -> headers
-      cookie -> Map.put(headers, "X-Fallback-Cookies", cookie)
-    end
-  end
-
-  @spec default_headers() :: headers
-  defp default_headers do
-    %{
-      "x-sdk-name" => "Web",
-      "x-sdk-platform" => "client",
-      "x-sdk-language" => "elixir",
-      "x-sdk-version" => "16.0.2",
-      "X-Appwrite-Response-Format" => "1.6.0"
-    }
-  end
-
-  @spec build_multipart_form(params, headers) :: {headers, any()}
-  defp build_multipart_form(params, headers) do
-    form_data =
-      params
-      |> Enum.reduce([], fn {key, value}, acc ->
-        cond do
-          is_binary(value) -> [{key, value} | acc]
-          true -> acc
-        end
-      end)
-
-      %{"content-type" => "multipart/form-data", "form-data" => form_data}
-  end
-
-  @doc """
-  Handles chunked uploads for large files.
-
-  ## Parameters
-    - `method`: HTTP method (e.g., "POST").
-    - `url`: Target URL.
-    - `headers`: Map of headers.
-    - `payload`: Original payload with file details.
-    - `on_progress`: Function to call with progress updates.
-
-  ## Returns
-    - Response from the final chunk.
-  """
-  @spec chunked_upload(method, url, headers, params, (UploadProgress.t() -> any())) :: any()
-  def chunked_upload(method, url, headers \\ %{}, payload \\ %{}, on_progress \\ nil) do
-    file = Enum.find(payload, fn {_, value} -> is_map(value) and Map.has_key?(value, :size) end)
-    |> elem(1)
-
-    if file.size <= @chunk_size do
-      call(method, url, headers, payload)
-    else
-      chunked_upload_process(method, url, headers, payload, file, on_progress)
-    end
-  end
-
-  @spec chunked_upload_process(method, url, headers, params, map(), (UploadProgress.t() -> any())) :: any()
-  defp chunked_upload_process(method, url, headers, payload, file, on_progress) do
-    Stream.iterate(0, &(&1 + @chunk_size))
-    |> Stream.take_while(fn start -> start < file.size end)
-    |> Enum.reduce(nil, fn start, _response ->
-      end_byte = min(start + @chunk_size, file.size)
-
-      headers = Map.put(headers, "content-range", "bytes #{start}-#{end_byte - 1}/#{file.size}")
-      chunk = :binary.part(file.content, start, end_byte - start)
-      updated_payload = Map.put(payload, :file, %{content: chunk, name: file.name})
-
-      response = call(method, url, headers, updated_payload)
-
-      if on_progress do
-        on_progress.(
-          %UploadProgress{
-            id: Map.get(response, "$id"),
-            progress: round((end_byte / file.size) * 100),
-            size_uploaded: end_byte,
-            chunks_total: div(file.size, @chunk_size) + 1,
-            chunks_uploaded: div(end_byte, @chunk_size)
-          }
-        )
-      end
-
-      response
-    end)
   end
 
   @doc """
@@ -303,44 +185,143 @@ defmodule Appwrite.Helpers.Client do
   ## Returns
     - Response data or raises an `AppwriteException` on error.
   """
-  @spec call(method, url, headers, params, response_type) :: any()
-  def call(method, url, headers \\ %{}, params \\ %{}, response_type \\ "json") do
-    {uri, options} = prepare_request(method, url, headers, params)
+  @spec call(String.t(), String.t(), Headers.t(), Payload.t(), String.t()) ::  response()
+  def call(method, api_path, headers \\ %{}, params \\ %{}, response_type \\ "json") do
+    try do
+      {uri, options} = prepare_request(method, api_path, headers, params)
+      method = String.to_atom(method)
 
-    case HTTPoison.request(method, uri, options[:body], options[:headers], options[:hackney]) do
-      {:ok, %HTTPoison.Response{status_code: code, body: body, headers: response_headers}} ->
-        handle_response(code, body, response_headers, response_type)
+      case HTTPoison.request(method, uri, options[:body], options[:headers], []) do
+        {:ok, %HTTPoison.Response{status_code: code, body: body, headers: response_headers}} ->
+          IO.puts("Response received with status: #{code}")
+          IO.puts("Body: #{body}")
+          IO.puts("response_type: #{response_type}")
+          IO.inspect(response_headers, label: "response_headers")
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        raise AppwriteException, message: inspect(reason), code: 500
+          handle_response(code, body, response_headers, response_type)
+
+        {:error, %HTTPoison.Error{reason: reason}} ->
+          raise Appwrite.Exceptions.AppwriteException,
+            message: reason,
+            code: 500,
+            type: response_type,
+            response: nil
+      end
+    rescue
+      error ->
+        raise Appwrite.Exceptions.AppwriteException,
+          message: error
+
     end
   end
 
-  @spec handle_response(integer(), binary(), headers, response_type) :: any()
+  @spec handle_response(integer(), binary(), Headers.t(), String.t()) :: any()
   defp handle_response(code, body, headers, response_type) when code >= 400 do
     data = if response_type == "json", do: Jason.decode!(body), else: %{"message" => body}
-    raise AppwriteException, message: data["message"], code: code, type: data["type"]
+
+    raise Appwrite.Exceptions.AppwriteException,
+      message: data["message"],
+      code: code,
+      type: response_type,
+      response: nil
   end
 
   defp handle_response(_code, body, _headers, "arrayBuffer"), do: body
   defp handle_response(_code, body, _headers, "json"), do: Jason.decode!(body)
   defp handle_response(_code, body, _headers, _), do: %{"message" => body}
 
-
-
-
-  defp get_base_url(config) do
-    case config[:root_uri] || Application.get_env(:appwrite, :root_uri) do
-      nil ->
-        raise Appwrite.MissingRootUriError
-
-      root_uri ->
-        root_uri
+  @spec maybe_add_fallback_cookie(Headers.t()) :: Headers.t()
+  defp maybe_add_fallback_cookie(headers) do
+    case System.get_env("FALLBACK_COOKIE") do
+      nil -> headers
+      cookie -> Map.put(headers, "X-Fallback-Cookies", cookie)
     end
   end
 
-  defp get_project_id(config) do
-    case config[:project_id] || Application.get_env(:appwrite, :project_id) do
+  @spec default_headers() :: Headers.t()
+  defp default_headers() do
+    Map.put(@headers, "X-Appwrite-Project", get_project_id())
+    # |> Map.put("X-Appwrite-Key", get_secret())
+  end
+
+  @spec build_multipart_form(Payload.t(), Headers.t()) :: {Headers.t(), any()}
+  defp build_multipart_form(params \\ %{}, headers) do
+    form_data =
+      params
+      |> Enum.reduce([], fn {key, value}, acc ->
+        cond do
+          is_binary(value) -> [{key, value} | acc]
+          true -> acc
+        end
+      end)
+
+    %{"content-type" => "multipart/form-data", "form-data" => form_data}
+  end
+
+  @doc """
+  Handles chunked uploads for large files.
+
+  ## Parameters
+    - `method`: HTTP method (e.g., "POST").
+    - `url`: Target URL.
+    - `headers`: Map of headers.
+    - `payload`: Original payload with file details.
+    - `on_progress`: Function to call with progress updates.
+
+  ## Returns
+    - Response from the final chunk.
+  """
+  @spec chunked_upload(String.t(), String.t(), Headers.t(), Payload.t(), (UploadProgress.t() ->
+                                                                            any())) :: any()
+  def chunked_upload(method, url, headers \\ %{}, payload \\ %{}, on_progress \\ nil) do
+    file =
+      Enum.find(payload, fn {_, value} -> is_map(value) and Map.has_key?(value, :size) end)
+      |> elem(1)
+
+    if file.size <= @chunk_size do
+      call(method, url, headers, payload)
+    else
+      chunked_upload_process(method, url, headers, payload, file, on_progress)
+    end
+  end
+
+  @spec chunked_upload_process(
+          String.t(),
+          String.t(),
+          Headers.t(),
+          Payload.t(),
+          map(),
+          (UploadProgress.t() -> any())
+        ) ::
+          any()
+  defp chunked_upload_process(method, url, headers, payload, file, on_progress) do
+    Stream.iterate(0, &(&1 + @chunk_size))
+    |> Stream.take_while(fn start -> start < file.size end)
+    |> Enum.reduce(nil, fn start, _response ->
+      end_byte = min(start + @chunk_size, file.size)
+
+      headers = Map.put(headers, "content-range", "bytes #{start}-#{end_byte - 1}/#{file.size}")
+      chunk = :binary.part(file.content, start, end_byte - start)
+      updated_payload = Map.put(payload, :file, %{content: chunk, name: file.name})
+
+      response = call(method, url, headers, updated_payload)
+
+      if on_progress do
+        on_progress.(%UploadProgress{
+          id: Map.get(response, "$id"),
+          progress: round(end_byte / file.size * 100),
+          size_uploaded: end_byte,
+          chunks_total: div(file.size, @chunk_size) + 1,
+          chunks_uploaded: div(end_byte, @chunk_size)
+        })
+      end
+
+      response
+    end)
+  end
+
+  defp get_project_id() do
+    case Application.get_env(:appwrite, :project_id) do
       nil ->
         raise Appwrite.MissingProjectIdError
 
@@ -349,20 +330,80 @@ defmodule Appwrite.Helpers.Client do
     end
   end
 
-  defp get_secret(config) do
-    case config[:secret] || Application.get_env(:appwrite, :secret) do
+  defp get_secret() do
+    case Application.get_env(:appwrite, :secret) do
       nil ->
         raise Appwrite.MissingSecretError
+        ""
 
       secret ->
         secret
     end
   end
 
+  @doc """
+  Flattens a nested map or list into a single-level map with prefixed keys.
 
+  ## Examples
 
+      iex> Client.flatten(%{"key1" => %{"key2" => "value"}}, "prefix")
+      %{"prefix[key1][key2]" => "value"}
 
+      iex> Client.flatten(%{"key1" => ["a", "b"]}, "prefix")
+      %{"prefix[key1][0]" => "a", "prefix[key1][1]" => "b"}
 
+  """
+  def flatten(data, prefix \\ "") do
+    Enum.reduce(data, %{}, fn {key, value}, acc ->
+      final_key = if prefix == "", do: key, else: "#{prefix}[#{key}]"
 
+      cond do
+        is_map(value) or is_list(value) ->
+          Map.merge(acc, flatten(value, final_key))
 
+        true ->
+          Map.put(acc, final_key, value)
+      end
+    end)
+  end
+
+  @spec get() :: {:ok, User.t()} | {:error, any()}
+  def get() do
+    api_path = "/v1/account"
+    payload = %{}
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        user = call("get", api_path, api_header, payload)
+        {:ok, user}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
+  end
+
+  @spec create_email_password_session(String.t(), String.t()) ::
+          {:ok, Session.t()} | {:error, any()}
+  def create_email_password_session(email, password) do
+    if is_nil(email) or is_nil(password) do
+      {:error, "Missing required parameters: 'email' or 'password'"}
+    else
+      api_path = "/v1/account/sessions/email"
+      payload = %{email: email, password: password}
+
+      api_header = %{"content-type" => "application/json"}
+
+      Task.async(fn ->
+        try do
+          session = call("post", api_path, api_header, payload)
+          {:ok, session}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
+    end
+  end
 end

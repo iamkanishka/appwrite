@@ -200,7 +200,7 @@ defmodule Appwrite.Helpers.Client do
           handle_response(code, body, response_headers, response_type)
 
         {:error, %HTTPoison.Error{reason: reason}} ->
-          raise Appwrite.Exceptions.AppwriteException,
+          raise AppwriteException,
             message: reason,
             code: 500,
             type: response_type,
@@ -208,7 +208,7 @@ defmodule Appwrite.Helpers.Client do
       end
     rescue
       error ->
-        raise Appwrite.Exceptions.AppwriteException,
+        raise AppwriteException,
           message: error
     end
   end
@@ -217,7 +217,7 @@ defmodule Appwrite.Helpers.Client do
   defp handle_response(code, body, headers, response_type) when code >= 400 do
     data = if response_type == "json", do: Jason.decode!(body), else: %{"message" => body}
 
-    raise Appwrite.Exceptions.AppwriteException,
+    raise AppwriteException,
       message: data["message"],
       code: code,
       type: response_type,

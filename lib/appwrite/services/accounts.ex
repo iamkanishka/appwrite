@@ -1354,36 +1354,40 @@ defmodule Appwrite.Services.Accounts do
     end
   end
 
-  # @doc """
-  # Creates a phone token for user authentication.
+  @doc """
+  Creates a phone token for user authentication.
 
-  # Sends the user an SMS with a secret key for creating a session.
+  Sends the user an SMS with a secret key for creating a session.
 
-  # ## Parameters
-  # - `user_id` (required): The user ID.
-  # - `phone` (required): The phone number.
+  ## Parameters
+  - `user_id` (required): The user ID.
+  - `phone` (required): The phone number.
 
-  # ## Returns
-  # - `{:ok, token}` on success.
-  # - `{:error, %Appwrite.Exception{}}` on failure.
-  # """
-  # @spec create_phone_token(Client.t(), String.t(), String.t()) ::
-  #         {:ok, map()} | {:error, Exception.t()}
-  # def create_phone_token(%Client{} = client, user_id, phone) do
-  #   with false <- is_nil(user_id) or is_nil(phone),
-  #        api_path <- "/account/tokens/phone",
-  #        uri <- URI.merge(client.config.endpoint, api_path),
-  #        headers <- %{"content-type" => "application/json"},
-  #        payload <- %{"userId" => user_id, "phone" => phone},
-  #        {:ok, response} <- Client.call(client, :post, uri, headers, payload) do
-  #     {:ok, response}
-  #   else
-  #     true -> {:error, Exception.new("Missing required parameters: 'userId' or 'phone'")}
-  #     {:error, error} -> {:error, Exception.from_error(error)}
-  #   end
-  # rescue
-  #   error -> {:error, Exception.from_exception(error)}
-  # end
+  ## Returns
+  - `{:ok, token}` on success.
+  - `{:error, %Appwrite.Exception{}}` on failure.
+  """
+  @spec create_phone_token(String.t(), String.t()) ::
+          {:ok, map()} | {:error, Exception.t()}
+  def create_phone_token(user_id, phone) do
+    if is_nil(user_id) or is_nil(phone) do
+      {:error, "Missing required parameters: : 'userId' or 'phone'"}
+    else
+      api_path = "/v1/account/tokens/phone"
+      api_header = %{"content-type" => "application/json"}
+      payload = %{"userId" => user_id, "phone" => phone}
+
+      Task.async(fn ->
+        try do
+          token = Client.call("post", api_path, api_header, payload)
+          {:ok, token}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
+    end
+  end
 
   #   @doc """
   # Create OAuth2 token.
@@ -1438,135 +1442,140 @@ defmodule Appwrite.Services.Accounts do
   #   end
   # end
 
-  # @doc """
-  # Create email verification.
+  @doc """
+  Create email verification.
 
-  # Use this endpoint to send a verification message to your user's email address to confirm ownership. Learn more about how to complete the verification process by verifying both the `userId` and `secret` parameters.
+  Use this endpoint to send a verification message to your user's email address to confirm ownership. Learn more about how to complete the verification process by verifying both the `userId` and `secret` parameters.
 
-  # ## Parameters
-  #   - `client`: Appwrite client.
-  #   - `url`: The redirect URL (required).
+  ## Parameters
+    - `url`: The redirect URL (required).
 
-  # ## Returns
-  #   - `{:ok, map()}`: Verification token.
-  #   - `{:error, Exception.t()}`: Error details.
-  # """
-  # @spec create_verification(Client.t(), String.t()) :: {:ok, Token.t()} | {:error, any()}
-  # def create_verification(client, url) when is_binary(url) do
-  #   if url == "" do
-  #     {:error, %AppwriteException{message: "Missing required parameter: 'url'"}}
-  #   else
-  #     try do
-  #       api_path = "/account/verification"
-  #       uri = URI.merge(client.config.endpoint, api_path)
+  ## Returns
+    - `{:ok, map()}`: Verification token.
+    - `{:error, Exception.t()}`: Error details.
+  """
+  @spec create_verification(String.t()) :: {:ok, Token.t()} | {:error, any()}
+  def create_verification(url) when is_binary(url) do
+    if is_nil(url) do
+      {:error, "Missing required parameters: : 'url' "}
+    else
+      api_path = "/v1/account/verification"
+      api_header = %{"content-type" => "application/json"}
+      payload = %{"url" => url}
 
-  #       payload = %{"url" => url}
-  #       headers = %{"content-type" => "application/json"}
+      Task.async(fn ->
+        try do
+          verification = Client.call("post", api_path, api_header, payload)
+          {:ok, verification}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
+    end
+  end
 
-  #       Client.call(client, :post, uri, headers, payload)
-  #     rescue
-  #       exception ->
-  #         {:error, %AppwriteException{message: exception.message}}
-  #     end
-  #   end
-  # end
+  @doc """
+  Update email verification.
 
-  # @doc """
-  # Update email verification.
+  Use this endpoint to complete the user email verification process.
 
-  # Use this endpoint to complete the user email verification process.
+  ## Parameters
+    - `client`: Appwrite client.
+    - `user_id`: The user's ID (required).
+    - `secret`: The secret key (required).
 
-  # ## Parameters
-  #   - `client`: Appwrite client.
-  #   - `user_id`: The user's ID (required).
-  #   - `secret`: The secret key (required).
+  ## Returns
+    - `{:ok, map()}`: Verification token.
+    - `{:error, Exception.t()}`: Error details.
+  """
+  @spec update_verification(String.t(), String.t()) ::
+          {:ok, Token.t()} | {:error, any()}
+  def update_verification(user_id, secret)
+      when is_binary(user_id) and is_binary(secret) do
+    if is_nil(user_id) or is_nil(secret) do
+      {:error, "Missing required parameters: : 'user_id' or 'secret'"}
+    else
+      api_path = "/v1/account/verification"
+      api_header = %{"content-type" => "application/json"}
+      payload = %{"userId" => user_id, "secret" => secret}
 
-  # ## Returns
-  #   - `{:ok, map()}`: Verification token.
-  #   - `{:error, Exception.t()}`: Error details.
-  # """
-  # @spec update_verification(Client.t(), String.t(),String.t() ) :: {:ok, Token.t()} | {:error, any()}
-  # def update_verification(client, user_id, secret)
-  #     when is_binary(user_id) and is_binary(secret) do
-  #   if user_id == "" or secret == "" do
-  #     {:error, %AppwriteException{message: "Missing required parameters: 'user_id' or 'secret'"}}
-  #   else
-  #     try do
-  #       api_path = "/account/verification"
-  #       uri = URI.merge(client.config.endpoint, api_path)
+      Task.async(fn ->
+        try do
+          verification_token = Client.call("put", api_path, api_header, payload)
+          {:ok, verification_token}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
+    end
+  end
 
-  #       payload = %{"userId" => user_id, "secret" => secret}
-  #       headers = %{"content-type" => "application/json"}
+  @doc """
+  Create phone verification.
 
-  #       Client.call(client, :put, uri, headers, payload)
-  #     rescue
-  #       exception ->
-  #         {:error, %AppwriteException{message: exception.message}}
-  #     end
-  #   end
-  # end
+  Use this endpoint to send a verification SMS to the currently logged-in user.
 
-  # @doc """
-  # Create phone verification.
+  ## Parameters
+    - `client`: Appwrite client.
 
-  # Use this endpoint to send a verification SMS to the currently logged-in user.
+  ## Returns
+    - `{:ok, Token.t()}`: Verification token.
+    - `{:error, Exception.t()}`: Error details.
+  """
+  @spec create_phone_verification() :: {:ok, Token.t()} | {:error, any()}
+  def create_phone_verification() do
+    api_path = "/v1/account/verification/phone"
+    api_header = %{"content-type" => "application/json"}
+    payload = %{}
 
-  # ## Parameters
-  #   - `client`: Appwrite client.
+    Task.async(fn ->
+      try do
+        verification_token = Client.call("post", api_path, api_header, payload)
+        {:ok, verification_token}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
+  end
 
-  # ## Returns
-  #   - `{:ok, map()}`: Verification token.
-  #   - `{:error, Exception.t()}`: Error details.
-  # """
-  # @spec create_phone_verification(Client.t()) ::{:ok, Token.t()} | {:error, any()}
-  # def create_phone_verification(client) do
-  #   try do
-  #     api_path = "/account/verification/phone"
-  #     uri = URI.merge(client.config.endpoint, api_path)
+  @doc """
+  Update phone verification.
 
-  #     headers = %{"content-type" => "application/json"}
+  Use this endpoint to complete the user phone verification process.
 
-  #     Client.call(client, :post, uri, headers, %{})
-  #   rescue
-  #     exception ->
-  #       {:error, %AppwriteException{message: exception.message}}
-  #   end
-  # end
+  ## Parameters
+    - `client`: Appwrite client.
+    - `user_id`: The user's ID (required).
+    - `secret`: The secret key (required).
 
-  # @doc """
-  # Update phone verification.
+  ## Returns
+    - `{:ok, map()}`: Verification token.
+    - `{:error, Exception.t()}`: Error details.
+  """
+  @spec update_phone_verification(String.t(), String.t()) :: {:ok, Token.t()} | {:error, any()}
+  def update_phone_verification(user_id, secret)
+      when is_binary(user_id) and is_binary(secret) do
+    if is_nil(user_id) or is_nil(secret) do
+      {:error, "Missing required parameters: : 'user_id' or 'secret'"}
+    else
+      api_path = "/v1/account/verification/phone"
+      api_header = %{"content-type" => "application/json"}
+      payload = %{"userId" => user_id, "secret" => secret}
 
-  # Use this endpoint to complete the user phone verification process.
-
-  # ## Parameters
-  #   - `client`: Appwrite client.
-  #   - `user_id`: The user's ID (required).
-  #   - `secret`: The secret key (required).
-
-  # ## Returns
-  #   - `{:ok, map()}`: Verification token.
-  #   - `{:error, Exception.t()}`: Error details.
-  # """
-  # @spec update_phone_verification(Client.t(), String.t(), String.t()) :: {:ok, Token.t()} | {:error, any()}
-  # def update_phone_verification(client, user_id, secret)
-  #     when is_binary(user_id) and is_binary(secret) do
-  #   if user_id == "" or secret == "" do
-  #     {:error, %AppwriteException{message: "Missing required parameters: 'user_id' or 'secret'"}}
-  #   else
-  #     try do
-  #       api_path = "/account/verification/phone"
-  #       uri = URI.merge(client.config.endpoint, api_path)
-
-  #       payload = %{"userId" => user_id, "secret" => secret}
-  #       headers = %{"content-type" => "application/json"}
-
-  #       Client.call(client, :put, uri, headers, payload)
-  #     rescue
-  #       exception ->
-  #         {:error, %AppwriteException{message: exception.message}}
-  #     end
-  #   end
-  # end
+      Task.async(fn ->
+        try do
+          verification_token = Client.call("put", api_path, api_header, payload)
+          {:ok, verification_token}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
+    end
+  end
 
   # Helper function to validate parameters
   defp validate_params(params) do

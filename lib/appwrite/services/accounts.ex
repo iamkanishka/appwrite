@@ -10,6 +10,7 @@ defmodule Appwrite.Services.Accounts do
   Status: In Testing
   """
 
+  alias Appwrite.Consts.OAuthProvider
   alias Appwrite.Consts.AuthenticationFactor
   alias Appwrite.Helpers.Client
   alias Appwrite.Exceptions.AppwriteException
@@ -905,67 +906,78 @@ defmodule Appwrite.Services.Accounts do
     end
   end
 
-  # @doc """
-  # Create an OAuth2 session.
+  @doc """
+  Create an OAuth2 session.
 
-  # Logs the user in with an OAuth2 provider.
+  Logs the user in with an OAuth2 provider.
 
-  # ## Parameters
-  # - `client`: The Appwrite client.
-  # - `provider`: The OAuth2 provider.
-  # - `success`: URL to redirect on success.
-  # - `failure`: URL to redirect on failure.
-  # - `scopes`: List of requested OAuth2 scopes.
+  ## Parameters
+  - `provider`: The OAuth2 provider.
+  - `success`: URL to redirect on success.
+  - `failure`: URL to redirect on failure.
+  - `scopes`: List of requested OAuth2 scopes.
 
-  # ## Returns
-  # - `{:ok, String.t()}` containing the OAuth2 URL on success
-  # - `{:error, reason}` on failure
-  # """
-  # @spec create_oauth2_session(
-  #         Client.t(),
-  #         String.t(),
-  #         String.t() | nil,
-  #         String.t() | nil,
-  #         [String.t()] | nil
-  #       ) ::
-  #         {:ok, String.t()} | {:error, any()}
-  # def create_oauth2_session(
-  #       %Client{} = client,
-  #       provider,
-  #       success \\ nil,
-  #       failure \\ nil,
-  #       scopes \\ nil
-  #     ) do
-  #   if is_nil(provider) do
-  #     {:error, "Missing required parameter: 'provider'"}
-  #   else
-  #     try do
-  #       api_path = "/account/sessions/oauth2/#{provider}"
-  #       uri = URI.merge(client.config.endpoint, api_path)
-  #       payload = %{project: client.config.project}
+  ## Returns
+  - `{:ok, String.t()}` containing the OAuth2 URL on success
+  - `{:error, reason}` on failure
+  """
+  @spec create_oauth2_session(
+          String.t(),
+          String.t() | nil,
+          String.t() | nil,
+          [String.t()] | nil
+        ) ::
+          {:ok, String.t()} | {:error, any()}
+  def create_oauth2_session(
 
-  #       payload =
-  #         Enum.reduce(
-  #           [{"success", success}, {"failure", failure}, {"scopes", scopes}],
-  #           payload,
-  #           fn
-  #             {key, value}, acc when not is_nil(value) -> Map.put(acc, key, value)
-  #             _, acc -> acc
-  #           end
-  #         )
+        provider,
+        success \\ nil,
+        failure \\ nil,
+        scopes \\ nil
+      ) do
+    if is_nil(provider) do
+      {:error, "Missing required parameter: 'provider'"}
+    else
+      try do
+        api_path = "/account/sessions/oauth2/#{provider}"
+        url = URI.merge(Client.default_config()['endpoint'], api_path)
+        payload = %{project: Client.config.project}
 
-  #       uri = URI.update_query(uri, payload)
+        params =
+          Enum.reduce(
+            [{"success", success}, {"failure", failure}, {"scopes", scopes}],
+            payload,
+            fn
+              {key, value}, acc when not is_nil(value) -> Map.put(acc, key, value)
+              _, acc -> acc
+            end
+          )
 
-  #       if is_pid(self()) and Process.info(self(), :registered_name) == {:registered_name, :shell} do
-  #         {:ok, uri.to_string()}
-  #       else
-  #         {:error, "Browser redirection is not supported"}
-  #       end
-  #     rescue
-  #       e in RuntimeError -> {:error, e.message}
-  #     end
-  #   end
-  # end
+             query_string = URI.encode_query(Client.flatten(params))
+          {to_string(url) <> "?" <> query_string}
+
+
+
+        # try do
+        #   api_path = "/account/tokens/oauth2/#{provider}"
+        #   url = URI.merge(Client.default_config()[~c"endpoint"], api_path)
+
+        #   params =
+        #     %{
+        #       "success" => success,
+        #       "failure" => failure,
+        #       "scopes" => scopes
+        #     }
+        #     |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+
+        #   query_string = URI.encode_query(Client.flatten(params))
+        #   {to_string(url) <> "?" <> query_string}
+
+      rescue
+        e in RuntimeError -> {:error, e.message}
+      end
+    end
+  end
 
   @doc """
   Update phone session.
@@ -1389,58 +1401,55 @@ defmodule Appwrite.Services.Accounts do
     end
   end
 
-  #   @doc """
-  # Create OAuth2 token.
+  @doc """
+  Create OAuth2 token.
 
-  # Allow the user to login to their account using the OAuth2 provider of their choice. Each OAuth2 provider should be enabled from the Appwrite console first. Use the `success` and `failure` arguments to provide redirect URLs back to your app when login is completed.
+  Allow the user to login to their account using the OAuth2 provider of their choice. Each OAuth2 provider should be enabled from the Appwrite console first. Use the `success` and `failure` arguments to provide redirect URLs back to your app when login is completed.
 
-  # If authentication succeeds, `userId` and `secret` of a token will be appended to the success URL as query parameters. These can be used to create a new session using the `create_session/3` function.
+  If authentication succeeds, `userId` and `secret` of a token will be appended to the success URL as query parameters. These can be used to create a new session using the `create_session/3` function.
 
-  # A user is limited to 10 active sessions at a time by default. [Learn more about session limits](https://appwrite.io/docs/authentication-security#limits).
+  A user is limited to 10 active sessions at a time by default. [Learn more about session limits](https://appwrite.io/docs/authentication-security#limits).
 
-  # ## Parameters
-  #   - `client`: Appwrite client.
-  #   - `provider`: OAuth2 provider (required).
-  #   - `success`: Success redirect URL (optional).
-  #   - `failure`: Failure redirect URL (optional).
-  #   - `scopes`: OAuth2 scopes (optional).
+  ## Parameters
+    - `client`: Appwrite client.
+    - `provider`: OAuth2 provider (required).
+    - `success`: Success redirect URL (optional).
+    - `failure`: Failure redirect URL (optional).
+    - `scopes`: OAuth2 scopes (optional).
 
-  # ## Returns
-  #   - `{:ok, url}`: Redirect URL.
-  #   - `{:error, Exception.t()}`: Error details.
-  # """
-  # @spec create_oauth2_token(Client.t(), String.t(),String.t() , [String.t()]) :: String.t()
-  # def create_oauth2_token(client, provider, success \\ nil, failure \\ nil, scopes \\ nil)
-  #     when is_binary(provider) and
-  #            (is_nil(success) or is_binary(success)) and
-  #            (is_nil(failure) or is_binary(failure)) and
-  #            (is_nil(scopes) or is_list(scopes)) do
-  #   if provider == "" do
-  #     {:error, %AppwriteException{message: "Missing required parameter: 'provider'"}}
-  #   else
-  #     try do
-  #       api_path = "/account/tokens/oauth2/#{provider}"
-  #       uri = URI.merge(client.config.endpoint, api_path)
+  ## Returns
+    - `{:ok, url}`: Redirect URL.
+    - `{:error, Exception.t()}`: Error details.
+  """
+  @spec create_oauth2_token(OAuthProvider, String.t(), [String.t()]) :: String.t()
+  def create_oauth2_token(provider, success \\ nil, failure \\ nil, scopes \\ nil)
+      when is_binary(provider) and
+             (is_nil(success) or is_binary(success)) and
+             (is_nil(failure) or is_binary(failure)) and
+             (is_nil(scopes) or is_list(scopes)) do
+    if provider == "" do
+      {:error, %AppwriteException{message: "Missing required parameter: 'provider'"}}
+    else
+      try do
+        api_path = "/account/tokens/oauth2/#{provider}"
+        url = URI.merge(Client.default_config()['endpoint'], api_path)
 
-  #       payload =
-  #         %{
-  #           "success" => success,
-  #           "failure" => failure,
-  #           "scopes" => scopes
-  #         }
-  #         |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+        params =
+          %{
+            "success" => success,
+            "failure" => failure,
+            "scopes" => scopes
+          }
+          |> Enum.reject(fn {_key, value} -> is_nil(value) end)
 
-  #       headers = %{
-  #         "content-type" => "application/json"
-  #       }
-
-  #       {:ok, Client.call(client, :get, uri, headers, payload)}
-  #     rescue
-  #       exception ->
-  #         {:error, %AppwriteException{message: exception.message}}
-  #     end
-  #   end
-  # end
+        query_string = URI.encode_query(Client.flatten(params))
+        {to_string(url) <> "?" <> query_string}
+      rescue
+        exception ->
+          {:error, %AppwriteException{message: exception}}
+      end
+    end
+  end
 
   @doc """
   Create email verification.

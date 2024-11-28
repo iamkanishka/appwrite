@@ -12,10 +12,10 @@ defmodule Appwrite.Services.Storage do
   Status: In Testing
   """
 
-  alias Appwrite.Helpers.Client
+  alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
   alias Appwrite.Types.{File, FileList}
-  alias Appwrite.Helpers.Service
+  alias Appwrite.Utils.Service
   alias Appwrite.Consts.{ImageGravity, ImageFormat}
   alias Appwrite.Types.Client.Payload
 

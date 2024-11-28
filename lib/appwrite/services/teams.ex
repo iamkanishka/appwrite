@@ -23,7 +23,7 @@ defmodule Appwrite.Services.Teams do
     - `{:error, %AppwriteException{}}` on failure.
   """
 
-  alias Appwrite.Helpers.Client
+  alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
   alias Appwrite.Types.{Membership, MembershipList, TeamList, Team, Preferences}
 

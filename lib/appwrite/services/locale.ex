@@ -12,6 +12,7 @@ defmodule Appwrite.Services.Locale do
 
   alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
+
   alias Appwrite.Types.{
     Locale,
     LocaleCodeList,
@@ -30,7 +31,7 @@ defmodule Appwrite.Services.Locale do
 
   ## Examples
 
-      iex> Appwrite.Locale.get(client)
+      iex> Appwrite.Locale.get()
       {:ok, %Appwrite.Types.Locale{}}
 
   ## Params
@@ -40,17 +41,21 @@ defmodule Appwrite.Services.Locale do
     - `{:ok, %Appwrite.Types.Locale{}}` on success.
     - `{:error, %Appwrite.Exceptions.AppwriteException{}}` on failure.
   """
-  @spec get(Client.t()) :: {:ok, Locale.t()} | {:error, AppwriteException.t()}
-  def get(client) when is_struct(client, Client) do
-    with uri <- URI.merge(client.config.endpoint, "/locale"),
-         headers <- %{"content-type" => "application/json"} do
+  @spec get() :: {:ok, Locale.t()} | {:error, AppwriteException.t()}
+  def get() do
+    api_path = "/v1/locale"
+    payload = %{}
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
       try do
-        Client.call(client, :get, uri, headers, %{})
+        locale = Client.call("get", api_path, api_header, payload)
+        {:ok, locale}
       rescue
-        error ->
-          {:error, AppwriteException.new(to_string(error))}
+        error -> {:error, error}
       end
-    end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -60,27 +65,30 @@ defmodule Appwrite.Services.Locale do
 
   ## Examples
 
-      iex> Appwrite.Locale.list_codes(client)
+      iex> Appwrite.Locale.list_codes()
       {:ok, %Appwrite.Types.LocaleCodeList{}}
 
   ## Params
-    - `client` (required): The Appwrite client instance.
 
   ## Returns
     - `{:ok, %Appwrite.Types.LocaleCodeList{}}` on success.
     - `{:error, %Appwrite.Exceptions.AppwriteException{}}` on failure.
   """
-  @spec list_codes(Client.t()) :: {:ok, LocaleCodeList.t()} | {:error, AppwriteException.t()}
-  def list_codes(client) when is_struct(client, Client) do
-    with uri <- URI.merge(client.config.endpoint, "/locale/codes"),
-         headers <- %{"content-type" => "application/json"} do
+  @spec list_codes() :: {:ok, LocaleCodeList.t()} | {:error, AppwriteException.t()}
+  def list_codes() do
+    api_path = "/v1/locale/codes"
+    payload = %{}
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
       try do
-        Client.call(client, :get, uri, headers, %{})
+        locale_codes = Client.call("get", api_path, api_header, payload)
+        {:ok, locale_codes}
       rescue
-        error ->
-          {:error, AppwriteException.new(to_string(error))}
+        error -> {:error, error}
       end
-    end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -90,27 +98,30 @@ defmodule Appwrite.Services.Locale do
 
   ## Examples
 
-      iex> Appwrite.Locale.list_continents(client)
+      iex> Appwrite.Locale.list_continents()
       {:ok, %Appwrite.Types.ContinentList{}}
 
   ## Params
-    - `client` (required): The Appwrite client instance.
 
   ## Returns
     - `{:ok, %Appwrite.Types.ContinentList{}}` on success.
     - `{:error, %Appwrite.Exceptions.AppwriteException{}}` on failure.
   """
-  @spec list_continents(Client.t()) :: {:ok, ContinentList.t()} | {:error, AppwriteException.t()}
-  def list_continents(client) when is_struct(client, Client) do
-    with uri <- URI.merge(client.config.endpoint, "/locale/continents"),
-         headers <- %{"content-type" => "application/json"} do
+  @spec list_continents() :: {:ok, ContinentList.t()} | {:error, AppwriteException.t()}
+  def list_continents() do
+    api_path = "/v1/locale/continents"
+    payload = %{}
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
       try do
-        Client.call(client, :get, uri, headers, %{})
+        continent_list = Client.call("get", api_path, api_header, payload)
+        {:ok, continent_list}
       rescue
-        error ->
-          {:error, AppwriteException.new(to_string(error))}
+        error -> {:error, error}
       end
-    end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -120,7 +131,7 @@ defmodule Appwrite.Services.Locale do
 
   ## Examples
 
-      iex> Appwrite.Locale.list_countries(client)
+      iex> Appwrite.Locale.list_countries()
       {:ok, %Appwrite.Types.CountryList{}}
 
   ## Params
@@ -130,17 +141,21 @@ defmodule Appwrite.Services.Locale do
     - `{:ok, %Appwrite.Types.CountryList{}}` on success.
     - `{:error, %Appwrite.Exceptions.AppwriteException{}}` on failure.
   """
-  @spec list_countries(Client.t()) :: {:ok, CountryList.t()} | {:error, AppwriteException.t()}
-  def list_countries(client) when is_struct(client, Client) do
-    with uri <- URI.merge(client.config.endpoint, "/locale/countries"),
-         headers <- %{"content-type" => "application/json"} do
+  @spec list_countries() :: {:ok, CountryList.t()} | {:error, AppwriteException.t()}
+  def list_countries() do
+    api_path = "/v1/locale/countries"
+    payload = %{}
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
       try do
-        Client.call(client, :get, uri, headers, %{})
+        country_list = Client.call("get", api_path, api_header, payload)
+        {:ok, country_list}
       rescue
-        error ->
-          {:error, AppwriteException.new(to_string(error))}
+        error -> {:error, error}
       end
-    end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -150,27 +165,30 @@ defmodule Appwrite.Services.Locale do
 
   ## Examples
 
-      iex> Appwrite.Locale.list_countries_eu(client)
+      iex> Appwrite.Locale.list_countries_eu()
       {:ok, %Appwrite.Types.CountryList{}}
 
   ## Params
-    - `client` (required): The Appwrite client instance.
 
   ## Returns
     - `{:ok, %Appwrite.Types.CountryList{}}` on success.
     - `{:error, %Appwrite.Exceptions.AppwriteException{}}` on failure.
   """
-  @spec list_countries_eu(Client.t()) :: {:ok, CountryList.t()} | {:error, AppwriteException.t()}
-  def list_countries_eu(client) when is_struct(client, Client) do
-    with uri <- URI.merge(client.config.endpoint, "/locale/countries/eu"),
-         headers <- %{"content-type" => "application/json"} do
+  @spec list_countries_eu() :: {:ok, CountryList.t()} | {:error, AppwriteException.t()}
+  def list_countries_eu() do
+    api_path = "/v1/locale/countries/eu"
+    payload = %{}
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
       try do
-        Client.call(client, :get, uri, headers, %{})
+        country_list = Client.call("get", api_path, api_header, payload)
+        {:ok, country_list}
       rescue
-        error ->
-          {:error, AppwriteException.new(to_string(error))}
+        error -> {:error, error}
       end
-    end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -180,27 +198,31 @@ defmodule Appwrite.Services.Locale do
 
   ## Examples
 
-      iex> Appwrite.Locale.list_countries_phones(client)
+      iex> Appwrite.Locale.list_countries_phones()
       {:ok, %Appwrite.Types.PhoneList{}}
 
   ## Params
-    - `client` (required): The Appwrite client instance.
 
   ## Returns
     - `{:ok, %Appwrite.Types.PhoneList{}}` on success.
     - `{:error, %Appwrite.Exceptions.AppwriteException{}}` on failure.
   """
-  @spec list_countries_phones(Client.t()) :: {:ok, PhoneList.t()} | {:error, AppwriteException.t()}
-  def list_countries_phones(client) when is_struct(client, Client) do
-    with uri <- URI.merge(client.config.endpoint, "/locale/countries/phones"),
-         headers <- %{"content-type" => "application/json"} do
+  @spec list_countries_phones() ::
+          {:ok, PhoneList.t()} | {:error, AppwriteException.t()}
+  def list_countries_phones() do
+    api_path = "/v1/locale/countries/phones"
+    payload = %{}
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
       try do
-        Client.call(client, :get, uri, headers, %{})
+        country_list = Client.call("get", api_path, api_header, payload)
+        {:ok, country_list}
       rescue
-        error ->
-          {:error, AppwriteException.new(to_string(error))}
+        error -> {:error, error}
       end
-    end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -210,27 +232,30 @@ defmodule Appwrite.Services.Locale do
 
   ## Examples
 
-      iex> Appwrite.Locale.list_currencies(client)
+      iex> Appwrite.Locale.list_currencies()
       {:ok, %Appwrite.Types.CurrencyList{}}
 
   ## Params
-    - `client` (required): The Appwrite client instance.
 
   ## Returns
     - `{:ok, %Appwrite.Types.CurrencyList{}}` on success.
     - `{:error, %Appwrite.Exceptions.AppwriteException{}}` on failure.
   """
-  @spec list_currencies(Client.t()) :: {:ok, CurrencyList.t()} | {:error, AppwriteException.t()}
-  def list_currencies(client) when is_struct(client, Client) do
-    with uri <- URI.merge(client.config.endpoint, "/locale/currencies"),
-         headers <- %{"content-type" => "application/json"} do
+  @spec list_currencies() :: {:ok, CurrencyList.t()} | {:error, AppwriteException.t()}
+  def list_currencies() do
+    api_path = "/v1/locale/currencies"
+    payload = %{}
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
       try do
-        Client.call(client, :get, uri, headers, %{})
+        country_list = Client.call("get", api_path, api_header, payload)
+        {:ok, country_list}
       rescue
-        error ->
-          {:error, AppwriteException.new(to_string(error))}
+        error -> {:error, error}
       end
-    end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -240,28 +265,31 @@ defmodule Appwrite.Services.Locale do
 
   ## Examples
 
-      iex> Appwrite.Locale.list_languages(client)
+      iex> Appwrite.Locale.list_languages()
       {:ok, %Appwrite.Types.LanguageList{}}
 
   ## Params
-    - `client` (required): The Appwrite client instance.
 
   ## Returns
     - `{:ok, %Appwrite.Types.LanguageList{}}` on success.
     - `{:error, %Appwrite.Exceptions.AppwriteException{}}` on failure.
   """
-  @spec list_languages(Client.t()) :: {:ok, LanguageList.t()} | {:error, AppwriteException.t()}
-  def list_languages(client) when is_struct(client, Client) do
-    with uri <- URI.merge(client.config.endpoint, "/locale/languages"),
-         headers <- %{"content-type" => "application/json"} do
+  @spec list_languages() :: {:ok, LanguageList.t()} | {:error, AppwriteException.t()}
+  def list_languages() do
+
+    api_path = "/v1/locale/languages"
+    payload = %{}
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
       try do
-        Client.call(client, :get, uri, headers, %{})
+        country_list = Client.call("get", api_path, api_header, payload)
+        {:ok, country_list}
       rescue
-        error ->
-          {:error, AppwriteException.new(to_string(error))}
+        error -> {:error, error}
       end
-    end
+    end)
+    |> Task.await()
+
   end
-
-
 end

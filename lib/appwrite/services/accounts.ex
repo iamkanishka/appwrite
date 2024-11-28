@@ -12,7 +12,7 @@ defmodule Appwrite.Services.Accounts do
 
   alias Appwrite.Consts.OAuthProvider
   alias Appwrite.Consts.AuthenticationFactor
-  alias Appwrite.Helpers.Client
+  alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
 
   alias Appwrite.Types.{

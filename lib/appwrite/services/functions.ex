@@ -10,7 +10,7 @@ defmodule Appwrite.Services.Functions do
   Status: In Testing
   """
 
-  alias Appwrite.Helpers.Client
+  alias Appwrite.Utils.Client
   alias Appwrite.Consts.ExecutionMethod
   alias Appwrite.Types.{Execution, ExecutionList }
 

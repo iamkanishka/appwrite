@@ -10,7 +10,7 @@ defmodule Appwrite.Services.Locale do
   Status: In Testing
   """
 
-  alias Appwrite.Helpers.Client
+  alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
   alias Appwrite.Types.{
     Locale,

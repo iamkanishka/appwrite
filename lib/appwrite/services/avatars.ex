@@ -13,7 +13,7 @@ defmodule Appwrite.Services.Avatars do
 
   alias Appwrite.Types.Client
   alias Appwrite.Exceptions.AppwriteException
-  alias Appwrite.Helpers.Service
+  alias Appwrite.Utils.Service
 
   @doc """
   Get browser icon.

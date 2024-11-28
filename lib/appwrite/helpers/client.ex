@@ -3,14 +3,8 @@ defmodule Appwrite.Helpers.Client do
   Client module for handling requests to Appwrite.
   """
 
-  alias Appwrite.Types.Session
-  alias Appwrite.Types.User
-  alias Appwrite.Types.Client.Payload
-  alias Appwrite.Types.Client.Headers
+  alias Appwrite.Types.Client.{Config, Payload, Headers, UploadProgress}
   alias Appwrite.Exceptions.AppwriteException
-  alias Appwrite.Types.Client.UploadProgress
-  alias Multipart
-  alias HTTPoison
 
   @chunk_size 1024 * 1024 * 5
 
@@ -34,6 +28,21 @@ defmodule Appwrite.Helpers.Client do
 
   @type response_type :: String.t()
   @type response :: {:ok, any()} | {:error, any()}
+
+  @doc """
+  Sets the Project.
+
+  ## Parameters
+
+    - `project`: The Project Name.
+
+  ## Returns
+    - Updated Config map.
+  """
+  @spec set_project(String.t()) :: Config.t()
+  def set_project(project) when is_binary(project) do
+    Map.put(default_config(), "project", project)
+  end
 
   @doc """
   Sets the JWT.

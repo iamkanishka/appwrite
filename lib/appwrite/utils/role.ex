@@ -1,4 +1,4 @@
-defmodule Appwrite.Helpers.Role do
+defmodule Appwrite.Utils.Role do
   @moduledoc """
   A helper module for generating role strings for `Permission`.
   """

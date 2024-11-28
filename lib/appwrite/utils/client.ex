@@ -1,4 +1,4 @@
-defmodule Appwrite.Helpers.Client do
+defmodule Appwrite.Utils.Client do
   @moduledoc """
   Client module for handling requests to Appwrite.
   """

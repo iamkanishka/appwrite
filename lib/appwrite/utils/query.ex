@@ -1,4 +1,4 @@
-defmodule Appwrite.Helpers.Query do
+defmodule Appwrite.Utils.Query do
   @moduledoc """
   A helper module to generate query strings for Appwrite filters.
 

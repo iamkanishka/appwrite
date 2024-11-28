@@ -1,4 +1,4 @@
-defmodule Appwrite.Helpers.Service do
+defmodule Appwrite.Utils.Service do
   @moduledoc """
   A service utility module for operations like chunked uploads and payload flattening.
   """

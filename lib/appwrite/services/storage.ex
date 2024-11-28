@@ -19,7 +19,6 @@ defmodule Appwrite.Services.Storage do
   alias Appwrite.Consts.{ImageGravity, ImageFormat}
   alias Appwrite.Types.Client.Payload
 
-
   @type bucket_id :: String.t()
   @type file_id :: String.t()
   @type permissions :: [String.t()]
@@ -42,31 +41,24 @@ defmodule Appwrite.Services.Storage do
           {:ok, FileList.t()} | {:error, AppwriteException.t()}
   def list_files(bucket_id, queries \\ nil, search \\ nil) do
     with :ok <- ensure_not_nil(bucket_id, "bucketId") do
-      api_path = "/storage/buckets/#{bucket_id}/files"
+      api_path = "/v1/storage/buckets/#{bucket_id}/files"
 
-      payload =
-        %{}
-        |> Map.put_new("queries", queries)
-        |> Map.put_new("search", search)
-
-      uri = URI.merge(Appwrite.Config.endpoint(), api_path)
-
-      headers = %{
-        "content-type" => "application/json"
+      payload = %{
+        queries: queries,
+        search: search
       }
 
-      try do
-        Client.call(:get, uri, headers, payload)
-      rescue
-        exception ->
-          {:error,
-           AppwriteException.new(
-             exception.message,
-             exception.code,
-             exception.type,
-             exception.response
-           )}
-      end
+      api_header = %{"content-type" => "application/json"}
+
+      Task.async(fn ->
+        try do
+          file_list = Client.call("get", api_path, api_header, payload)
+          {:ok, file_list}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
     end
   end
 
@@ -89,7 +81,7 @@ defmodule Appwrite.Services.Storage do
     with :ok <- ensure_not_nil(bucket_id, "bucketId"),
          :ok <- ensure_not_nil(file_id, "fileId"),
          :ok <- ensure_not_nil(file, "file") do
-      api_path = "/storage/buckets/#{bucket_id}/files"
+      api_path = "/v1/storage/buckets/#{bucket_id}/files"
 
       payload = %{
         "fileId" => file_id,
@@ -97,24 +89,17 @@ defmodule Appwrite.Services.Storage do
         "permissions" => permissions
       }
 
-      uri = URI.merge(Appwrite.Config.endpoint(), api_path)
+      api_header = %{"content-type" => "application/json"}
 
-      headers = %{
-        "content-type" => "multipart/form-data"
-      }
-
-      try do
-        Client.chunked_upload(:post, uri, headers, payload)
-      rescue
-        exception ->
-          {:error,
-           AppwriteException.new(
-             exception.message,
-             exception.code,
-             exception.type,
-             exception.response
-           )}
-      end
+      Task.async(fn ->
+        try do
+          file = Client.chunked_upload("post", api_path, api_header, payload)
+          {:ok, file}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
     end
   end
 
@@ -133,23 +118,21 @@ defmodule Appwrite.Services.Storage do
   def get_file(bucket_id, file_id) do
     with :ok <- ensure_not_nil(bucket_id, "bucketId"),
          :ok <- ensure_not_nil(file_id, "fileId") do
-      api_path = "/storage/buckets/#{bucket_id}/files/#{file_id}"
+      api_path = "/v1/storage/buckets/#{bucket_id}/files/#{file_id}"
 
-      uri = URI.merge(Appwrite.Config.endpoint(), api_path)
-      headers = %{"content-type" => "application/json"}
+      payload = %{}
 
-      try do
-        Client.call(:get, uri, headers, %{})
-      rescue
-        exception ->
-          {:error,
-           AppwriteException.new(
-             exception.message,
-             exception.code,
-             exception.type,
-             exception.response
-           )}
-      end
+      api_header = %{"content-type" => "application/json"}
+
+      Task.async(fn ->
+        try do
+          file = Client.chunked_upload("get", api_path, api_header, payload)
+          {:ok, file}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
     end
   end
 
@@ -169,24 +152,21 @@ defmodule Appwrite.Services.Storage do
   def delete_file(bucket_id, file_id) do
     with :ok <- ensure_not_nil(bucket_id, "bucketId"),
          :ok <- ensure_not_nil(file_id, "fileId") do
-      api_path = "/storage/buckets/#{bucket_id}/files/#{file_id}"
+      api_path = "/v1/storage/buckets/#{bucket_id}/files/#{file_id}"
 
-      uri = URI.merge(Appwrite.Config.endpoint(), api_path)
-      headers = %{"content-type" => "application/json"}
+      payload = %{}
 
-      try do
-        Client.call(:delete, uri, headers, %{})
-        {:ok, :deleted}
-      rescue
-        exception ->
-          {:error,
-           AppwriteException.new(
-             exception.message,
-             exception.code,
-             exception.type,
-             exception.response
-           )}
-      end
+      api_header = %{"content-type" => "application/json"}
+
+      Task.async(fn ->
+        try do
+          Client.chunked_upload("delete", api_path, api_header, payload)
+          {:ok, :deleted}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
     end
   end
 
@@ -206,18 +186,17 @@ defmodule Appwrite.Services.Storage do
   ## Raises
   - `AppwriteException` if parameters are missing or request fails.
   """
-  @spec get_file_download(Client.t(), String.t(), String.t()) :: String.t()
-  def get_file_download(client, bucket_id, file_id) do
+  @spec get_file_download(String.t(), String.t()) :: String.t()
+  def get_file_download( bucket_id, file_id) do
     with :ok <- ensure_not_nil(bucket_id, "bucketId"),
          :ok <- ensure_not_nil(file_id, "fileId") do
       api_path = "/storage/buckets/#{bucket_id}/files/#{file_id}/download"
-      uri = URI.merge(client.config.endpoint, api_path)
+      uri = URI.merge(Client.default_config()["endpoint"], api_path)
 
       payload =
         %{
-          "project" => client.config.project
-        }
-        |> Service.flatten()
+          project: Client.default_config()["project"]
+        } |> Service.flatten()
 
       Enum.each(payload, fn {key, value} ->
         uri = URI.append_query(uri, key, value)
@@ -246,21 +225,20 @@ defmodule Appwrite.Services.Storage do
   - `AppwriteException` if parameters are missing or invalid.
   """
   @spec get_file_preview(
-          Client.t(),
           String.t(),
           String.t(),
           keyword()
         ) :: String.t()
-  def get_file_preview(client, bucket_id, file_id, options \\ []) do
+  def get_file_preview(bucket_id, file_id, options \\ []) do
     with :ok <- ensure_not_nil(bucket_id, "bucketId"),
          :ok <- ensure_not_nil(file_id, "fileId") do
       api_path = "/storage/buckets/#{bucket_id}/files/#{file_id}/preview"
-      uri = URI.merge(client.config.endpoint, api_path)
+      uri = URI.merge(Client.default_config()["endpoint"], api_path)
 
       payload =
         options
         |> Enum.into(%{})
-        |> Map.put("project", client.config.project)
+        |> Map.put("project", Client.default_config()["project"])
         |> Service.flatten()
 
       Enum.each(payload, fn {key, value} ->
@@ -289,16 +267,16 @@ defmodule Appwrite.Services.Storage do
   ## Raises
   - `AppwriteException` if parameters are missing.
   """
-  @spec get_file_view(Client.t(), String.t(), String.t()) :: String.t()
-  def get_file_view(client, bucket_id, file_id) do
+  @spec get_file_view( String.t(), String.t()) :: String.t()
+  def get_file_view( bucket_id, file_id) do
     with :ok <- ensure_not_nil(bucket_id, "bucketId"),
          :ok <- ensure_not_nil(file_id, "fileId") do
       api_path = "/storage/buckets/#{bucket_id}/files/#{file_id}/view"
-      uri = URI.merge(client.config.endpoint, api_path)
+      uri = URI.merge(Client.default_config()["endpoint"], api_path)
 
       payload =
         %{
-          "project" => client.config.project
+          "project" => Client.default_config()["project"]
         }
         |> Service.flatten()
 

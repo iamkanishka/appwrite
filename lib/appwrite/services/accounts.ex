@@ -941,7 +941,7 @@ defmodule Appwrite.Services.Accounts do
       try do
         api_path = "/account/sessions/oauth2/#{provider}"
         url = URI.merge(Client.default_config()['endpoint'], api_path)
-        payload = %{project: Client.config.project}
+        payload = %{project: Client.default_config()['project']}
 
         params =
           Enum.reduce(

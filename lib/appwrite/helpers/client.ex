@@ -3,14 +3,8 @@ defmodule Appwrite.Helpers.Client do
   Client module for handling requests to Appwrite.
   """
 
-  alias Appwrite.Types.Session
-  alias Appwrite.Types.User
-  alias Appwrite.Types.Client.Payload
-  alias Appwrite.Types.Client.Headers
+  alias Appwrite.Types.Client.{Config, Payload, Headers, UploadProgress}
   alias Appwrite.Exceptions.AppwriteException
-  alias Appwrite.Types.Client.UploadProgress
-  alias Multipart
-  alias HTTPoison
 
   @chunk_size 1024 * 1024 * 5
 
@@ -20,8 +14,7 @@ defmodule Appwrite.Helpers.Client do
     "x-sdk-language" => "web",
     "x-sdk-version" => "16.0.2",
     "X-Appwrite-Response-Format" => "1.6.0",
-    "X-Appwrite-Session" =>
-      "eyJpZCI6IjliMWRlYjRkM2I3ZDRiYWQ5YmRkMmIwZDdiNHR5dTYiLCJzZWNyZXQiOiI4ZDhlN2I3N2FlY2FlNjM2MWJmYzAxYmI4ZTA4NGEzMzYxYTY5M2JlZDczZmM1OTFiMjVhNTVjZDZlMWI1MGU4Yzg0ZDZmYWI1ZDUyMDcyMjg2MWIzZWYwM2NjMTlkYjM2ZjcwYjEzNDNjN2RhNTg3NDY1ODIzYzU2OGI2YTI1YWJkZjBmMWUyOWZhZmM0OTM4NGUyZmMyZmVhMzIzMjc5OWJjNWRlMTJiNDlmMDlhMzFlOTUwZGExNmI4ZGU2YWU2OWZiMWQ5MWJlYWZlZmFiNWUzYmFlNTlhY2QzNWMxM2I0MDRhOTFlMjk4NmUzMWMwODk2N2VhYmZhMTM3M2M3In0="
+    "X-Appwrite-Session" => ""
   }
 
   @config %{
@@ -37,6 +30,21 @@ defmodule Appwrite.Helpers.Client do
   @type response :: {:ok, any()} | {:error, any()}
 
   @doc """
+  Sets the Project.
+
+  ## Parameters
+
+    - `project`: The Project Name.
+
+  ## Returns
+    - Updated Config map.
+  """
+  @spec set_project(String.t()) :: Config.t()
+  def set_project(project) when is_binary(project) do
+    Map.put(default_config(), "project", project)
+  end
+
+  @doc """
   Sets the JWT.
 
   ## Parameters
@@ -48,7 +56,7 @@ defmodule Appwrite.Helpers.Client do
   """
   @spec set_locale(String.t()) :: Headers.t()
   def set_jwt(jwt) when is_binary(jwt) do
-    Map.put(@headers, "X-Appwrite-JWT", jwt)
+    Map.put(default_headers(), "X-Appwrite-JWT", jwt)
   end
 
   @doc """
@@ -63,7 +71,7 @@ defmodule Appwrite.Helpers.Client do
   """
   @spec set_locale(String.t()) :: Headers.t()
   def set_locale(locale) when is_binary(locale) do
-    Map.put(@headers, "X-Appwrite-Locale", locale)
+    Map.put(default_headers(), "X-Appwrite-Locale", locale)
   end
 
   @doc """
@@ -78,7 +86,7 @@ defmodule Appwrite.Helpers.Client do
   """
   @spec set_session(String.t()) :: Headers.t()
   def set_session(session) when is_binary(session) do
-    Map.put(@headers, "X-Appwrite-Session", session)
+    Map.put(default_headers(), "X-Appwrite-Session", session)
   end
 
   @doc """
@@ -185,7 +193,7 @@ defmodule Appwrite.Helpers.Client do
   ## Returns
     - Response data or raises an `AppwriteException` on error.
   """
-  @spec call(String.t(), String.t(), Headers.t(), Payload.t(), String.t()) ::  response()
+  @spec call(String.t(), String.t(), Headers.t(), Payload.t(), String.t()) :: response()
   def call(method, api_path, headers \\ %{}, params \\ %{}, response_type \\ "json") do
     try do
       {uri, options} = prepare_request(method, api_path, headers, params)
@@ -201,7 +209,7 @@ defmodule Appwrite.Helpers.Client do
           handle_response(code, body, response_headers, response_type)
 
         {:error, %HTTPoison.Error{reason: reason}} ->
-          raise Appwrite.Exceptions.AppwriteException,
+          raise AppwriteException,
             message: reason,
             code: 500,
             type: response_type,
@@ -209,9 +217,8 @@ defmodule Appwrite.Helpers.Client do
       end
     rescue
       error ->
-        raise Appwrite.Exceptions.AppwriteException,
+        raise AppwriteException,
           message: error
-
     end
   end
 
@@ -219,7 +226,7 @@ defmodule Appwrite.Helpers.Client do
   defp handle_response(code, body, headers, response_type) when code >= 400 do
     data = if response_type == "json", do: Jason.decode!(body), else: %{"message" => body}
 
-    raise Appwrite.Exceptions.AppwriteException,
+    raise AppwriteException,
       message: data["message"],
       code: code,
       type: response_type,
@@ -242,6 +249,11 @@ defmodule Appwrite.Helpers.Client do
   defp default_headers() do
     Map.put(@headers, "X-Appwrite-Project", get_project_id())
     # |> Map.put("X-Appwrite-Key", get_secret())
+  end
+
+  @spec default_config() :: any()
+  def default_config() do
+    @config
   end
 
   @spec build_multipart_form(Payload.t(), Headers.t()) :: {Headers.t(), any()}
@@ -365,45 +377,5 @@ defmodule Appwrite.Helpers.Client do
           Map.put(acc, final_key, value)
       end
     end)
-  end
-
-  @spec get() :: {:ok, User.t()} | {:error, any()}
-  def get() do
-    api_path = "/v1/account"
-    payload = %{}
-    api_header = %{"content-type" => "application/json"}
-
-    Task.async(fn ->
-      try do
-        user = call("get", api_path, api_header, payload)
-        {:ok, user}
-      rescue
-        error -> {:error, error}
-      end
-    end)
-    |> Task.await()
-  end
-
-  @spec create_email_password_session(String.t(), String.t()) ::
-          {:ok, Session.t()} | {:error, any()}
-  def create_email_password_session(email, password) do
-    if is_nil(email) or is_nil(password) do
-      {:error, "Missing required parameters: 'email' or 'password'"}
-    else
-      api_path = "/v1/account/sessions/email"
-      payload = %{email: email, password: password}
-
-      api_header = %{"content-type" => "application/json"}
-
-      Task.async(fn ->
-        try do
-          session = call("post", api_path, api_header, payload)
-          {:ok, session}
-        rescue
-          error -> {:error, error}
-        end
-      end)
-      |> Task.await()
-    end
   end
 end

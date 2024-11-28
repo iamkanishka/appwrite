@@ -242,6 +242,11 @@ defmodule Appwrite.Helpers.Client do
     # |> Map.put("X-Appwrite-Key", get_secret())
   end
 
+  @spec default_config() :: any()
+  def default_config() do
+    @config
+  end
+
   @spec build_multipart_form(Payload.t(), Headers.t()) :: {Headers.t(), any()}
   defp build_multipart_form(params \\ %{}, headers) do
     form_data =

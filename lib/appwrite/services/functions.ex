@@ -12,14 +12,13 @@ defmodule Appwrite.Services.Functions do
 
   alias Appwrite.Utils.Client
   alias Appwrite.Consts.ExecutionMethod
-  alias Appwrite.Types.{Execution, ExecutionList }
+  alias Appwrite.Types.{Execution, ExecutionList}
 
   @doc """
   Lists all executions for a given function.
 
   ## Parameters
 
-    - `client` (`Client.t()`): The Appwrite client.
     - `function_id` (`String.t()`): The function ID.
     - `queries` (`[String.t()]`): Optional query parameters.
     - `search` (`String.t()`): Optional search keyword.
@@ -29,20 +28,28 @@ defmodule Appwrite.Services.Functions do
     - `{:ok, %ExecutionList{}}` on success.
     - `{:error, reason}` on failure.
   """
-  @spec list_executions(Client.t(), String.t(), [String.t()] | nil, String.t() | nil) ::
+  @spec list_executions(String.t(), [String.t()] | nil, String.t() | nil) ::
           {:ok, ExecutionList.t()} | {:error, any()}
-  def list_executions(client, function_id, queries \\ nil, search \\ nil) do
-    with :ok <- validate_not_nil(function_id, "function_id"),
-         api_path <- "/functions/#{function_id}/executions",
-         uri <- URI.merge(client.config.endpoint, api_path),
-         payload <- %{
-           queries: queries,
-           search: search
-         },
-         headers <- %{"content-type" => "application/json"},
-         response <- Client.call(client, :get, uri, headers, payload) do
-      response
-      |> handle_response(ExecutionList)
+  def list_executions(function_id, queries \\ nil, search \\ nil) do
+    with :ok <- validate_not_nil(function_id, "function_id") do
+      api_path = "/v1/functions/#{function_id}/executions"
+
+      payload = %{
+        queries: queries,
+        search: search
+      }
+
+      api_header = %{"content-type" => "application/json"}
+
+      Task.async(fn ->
+        try do
+          executions = Client.call("get", api_path, api_header, payload)
+          {:ok, executions}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
     else
       {:error, reason} -> {:error, reason}
     end
@@ -53,7 +60,6 @@ defmodule Appwrite.Services.Functions do
 
   ## Parameters
 
-    - `client` (`Client.t()`): The Appwrite client.
     - `function_id` (`String.t()`): The function ID.
     - `body` (`String.t()`): Optional execution body.
     - `async` (`boolean()`): Optional async flag.
@@ -68,7 +74,6 @@ defmodule Appwrite.Services.Functions do
     - `{:error, reason}` on failure.
   """
   @spec create_execution(
-          Client.t(),
           String.t(),
           String.t() | nil,
           boolean() | nil,
@@ -77,23 +82,39 @@ defmodule Appwrite.Services.Functions do
           map() | nil,
           String.t() | nil
         ) :: {:ok, Execution.t()} | {:error, any()}
-  def create_execution(client, function_id, body \\ nil, async \\ nil, xpath \\ nil, method \\ nil, headers \\ nil, scheduled_at \\ nil) do
+  def create_execution(
+        function_id,
+        body \\ nil,
+        async \\ nil,
+        xpath \\ nil,
+        method \\ nil,
+        headers \\ nil,
+        scheduled_at \\ nil
+      ) do
     with :ok <- validate_not_nil(function_id, "function_id"),
-         :ok <- validate_method(method),
-         api_path <- "/functions/#{function_id}/executions",
-         uri <- URI.merge(client.config.endpoint, api_path),
-         payload <- %{
-           body: body,
-           async: async,
-           path: xpath,
-           method: method,
-           headers: headers,
-           scheduledAt: scheduled_at
-         },
-         headers <- %{"content-type" => "application/json"},
-         response <- Client.call(client, :post, uri, headers, payload) do
-      response
-      |> handle_response(Execution)
+         :ok <- validate_method(method) do
+      api_path = "/v1/functions/#{function_id}/executions"
+
+      payload = %{
+        body: body,
+        async: async,
+        path: xpath,
+        method: method,
+        headers: headers,
+        scheduledAt: scheduled_at
+      }
+
+      api_header = %{"content-type" => "application/json"}
+
+      Task.async(fn ->
+        try do
+          execution = Client.call("post", api_path, api_header, payload)
+          {:ok, execution}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
     else
       {:error, reason} -> {:error, reason}
     end
@@ -104,7 +125,6 @@ defmodule Appwrite.Services.Functions do
 
   ## Parameters
 
-    - `client` (`Client.t()`): The Appwrite client.
     - `function_id` (`String.t()`): The function ID.
     - `execution_id` (`String.t()`): The execution ID.
 
@@ -113,16 +133,26 @@ defmodule Appwrite.Services.Functions do
     - `{:ok, %Execution{}}` on success.
     - `{:error, reason}` on failure.
   """
-  @spec get_execution(Client.t(), String.t(), String.t()) :: {:ok, Execution.t()} | {:error, any()}
-  def get_execution(client, function_id, execution_id) do
+  @spec get_execution(String.t(), String.t()) ::
+          {:ok, Execution.t()} | {:error, any()}
+  def get_execution(function_id, execution_id) do
     with :ok <- validate_not_nil(function_id, "function_id"),
-         :ok <- validate_not_nil(execution_id, "execution_id"),
-         api_path <- "/functions/#{function_id}/executions/#{execution_id}",
-         uri <- URI.merge(client.config.endpoint, api_path),
-         headers <- %{"content-type" => "application/json"},
-         response <- Client.call(client, :get, uri, headers, %{}) do
-      response
-      |> handle_response(Execution)
+         :ok <- validate_not_nil(execution_id, "execution_id") do
+      api_path = "/v1/functions/#{function_id}/executions/#{execution_id}"
+
+      payload = %{}
+
+      api_header = %{"content-type" => "application/json"}
+
+      Task.async(fn ->
+        try do
+          execution = Client.call("get", api_path, api_header, payload)
+          {:ok, execution}
+        rescue
+          error -> {:error, error}
+        end
+      end)
+      |> Task.await()
     else
       {:error, reason} -> {:error, reason}
     end
@@ -134,6 +164,7 @@ defmodule Appwrite.Services.Functions do
   end
 
   defp validate_method(nil), do: :ok
+
   defp validate_method(method) do
     case ExecutionMethod.validate_method(method) do
       {:ok, _} -> :ok
@@ -146,6 +177,4 @@ defmodule Appwrite.Services.Functions do
   end
 
   defp handle_response({:error, reason}, _module), do: {:error, reason}
-
-
 end

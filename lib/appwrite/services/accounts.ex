@@ -929,7 +929,6 @@ defmodule Appwrite.Services.Accounts do
         ) ::
           {:ok, String.t()} | {:error, any()}
   def create_oauth2_session(
-
         provider,
         success \\ nil,
         failure \\ nil,
@@ -941,7 +940,7 @@ defmodule Appwrite.Services.Accounts do
       try do
         api_path = "/account/sessions/oauth2/#{provider}"
         url = URI.merge(Client.default_config()['endpoint'], api_path)
-        payload = %{project: Client.default_config()['project']}
+        payload = %{project: Client.default_config()["project"]}
 
         params =
           Enum.reduce(
@@ -953,10 +952,8 @@ defmodule Appwrite.Services.Accounts do
             end
           )
 
-             query_string = URI.encode_query(Client.flatten(params))
-          {to_string(url) <> "?" <> query_string}
-
-
+        query_string = URI.encode_query(Client.flatten(params))
+        {to_string(url) <> "?" <> query_string}
 
         # try do
         #   api_path = "/account/tokens/oauth2/#{provider}"
@@ -972,7 +969,6 @@ defmodule Appwrite.Services.Accounts do
 
         #   query_string = URI.encode_query(Client.flatten(params))
         #   {to_string(url) <> "?" <> query_string}
-
       rescue
         e in RuntimeError -> {:error, e.message}
       end
@@ -1432,7 +1428,7 @@ defmodule Appwrite.Services.Accounts do
     else
       try do
         api_path = "/account/tokens/oauth2/#{provider}"
-        url = URI.merge(Client.default_config()['endpoint'], api_path)
+        url = URI.merge(Client.default_config()["endpoint"], api_path)
 
         params =
           %{

@@ -950,6 +950,7 @@ defmodule Appwrite.Services.Accounts do
             end
           )
 
+
         query_string = URI.encode_query(Client.flatten(params))
         {to_string(url) <> "?" <> query_string}
 

@@ -14,8 +14,7 @@ defmodule Appwrite.Services.Storage do
   alias Appwrite.Exceptions.AppwriteException
   alias Appwrite.Types.{File, FileList}
   alias Appwrite.Utils.Service
-  alias Appwrite.Consts.{ImageGravity, ImageFormat}
-  alias Appwrite.Types.Client.Payload
+
 
   @type bucket_id :: String.t()
   @type file_id :: String.t()
@@ -87,11 +86,11 @@ defmodule Appwrite.Services.Storage do
         "permissions" => permissions
       }
 
-      api_header = %{"content-type" => "application/json"}
+      api_header = %{"content-type" => "multipart/form-data"}
 
       Task.async(fn ->
         try do
-          file = Client.chunked_upload("post", api_path, api_header, payload)
+          file = Client.call("post", api_path, api_header, payload)
           {:ok, file}
         rescue
           error -> {:error, error}

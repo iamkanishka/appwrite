@@ -831,20 +831,20 @@ defmodule Appwrite.Services.Accounts do
     |> Task.await()
   end
 
-  # @doc """
-  # Creates an email-password session.
-  # Note, if theres secret in
+  @doc """
+  Creates an email-password session.
+  Note, if theres secret in
 
-  # Allows the user to log in with an email and password combination.
+  Allows the user to log in with an email and password combination.
 
-  # ## Parameters
-  # - `email`: The user's email (required).
-  # - `password`: The user's password (required).
+  ## Parameters
+  - `email`: The user's email (required).
+  - `password`: The user's password (required).
 
-  # ## Returns
-  # - `{:ok, %Session{}}` on success
-  # - `{:error, reason}` on failure
-  # """
+  ## Returns
+  - `{:ok, %Session{}}` on success
+  - `{:error, reason}` on failure
+  """
   @spec create_email_password_session(String.t(), String.t()) ::
           {:ok, Session.t()} | {:error, any()}
   def create_email_password_session(email, password) do

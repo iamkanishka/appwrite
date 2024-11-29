@@ -102,17 +102,15 @@ defmodule Appwrite.MixProject do
         Appwrite.Services.Locale,
         Appwrite.Services.Messaging,
         Appwrite.Services.Storage,
-        Appwrite.Services.Teams,
-
+        Appwrite.Services.Teams
       ],
-      Helpers: [
-        Appwrite.Helpers.IdGenerator,
-        Appwrite.Helpers.Permission,
-        Appwrite.Helpers.Query,
-        Appwrite.Helpers.Role,
-        Appwrite.Helpers.Client,
-
-
+      Utils: [
+        Appwrite.Utils.Id,
+        Appwrite.Utils.Permission,
+        Appwrite.Utils.Query,
+        Appwrite.Utils.Role,
+        Appwrite.Utils.Client,
+        Appwrite.Utils.Service
       ],
       Consts: [
         Appwrite.Consts.AuthenticationFactor,
@@ -182,8 +180,7 @@ defmodule Appwrite.MixProject do
         Appwrite.Types.Client.RealtimeResponseConnected,
         Appwrite.Types.Client.RealtimeResponseError,
         Appwrite.Types.Client.RealtimeResponseEvent,
-        Appwrite.Types.Client.UploadProgress,
-
+        Appwrite.Types.Client.UploadProgress
       ]
     ]
   end

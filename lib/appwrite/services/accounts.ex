@@ -67,22 +67,21 @@ defmodule Appwrite.Services.Accounts do
   - `{:ok, User.t()}` on success
   - `{:error, reason}` on failure
   """
-  @spec create(String.t(), String.t(), String.t(), String.t() | nil) ::
+  @spec create(String.t(), String.t(), String.t() | nil) ::
           {:ok, User.t()} | {:error, any()}
-  def create(user_id, email, password, name \\ nil) do
-    if is_nil(user_id) or is_nil(email) or is_nil(password) do
-      {:error, %AppwriteException{message: "Missing required parameters"}}
+  def create(email, password, name \\ nil) do
+    if is_nil(email) or is_nil(password) do
+      {:error, %AppwriteException{message: "Missing required parameters 'email' or 'password'"}}
     else
       api_path = "/v1/account"
 
       payload = %{
-        userId: user_id,
+        userId: String.replace(to_string(generate_user_id()), "-", ""),
         email: email,
         password: password,
         name: name
       }
-
-      api_header = %{"content-type" => "application/json"}
+     api_header = %{"content-type" => "application/json"}
 
       Task.async(fn ->
         try do
@@ -937,7 +936,7 @@ defmodule Appwrite.Services.Accounts do
     else
       try do
         api_path = "/account/sessions/oauth2/#{provider}"
-        url = URI.merge(Client.default_config()['endpoint'], api_path)
+        url = URI.merge(Client.default_config()[~c"endpoint"], api_path)
         payload = %{project: Client.default_config()["project"]}
 
         params =
@@ -949,7 +948,6 @@ defmodule Appwrite.Services.Accounts do
               _, acc -> acc
             end
           )
-
 
         query_string = URI.encode_query(Client.flatten(params))
         {to_string(url) <> "?" <> query_string}
@@ -1587,6 +1585,10 @@ defmodule Appwrite.Services.Accounts do
       nil -> :ok
       {key, _} -> {:error, "Missing required parameter: #{key}"}
     end
+  end
+
+  defp generate_user_id do
+    UUID.uuid4()
   end
 
   # # Helper function to update query

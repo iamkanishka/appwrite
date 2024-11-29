@@ -2,7 +2,7 @@ defmodule Appwrite.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/iamkanishka/appwrite"
-  @version "0.1.6"
+  @version "0.1.7"
 
   def project do
     [
@@ -34,7 +34,8 @@ defmodule Appwrite.MixProject do
       {:ex_doc, "~> 0.28", only: :dev, runtime: false},
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.4"},
-      {:poison, "~> 6.0"}
+      {:poison, "~> 6.0"},
+      {:uuid, "~> 1.1"}
     ]
   end
 

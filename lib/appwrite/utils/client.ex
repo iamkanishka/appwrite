@@ -201,10 +201,10 @@ defmodule Appwrite.Utils.Client do
 
       case HTTPoison.request(method, uri, options[:body], options[:headers], []) do
         {:ok, %HTTPoison.Response{status_code: code, body: body, headers: response_headers}} ->
-          IO.puts("Response received with status: #{code}")
-          IO.puts("Body: #{body}")
-          IO.puts("response_type: #{response_type}")
-          IO.inspect(response_headers, label: "response_headers")
+          # IO.puts("Response received with status: #{code}")
+          # IO.puts("Body: #{body}")
+          # IO.puts("response_type: #{response_type}")
+          # IO.inspect(response_headers, label: "response_headers")
 
           handle_response(code, body, response_headers, response_type)
 
@@ -248,7 +248,7 @@ defmodule Appwrite.Utils.Client do
   @spec default_headers() :: Headers.t()
   defp default_headers() do
     Map.put(@headers, "X-Appwrite-Project", get_project_id())
-    # |> Map.put("X-Appwrite-Key", get_secret())
+     |> Map.put("X-Appwrite-Key", get_secret())
   end
 
   @spec default_config() :: any()
@@ -333,7 +333,7 @@ defmodule Appwrite.Utils.Client do
   end
 
   defp get_project_id() do
-    case Application.get_env(:appwrite, :project_id) do
+    case Application.get_env(get_app_name(), :project_id) do
       nil ->
         raise Appwrite.MissingProjectIdError
 
@@ -343,7 +343,7 @@ defmodule Appwrite.Utils.Client do
   end
 
   defp get_secret() do
-    case Application.get_env(:appwrite, :secret) do
+    case Application.get_env(get_app_name(), :secret) do
       nil ->
         raise Appwrite.MissingSecretError
         ""
@@ -378,4 +378,10 @@ defmodule Appwrite.Utils.Client do
       end
     end)
   end
+
+
+  def get_app_name do
+    Mix.Project.config()[:app]
+  end
+
 end

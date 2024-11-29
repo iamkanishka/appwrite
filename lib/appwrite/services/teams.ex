@@ -25,7 +25,7 @@ defmodule Appwrite.Services.Teams do
 
   alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
-  alias Appwrite.Types.{Membership, MembershipList, TeamList, Team, Preferences}
+  alias Appwrite.Types.{Membership, MembershipList, TeamList, Team, Preference}
 
   @doc """
   List teams.
@@ -42,25 +42,29 @@ defmodule Appwrite.Services.Teams do
     - `{:error, %AppwriteException{}}` on failure.
   """
 
-  @spec list(Client.t(), [String.t()] | nil, String.t() | nil) ::
+  @spec list([String.t()] | nil, String.t() | nil) ::
           {:ok, TeamList.t()} | {:error, AppwriteException.t()}
-  def list(client, queries \\ nil, search \\ nil) do
-    api_path = "/teams"
-    payload = %{}
+  def list(queries \\ nil, search \\ nil) do
+    api_path = "/v1/teams"
 
     payload =
-      if queries, do: Map.put(payload, "queries", queries), else: payload
+      %{
+        "search" => search,
+        "queries" => queries
+      }
+      |> Enum.reject(fn {_key, value} -> is_nil(value) end)
 
-    payload =
-      if search, do: Map.put(payload, "search", search), else: payload
+    api_header = %{"content-type" => "application/json"}
 
-    uri = URI.merge(client.config.endpoint, api_path)
-
-    try do
-      Client.call(client, :get, uri, payload, %{"content-type" => "application/json"})
-    rescue
-      e -> {:error, %AppwriteException{message: Exception.message(e)}}
-    end
+    Task.async(fn ->
+      try do
+        team_list = Client.call("get", api_path, api_header, payload)
+        {:ok, team_list}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -77,26 +81,34 @@ defmodule Appwrite.Services.Teams do
   - `{:ok, %Team{}}` on success.
   - `{:error, %AppwriteException{}}` on failure.
   """
-  @spec create(Client.t(), String.t(), String.t(), [String.t()] | nil) ::
+  @spec create(String.t(), String.t(), [String.t()] | nil) ::
           {:ok, Team.t()} | {:error, AppwriteException.t()}
-  def create(client, team_id, name, roles \\ nil) do
+  def create(team_id, name, roles \\ nil) do
     if is_nil(team_id) or is_nil(name) do
       raise AppwriteException, "Missing required parameters: 'team_id' or 'name'"
     end
 
-    api_path = "/teams"
-    payload = %{"teamId" => team_id, "name" => name}
+    api_path = "/v1/teams"
 
     payload =
-      if roles, do: Map.put(payload, "roles", roles), else: payload
+      %{
+        "teamId" => team_id,
+        "name" => name,
+        "roles" => roles
+      }
+      |> Enum.reject(fn {_key, value} -> is_nil(value) end)
 
-    uri = URI.merge(client.config.endpoint, api_path)
+    api_header = %{"content-type" => "application/json"}
 
-    try do
-      Client.call(client, :post, uri, payload, %{"content-type" => "application/json"})
-    rescue
-      e -> {:error, %AppwriteException{message: Exception.message(e)}}
-    end
+    Task.async(fn ->
+      try do
+        team = Client.call("post", api_path, api_header, payload)
+        {:ok, team}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -109,20 +121,27 @@ defmodule Appwrite.Services.Teams do
   - `{:ok, %Team{}}` on success.
   - `{:error, %AppwriteException{}}` on failure.
   """
-  @spec get(Client.t(), String.t()) :: {:ok, Team.t()} | {:error, AppwriteException.t()}
-  def get(client, team_id) do
+  @spec get(String.t()) :: {:ok, Team.t()} | {:error, AppwriteException.t()}
+  def get(team_id) do
     if is_nil(team_id) do
       raise AppwriteException, "Missing required parameter: 'team_id'"
     end
 
-    api_path = "/teams/#{team_id}"
-    uri = URI.merge(client.config.endpoint, api_path)
+    api_path = "/v1/teams/#{team_id}"
 
-    try do
-      Client.call(client, :get, uri, %{}, %{"content-type" => "application/json"})
-    rescue
-      e -> {:error, %AppwriteException{message: Exception.message(e)}}
-    end
+    payload = %{}
+
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        team = Client.call("get", api_path, api_header, payload)
+        {:ok, team}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -136,22 +155,28 @@ defmodule Appwrite.Services.Teams do
   - `{:ok, %Team{}}` on success.
   - `{:error, %AppwriteException{}}` on failure.
   """
-  @spec update_name(Client.t(), String.t(), String.t()) ::
+  @spec update_name(String.t(), String.t()) ::
           {:ok, Team.t()} | {:error, AppwriteException.t()}
-  def update_name(client, team_id, name) do
+  def update_name(team_id, name) do
     if is_nil(team_id) or is_nil(name) do
       raise AppwriteException, "Missing required parameters: 'team_id' or 'name'"
     end
 
-    api_path = "/teams/#{team_id}"
-    payload = %{"name" => name}
-    uri = URI.merge(client.config.endpoint, api_path)
+    api_path = "/v1/teams/#{team_id}"
 
-    try do
-      Client.call(client, :put, uri, payload, %{"content-type" => "application/json"})
-    rescue
-      e -> {:error, %AppwriteException{message: Exception.message(e)}}
-    end
+    payload = %{"name" => name}
+
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        team = Client.call("put", api_path, api_header, payload)
+        {:ok, team}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -164,20 +189,27 @@ defmodule Appwrite.Services.Teams do
   - `{:ok, %{}}` on success.
   - `{:error, %AppwriteException{}}` on failure.
   """
-  @spec delete(Client.t(), String.t()) :: {:ok, map()} | {:error, AppwriteException.t()}
-  def delete(client, team_id) do
+  @spec delete(String.t()) :: {:ok, map()} | {:error, AppwriteException.t()}
+  def delete(team_id) do
     if is_nil(team_id) do
       raise AppwriteException, "Missing required parameter: 'team_id'"
     end
 
-    api_path = "/teams/#{team_id}"
-    uri = URI.merge(client.config.endpoint, api_path)
+    api_path = "/v1/teams/#{team_id}"
 
-    try do
-      Client.call(client, :delete, uri, %{}, %{"content-type" => "application/json"})
-    rescue
-      e -> {:error, %AppwriteException{message: Exception.message(e)}}
-    end
+    payload = %{}
+
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        team = Client.call("delete", api_path, api_header, payload)
+        {:ok, :deleted}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -191,18 +223,33 @@ defmodule Appwrite.Services.Teams do
   ## Returns:
     - `MembershipList`: A list of memberships.
   """
-  @spec list_memberships(Client.t(), String.t(), list(String.t()) | nil, String.t() | nil) ::
+  @spec list_memberships(String.t(), list(String.t()) | nil, String.t() | nil) ::
           {:ok, MembershipList.t()} | {:error, any()}
-  def list_memberships(client, team_id, queries \\ nil, search \\ nil) do
-    with :ok <- validate_param(team_id, "team_id"),
-         api_path <- "/teams/#{team_id}/memberships",
-         uri <- URI.merge(client.config.endpoint, api_path),
-         payload <- %{"queries" => queries, "search" => search} |> Enum.reject(&is_nil/1),
-         headers <- %{"content-type" => "application/json"} do
-      Client.call(client, :get, uri, headers, payload)
-    else
-      {:error, reason} -> {:error, %AppwriteException{message: reason}}
+  def list_memberships(team_id, queries \\ nil, search \\ nil) do
+    if is_nil(team_id) do
+      raise AppwriteException, "Missing required parameter: 'team_id'"
     end
+
+    api_path = "/v1/teams/#{team_id}/memberships"
+
+    payload =
+      %{
+        "queries" => queries,
+        "search" => search
+      }
+      |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        memberships = Client.call("get", api_path, api_header, payload)
+        {:ok, memberships}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -221,7 +268,6 @@ defmodule Appwrite.Services.Teams do
   - `Membership`: Membership details.
   """
   @spec create_membership(
-          Client.t(),
           String.t(),
           list(String.t()),
           String.t() | nil,
@@ -231,7 +277,6 @@ defmodule Appwrite.Services.Teams do
           String.t() | nil
         ) :: {:ok, Membership.t()} | {:error, any()}
   def create_membership(
-        client,
         team_id,
         roles,
         email \\ nil,
@@ -240,25 +285,34 @@ defmodule Appwrite.Services.Teams do
         url \\ nil,
         name \\ nil
       ) do
-    with :ok <- validate_param(team_id, "team_id"),
-         :ok <- validate_param(roles, "roles"),
-         api_path <- "/teams/#{team_id}/memberships",
-         uri <- URI.merge(client.config.endpoint, api_path),
-         payload <-
-           %{
-             "roles" => roles,
-             "email" => email,
-             "userId" => user_id,
-             "phone" => phone,
-             "url" => url,
-             "name" => name
-           }
-           |> Enum.reject(&is_nil/1),
-         headers <- %{"content-type" => "application/json"} do
-      Client.call(client, :post, uri, headers, payload)
-    else
-      {:error, reason} -> {:error, %AppwriteException{message: reason}}
+    if is_nil(team_id) or is_nil(roles) do
+      raise AppwriteException, "Missing required parameter: 'team_id' or 'roles'"
     end
+
+    api_path = "/v1/teams/#{team_id}/memberships"
+
+    payload =
+      %{
+        "roles" => roles,
+        "email" => email,
+        "userId" => user_id,
+        "phone" => phone,
+        "url" => url,
+        "name" => name
+      }
+      |> Enum.reject(&is_nil/1)
+
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        membership = Client.call("post", api_path, api_header, payload)
+        {:ok, membership}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -271,18 +325,28 @@ defmodule Appwrite.Services.Teams do
   ## Returns:
   - `Membership`: Membership details.
   """
-  @spec get_membership(Client.t(), String.t(), String.t()) ::
+  @spec get_membership(String.t(), String.t()) ::
           {:ok, Membership.t()} | {:error, any()}
-  def get_membership(client, team_id, membership_id) do
-    with :ok <- validate_param(team_id, "team_id"),
-         :ok <- validate_param(membership_id, "membership_id"),
-         api_path <- "/teams/#{team_id}/memberships/#{membership_id}",
-         uri <- URI.merge(client.config.endpoint, api_path),
-         headers <- %{"content-type" => "application/json"} do
-      Client.call(client, :get, uri, headers, %{})
-    else
-      {:error, reason} -> {:error, %AppwriteException{message: reason}}
+  def get_membership(team_id, membership_id) do
+    if is_nil(team_id) or is_nil(membership_id) do
+      raise AppwriteException, "Missing required parameter: 'team_id' or 'membership_id'"
     end
+
+    api_path = "/v1/teams/#{team_id}/memberships/#{membership_id}"
+
+    payload = %{}
+
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        membership = Client.call("get", api_path, api_header, payload)
+        {:ok, membership}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -296,20 +360,29 @@ defmodule Appwrite.Services.Teams do
   ## Returns:
   - `Membership`: Updated membership details.
   """
-  @spec update_membership(Client.t(), String.t(), String.t(), list(String.t())) ::
+  @spec update_membership(String.t(), String.t(), list(String.t())) ::
           {:ok, Membership.t()} | {:error, any()}
-  def update_membership(client, team_id, membership_id, roles) do
-    with :ok <- validate_param(team_id, "team_id"),
-         :ok <- validate_param(membership_id, "membership_id"),
-         :ok <- validate_param(roles, "roles"),
-         api_path <- "/teams/#{team_id}/memberships/#{membership_id}",
-         uri <- URI.merge(client.config.endpoint, api_path),
-         payload <- %{"roles" => roles},
-         headers <- %{"content-type" => "application/json"} do
-      Client.call(client, :patch, uri, headers, payload)
-    else
-      {:error, reason} -> {:error, %AppwriteException{message: reason}}
+  def update_membership(team_id, membership_id, roles) do
+    if is_nil(team_id) or is_nil(membership_id) or is_nil(roles) do
+      raise AppwriteException,
+            "Missing required parameter: 'team_id' or 'membership_id' or 'roles'"
     end
+
+    api_path = "/v1/teams/#{team_id}/memberships/#{membership_id}"
+
+    payload = %{"roles" => roles}
+
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        membership = Client.call("patch", api_path, api_header, payload)
+        {:ok, membership}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -322,18 +395,29 @@ defmodule Appwrite.Services.Teams do
   ## Returns:
   - `{}`: Empty response.
   """
-  @spec delete_membership(Client.t(), String.t(), String.t()) ::
+  @spec delete_membership(String.t(), String.t()) ::
           {:ok, map()} | {:error, any()}
-  def delete_membership(client, team_id, membership_id) do
-    with :ok <- validate_param(team_id, "team_id"),
-         :ok <- validate_param(membership_id, "membership_id"),
-         api_path <- "/teams/#{team_id}/memberships/#{membership_id}",
-         uri <- URI.merge(client.config.endpoint, api_path),
-         headers <- %{"content-type" => "application/json"} do
-      Client.call(client, :delete, uri, headers, %{})
-    else
-      {:error, reason} -> {:error, %AppwriteException{message: reason}}
+  def delete_membership(team_id, membership_id) do
+    if is_nil(team_id) or is_nil(membership_id) do
+      raise AppwriteException,
+            "Missing required parameter: 'team_id' or 'membership_id'"
     end
+
+    api_path = "/v1/teams/#{team_id}/memberships/#{membership_id}"
+
+    payload = %{}
+
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        Client.call("delete", api_path, api_header, payload)
+        {:ok, :deleted}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -342,7 +426,6 @@ defmodule Appwrite.Services.Teams do
   Allows a user to accept an invitation to join a team after being redirected back to the app.
 
   ## Parameters:
-    - `client` (Client): The Appwrite client instance.
     - `team_id` (String): The team ID.
     - `membership_id` (String): The membership ID.
     - `user_id` (String): The user ID.
@@ -351,21 +434,29 @@ defmodule Appwrite.Services.Teams do
   ## Returns:
     - `Membership`: Updated membership details.
   """
-  @spec update_membership_status(Client.t(), String.t(), String.t(), String.t(), String.t()) ::
+  @spec update_membership_status(String.t(), String.t(), String.t(), String.t()) ::
           {:ok, Membership.t()} | {:error, any()}
-  def update_membership_status(client, team_id, membership_id, user_id, secret) do
-    with :ok <- validate_param(team_id, "team_id"),
-         :ok <- validate_param(membership_id, "membership_id"),
-         :ok <- validate_param(user_id, "user_id"),
-         :ok <- validate_param(secret, "secret"),
-         api_path <- "/teams/#{team_id}/memberships/#{membership_id}/status",
-         uri <- URI.merge(client.config.endpoint, api_path),
-         payload <- %{"userId" => user_id, "secret" => secret},
-         headers <- %{"content-type" => "application/json"} do
-      Client.call(client, :patch, uri, headers, payload)
-    else
-      {:error, reason} -> {:error, %AppwriteException{message: reason}}
+  def update_membership_status(team_id, membership_id, user_id, secret) do
+    if is_nil(team_id) or is_nil(membership_id) or is_nil(user_id) or is_nil(secret) do
+      raise AppwriteException,
+            "Missing required parameter: 'team_id' or 'membership_id' or 'user_id' or 'secret'"
     end
+
+    api_path = "/v1/teams/#{team_id}/memberships/#{membership_id}/status"
+
+    payload = %{"userId" => user_id, "secret" => secret}
+
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        membership = Client.call("post", api_path, api_header, payload)
+        {:ok, membership}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -374,22 +465,32 @@ defmodule Appwrite.Services.Teams do
   Retrieves the shared preferences of a team by its unique ID.
 
   ## Parameters:
-  - `client` (Client): The Appwrite client instance.
   - `team_id` (String): The team ID.
 
   ## Returns:
   - `Preferences`: Team preferences.
   """
-  @spec get_prefs(Client.t(), String.t()) :: {:ok, Preferences.t()} | {:error, any()}
-  def get_prefs(client, team_id) do
-    with :ok <- validate_param(team_id, "team_id"),
-         api_path <- "/teams/#{team_id}/prefs",
-         uri <- URI.merge(client.config.endpoint, api_path),
-         headers <- %{"content-type" => "application/json"} do
-      Client.call(client, :get, uri, headers, %{})
-    else
-      {:error, reason} -> {:error, %AppwriteException{message: reason}}
+  @spec get_prefs(String.t()) :: {:ok, Preference.t()} | {:error, any()}
+  def get_prefs(team_id) do
+    if is_nil(team_id) do
+      raise AppwriteException, "Missing required parameter: 'team_id'"
     end
+
+    api_path = "/v1/teams/#{team_id}/prefs"
+
+    payload = %{}
+
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        preferences = Client.call("get", api_path, api_header, payload)
+        {:ok, preferences}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   @doc """
@@ -398,25 +499,33 @@ defmodule Appwrite.Services.Teams do
   Updates the team's preferences. The new preferences replace any existing ones.
 
   ## Parameters:
-  - `client` (Client): The Appwrite client instance.
   - `team_id` (String): The team ID.
   - `prefs` (map): The preferences to update.
 
   ## Returns:
   - `Preferences`: Updated team preferences.
   """
-  @spec update_prefs(Client.t(), String.t(), map()) :: {:ok, Preferences.t()} | {:error, any()}
-  def update_prefs(client, team_id, prefs) do
-    with :ok <- validate_param(team_id, "team_id"),
-         :ok <- validate_param(prefs, "prefs"),
-         api_path <- "/teams/#{team_id}/prefs",
-         uri <- URI.merge(client.config.endpoint, api_path),
-         payload <- %{"prefs" => prefs},
-         headers <- %{"content-type" => "application/json"} do
-      Client.call(client, :put, uri, headers, payload)
-    else
-      {:error, reason} -> {:error, %AppwriteException{message: reason}}
+  @spec update_prefs(String.t(), map()) :: {:ok, Preference.t()} | {:error, any()}
+  def update_prefs(team_id, prefs) do
+    if is_nil(team_id) or is_nil(prefs) do
+      raise AppwriteException, "Missing required parameter: 'team_id' or 'prefs'"
     end
+
+    api_path = "/v1/teams/#{team_id}/prefs"
+
+    payload = %{"prefs" => prefs}
+
+    api_header = %{"content-type" => "application/json"}
+
+    Task.async(fn ->
+      try do
+        preferences = Client.call("put", api_path, api_header, payload)
+        {:ok, preferences}
+      rescue
+        error -> {:error, error}
+      end
+    end)
+    |> Task.await()
   end
 
   # Helper to validate required parameters

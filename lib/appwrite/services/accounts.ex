@@ -6,8 +6,6 @@ defmodule Appwrite.Services.Accounts do
   and fetch the user security logs with his or her recent activity.
   You can authenticate the user account by using multiple sign-in methods available.
   Once the user is authenticated, a new session object will be created to allow the user to access his or her private data and settings.
-
-  Status: In Testing
   """
 
   alias Appwrite.Consts.OAuthProvider

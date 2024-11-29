@@ -6,8 +6,6 @@ defmodule Appwrite.Services.Locale do
 
   The user service supports multiple locales.
   This feature allows you to fetch countries and continents information in your app language.
-
-  Status: In Testing
   """
 
   alias Appwrite.Utils.Client

@@ -50,7 +50,7 @@ defmodule Appwrite.MixProject do
         Changelog: "#{@source_url}/blob/master/CHANGELOG.md",
         GitHub: @source_url,
         Docs: "https://hexdocs.pm/appwrite",
-        Twitter: "https://x.com/home",
+        Twitter: "https://x.com/NaikKanishk1831",
         Medium: "https://medium.com/@kanishkanaik97",
         Linkedin: "https://www.linkedin.com/in/kanishka-naik-kannu-6b5180191/"
       },
@@ -111,7 +111,9 @@ defmodule Appwrite.MixProject do
         Appwrite.Utils.Query,
         Appwrite.Utils.Role,
         Appwrite.Utils.Client,
-        Appwrite.Utils.Service
+        Appwrite.Utils.Service,
+        Appwrite.Utils.General
+
       ],
       Consts: [
         Appwrite.Consts.AuthenticationFactor,

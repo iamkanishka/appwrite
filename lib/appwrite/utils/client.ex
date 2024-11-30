@@ -103,7 +103,7 @@ defmodule Appwrite.Utils.Client do
   """
   @spec prepare_request(String.t(), String.t(), Headers.t(), Payload.t()) :: {String.t(), map()}
   def prepare_request(method, api_path, headers \\ %{}, params \\ %{}) do
-    url = URI.merge(@config.endpoint, api_path)
+    url = URI.merge(default_config()["endpoint"], api_path)
     method = String.upcase(method)
 
     headers =
@@ -253,7 +253,8 @@ defmodule Appwrite.Utils.Client do
 
   @spec default_config() :: any()
   def default_config() do
-    @config
+    Map.put(@config, "endpoint", get_root_uri())
+
   end
 
   @spec build_multipart_form(Payload.t(), Headers.t()) :: {Headers.t(), any()}
@@ -333,7 +334,7 @@ defmodule Appwrite.Utils.Client do
   end
 
   defp get_project_id() do
-    case Application.get_env(get_app_name(), :project_id) do
+    case Application.get_env(get_app_name(), :appwrite_project_id) do
       nil ->
         raise Appwrite.MissingProjectIdError
 
@@ -342,8 +343,11 @@ defmodule Appwrite.Utils.Client do
     end
   end
 
+
+
+
   defp get_secret() do
-    case Application.get_env(get_app_name(), :secret) do
+    case Application.get_env(get_app_name(), :appwrite_secret) do
       nil ->
         raise Appwrite.MissingSecretError
         ""
@@ -352,6 +356,17 @@ defmodule Appwrite.Utils.Client do
         secret
     end
   end
+
+  defp get_root_uri() do
+    case Application.get_env(get_app_name(), :appwrite_root_uri) do
+      nil ->
+        raise Appwrite.MissingRootUriError
+
+      project_id ->
+        project_id
+    end
+  end
+
 
   @doc """
   Flattens a nested map or list into a single-level map with prefixed keys.

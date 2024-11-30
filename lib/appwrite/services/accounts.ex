@@ -8,6 +8,7 @@ defmodule Appwrite.Services.Accounts do
   Once the user is authenticated, a new session object will be created to allow the user to access his or her private data and settings.
   """
 
+  alias Appwrite.Utils.General
   alias Appwrite.Consts.OAuthProvider
   alias Appwrite.Consts.AuthenticationFactor
   alias Appwrite.Utils.Client
@@ -67,21 +68,27 @@ defmodule Appwrite.Services.Accounts do
   - `{:ok, User.t()}` on success
   - `{:error, reason}` on failure
   """
-  @spec create(String.t(), String.t(), String.t() | nil) ::
+  @spec create(String.t(), String.t(), String.t(), String.t() | nil) ::
           {:ok, User.t()} | {:error, any()}
-  def create(email, password, name \\ nil) do
+  def create(user_id \\ nil, email, password, name \\ nil) do
     if is_nil(email) or is_nil(password) do
       {:error, %AppwriteException{message: "Missing required parameters 'email' or 'password'"}}
     else
       api_path = "/v1/account"
 
+      cust_or_autogen_user_id =
+        if user_id == nil,
+          do: String.replace(to_string(General.generate_user_id()), "-", ""),
+          else: user_id
+
       payload = %{
-        userId: String.replace(to_string(generate_user_id()), "-", ""),
+        userId: cust_or_autogen_user_id,
         email: email,
         password: password,
         name: name
       }
-     api_header = %{"content-type" => "application/json"}
+
+      api_header = %{"content-type" => "application/json"}
 
       Task.async(fn ->
         try do
@@ -1587,9 +1594,7 @@ defmodule Appwrite.Services.Accounts do
     end
   end
 
-  defp generate_user_id do
-    UUID.uuid4()
-  end
+
 
   # # Helper function to update query
 

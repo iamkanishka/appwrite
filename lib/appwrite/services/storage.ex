@@ -1,20 +1,20 @@
 defmodule Appwrite.Services.Storage do
   @moduledoc """
-  The Storage service allows you to manage your project files.
-  Using the Storage service, you can upload, view, download, and query all your project files.
+   The Storage service allows you to manage your project files.
+   Using the Storage service, you can upload, view, download, and query all your project files.
 
-  Each file in the service is granted with read and write permissions to manage who has access to view or edit it.
-  You can also learn more about how to manage your resources permissions.
+   Each file in the service is granted with read and write permissions to manage who has access to view or edit it.
+   You can also learn more about how to manage your resources permissions.
 
-  The preview endpoint allows you to generate preview images for your files.
-  Using the preview endpoint, you can also manipulate the resulting image so that it will fit perfectly inside your app in terms of dimensions, file size, and style. The preview endpoint also allows you to change the resulting image file format for better compression or image quality for better delivery over the network.
- """
+   The preview endpoint allows you to generate preview images for your files.
+   Using the preview endpoint, you can also manipulate the resulting image so that it will fit perfectly inside your app in terms of dimensions, file size, and style. The preview endpoint also allows you to change the resulting image file format for better compression or image quality for better delivery over the network.
+  """
 
+  alias Appwrite.Utils.General
   alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
   alias Appwrite.Types.{File, FileList}
   alias Appwrite.Utils.Service
-
 
   @type bucket_id :: String.t()
   @type file_id :: String.t()
@@ -72,13 +72,18 @@ defmodule Appwrite.Services.Storage do
   - `{:ok, File.t()}` on success.
   - `{:error, AppwriteException.t()}` on failure.
   """
-  @spec create_file(bucket_id(), file_id(), File.t(), permissions() | nil) ::
+  @spec create_file(bucket_id() | nil, file_id(), any(), permissions() | nil) ::
           {:ok, File.t()} | {:error, AppwriteException.t()}
-  def create_file(bucket_id, file_id, file, permissions \\ nil) do
+  def create_file(bucket_id \\ nil, file_id, file, permissions \\ nil) do
     with :ok <- ensure_not_nil(bucket_id, "bucketId"),
          :ok <- ensure_not_nil(file_id, "fileId"),
          :ok <- ensure_not_nil(file, "file") do
-      api_path = "/v1/storage/buckets/#{bucket_id}/files"
+      cust_or_autogen_bucket_id =
+        if bucket_id == nil,
+          do: String.replace(to_string(General.generate_user_id()), "-", ""),
+          else: bucket_id
+
+      api_path = "/v1/storage/buckets/#{cust_or_autogen_bucket_id}/files"
 
       payload = %{
         "fileId" => file_id,
@@ -184,7 +189,7 @@ defmodule Appwrite.Services.Storage do
   - `AppwriteException` if parameters are missing or request fails.
   """
   @spec get_file_download(String.t(), String.t()) :: String.t()
-  def get_file_download( bucket_id, file_id) do
+  def get_file_download(bucket_id, file_id) do
     with :ok <- ensure_not_nil(bucket_id, "bucketId"),
          :ok <- ensure_not_nil(file_id, "fileId") do
       api_path = "/storage/buckets/#{bucket_id}/files/#{file_id}/download"
@@ -193,7 +198,8 @@ defmodule Appwrite.Services.Storage do
       payload =
         %{
           project: Client.default_config()["project"]
-        } |> Service.flatten()
+        }
+        |> Service.flatten()
 
       Enum.each(payload, fn {key, value} ->
         uri = URI.append_query(uri, key, value)
@@ -264,8 +270,8 @@ defmodule Appwrite.Services.Storage do
   ## Raises
   - `AppwriteException` if parameters are missing.
   """
-  @spec get_file_view( String.t(), String.t()) :: String.t()
-  def get_file_view( bucket_id, file_id) do
+  @spec get_file_view(String.t(), String.t()) :: String.t()
+  def get_file_view(bucket_id, file_id) do
     with :ok <- ensure_not_nil(bucket_id, "bucketId"),
          :ok <- ensure_not_nil(file_id, "fileId") do
       api_path = "/storage/buckets/#{bucket_id}/files/#{file_id}/view"

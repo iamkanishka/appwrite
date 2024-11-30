@@ -1,6 +1,6 @@
 import Config
 
 config :appwrite,
-  project_id: "",
-  secret: "",
-  root_uri: "https://cloud.appwrite.io/v1"
+  appwrite_project_id: "",
+  appwrite_secret: "",
+  appwrite_root_uri: "https://cloud.appwrite.io/v1"

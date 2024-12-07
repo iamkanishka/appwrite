@@ -72,30 +72,35 @@ defmodule Appwrite.Services.Storage do
   - `{:ok, File.t()}` on success.
   - `{:error, AppwriteException.t()}` on failure.
   """
-  @spec create_file(bucket_id() | nil, file_id(), any(), permissions() | nil) ::
+  @spec create_file(bucket_id(), file_id() | nil, any(), permissions() | nil) ::
           {:ok, File.t()} | {:error, AppwriteException.t()}
-  def create_file(bucket_id \\ nil, file_id, file, permissions \\ nil) do
+  def create_file(bucket_id, file_id, file, permissions \\ nil) do
     with :ok <- ensure_not_nil(bucket_id, "bucketId"),
          :ok <- ensure_not_nil(file_id, "fileId"),
          :ok <- ensure_not_nil(file, "file") do
-      cust_or_autogen_bucket_id =
-        if bucket_id == nil,
-          do: String.replace(to_string(General.generate_user_id()), "-", ""),
-          else: bucket_id
+      cust_or_autogen_file_id =
+        if file_id == nil,
+          do: String.replace(to_string(General.generate_uniqe_id()), "-", ""),
+          else: file_id
 
-      api_path = "/v1/storage/buckets/#{cust_or_autogen_bucket_id}/files"
+      api_path = "/v1/storage/buckets/#{bucket_id}/files"
 
-      payload = %{
-        "fileId" => file_id,
-        "file" => file,
-        "permissions" => permissions
-      }
+      payload =
+        %{
+          "fileId" => cust_or_autogen_file_id,
+          "file" => file
+          # "permissions" => permissions
+        }
+
+      if permissions != nil do
+        Map.put(payload, "permissions", permissions)
+      end
 
       api_header = %{"content-type" => "multipart/form-data"}
 
       Task.async(fn ->
         try do
-          file = Client.call("post", api_path, api_header, payload)
+          file = Client.chunked_upload("post", api_path, api_header, payload, nil)
           {:ok, file}
         rescue
           error -> {:error, error}
@@ -128,7 +133,7 @@ defmodule Appwrite.Services.Storage do
 
       Task.async(fn ->
         try do
-          file = Client.chunked_upload("get", api_path, api_header, payload)
+          file = Client.call("get", api_path, api_header, payload)
           {:ok, file}
         rescue
           error -> {:error, error}
@@ -299,4 +304,20 @@ defmodule Appwrite.Services.Storage do
   end
 
   defp ensure_not_nil(_value, _param_name), do: :ok
+
+  def to_preflight_payload(file) do
+    %{
+      lastModified: file.client_last_modified,
+      name: file.client_name,
+      webkitRelativePath: "",
+      # webkitRelativePath: Map.get(file.client_relative_path, :webkit_relative_path, nil) ||  nil,
+
+      size: file.client_size,
+      type: file.client_type,
+      meta: extract_meta(file.client_meta)
+    }
+  end
+
+  defp extract_meta(%{meta: meta}) when is_function(meta, 0), do: meta.()
+  defp extract_meta(_), do: nil
 end

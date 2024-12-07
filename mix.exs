@@ -35,7 +35,8 @@ defmodule Appwrite.MixProject do
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.4"},
       {:poison, "~> 6.0"},
-      {:uuid, "~> 1.1"}
+      {:uuid, "~> 1.1"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -113,7 +114,6 @@ defmodule Appwrite.MixProject do
         Appwrite.Utils.Client,
         Appwrite.Utils.Service,
         Appwrite.Utils.General
-
       ],
       Consts: [
         Appwrite.Consts.AuthenticationFactor,

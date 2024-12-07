@@ -1088,7 +1088,6 @@ defmodule Appwrite.Services.Accounts do
   Retrieves a session by session ID.
 
   ## Parameters
-  - `client`: The Appwrite client.
   - `session_id`: The session ID (use "current" for the current session).
 
   ## Returns

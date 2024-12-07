@@ -13,7 +13,7 @@ The function returns a random, unique string in UUID format, suitable for identi
 ## Notes
 - The generated UUID follows the version 4 standard, ensuring randomness and uniqueness.
 """
-def generate_user_id do
+def generate_uniqe_id do
   UUID.uuid4()
 end
 

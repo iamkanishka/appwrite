@@ -2,7 +2,6 @@ defmodule Appwrite.Utils.Client do
   @moduledoc """
   Client module for handling requests to Appwrite.
   """
-
   alias Appwrite.Types.Client.{Config, Payload, Headers, UploadProgress}
   alias Appwrite.Exceptions.AppwriteException
 
@@ -143,34 +142,12 @@ defmodule Appwrite.Utils.Client do
               Map.put(options, :body, Jason.encode!(params))
 
             "multipart/form-data" ->
-              IO.inspect(label: "multipart/form-data")
+              multipart_data =
+                {:multipart, process_payload(params)}
 
-              form_data =
-                params
-                |> Enum.reduce(Multipart.new(), fn {key, value}, form ->
-                  cond do
-                    # If value is a file
-                    is_map(value) and Map.has_key?(value, :path) and
-                        Map.has_key?(value, :filename) ->
-                      Multipart.add_part(form, value.path, name: key, filename: value.filename)
-
-                    # If value is a list
-                    is_list(value) ->
-                      Enum.reduce(value, form, fn nested_value, acc ->
-                        Multipart.add_field(acc, "#{key}[]", nested_value)
-                      end)
-
-                    # Otherwise, treat as a single value
-                    true ->
-                      Multipart.add_field(form, key, value)
-                  end
-                end)
-
-              options = Map.put(options, :body, Multipart.body(form_data))
-              headers = Map.delete(headers, "content-type")
+              Map.put(options, :body, multipart_data)
 
             _ ->
-              # Default case if `content-type` doesn't match
               options
           end
 
@@ -178,6 +155,78 @@ defmodule Appwrite.Utils.Client do
       end
 
     {uri, options}
+  end
+
+  @doc """
+  Processes a payload map into a list of tuples formatted for HTTP multipart requests.
+
+  ## Parameters
+
+    - `payload` (map): A map containing key-value pairs to be processed. The map can include a special `"file"` key with a nested map for file metadata.
+
+  ## Returns
+
+    - A list of tuples representing the processed payload:
+      - For the `"file"` key:
+        ```elixir
+        {"file", binary_content,
+          {"form-data", [{"name", "file"}, {"filename", file_name}]},
+          [{"Content-Type", file_type}]}
+        ```
+      - For all other keys:
+        ```elixir
+        {"key", "value"}
+        ```
+
+  ## Examples
+
+      iex> payload = %{
+      ...>   "fileId" => "12345",
+      ...>   "file" => %{"content" => "binary_content", "name" => "example.txt", "type" => "text/plain"},
+      ...>   "permissions" => "read-only"
+      ...> }
+      iex> PayloadProcessor.process_payload(payload)
+      [
+        {"fileId", "12345"},
+        {"file", "binary_content",
+         {"form-data", [{"name", "file"}, {"filename", "example.txt"}]},
+         [{"Content-Type", "text/plain"}]},
+        {"permissions", "read-only"}
+      ]
+
+  """
+
+  defp process_payload(payload) do
+    Enum.reduce(payload, [], fn {key, value}, acc ->
+      case key do
+        "file" ->
+          # Extract file information if the key is "file"
+          file_data = value
+
+          if is_map(file_data) do
+            binary_content = Base.decode64!(file_data["data"])
+
+            [
+              {"file", binary_content,
+               {"form-data", [{"name", "file"}, {"filename", file_data["name"]}]},
+               [{"Content-Type", file_data["type"]}]}
+              | acc
+            ]
+          else
+            acc
+          end
+
+        _ ->
+          # Add other key-value pairs as {"key", "value"}
+          # if(is_list(value)) do
+          #   [{"#{key}", value} | acc]
+          # else
+          #   [{"#{key}", "#{value}"} | acc]
+          # end
+          [{"#{key}", "#{value}"} | acc]
+      end
+    end)
+    |> Enum.reverse()
   end
 
   @doc """
@@ -194,6 +243,7 @@ defmodule Appwrite.Utils.Client do
     - Response data or raises an `AppwriteException` on error.
   """
   @spec call(String.t(), String.t(), Headers.t(), Payload.t(), String.t()) :: response()
+
   def call(method, api_path, headers \\ %{}, params \\ %{}, response_type \\ "json") do
     try do
       {uri, options} = prepare_request(method, api_path, headers, params)
@@ -201,11 +251,6 @@ defmodule Appwrite.Utils.Client do
 
       case HTTPoison.request(method, uri, options[:body], options[:headers], []) do
         {:ok, %HTTPoison.Response{status_code: code, body: body, headers: response_headers}} ->
-          # IO.puts("Response received with status: #{code}")
-          # IO.puts("Body: #{body}")
-          # IO.puts("response_type: #{response_type}")
-          # IO.inspect(response_headers, label: "response_headers")
-
           handle_response(code, body, response_headers, response_type)
 
         {:error, %HTTPoison.Error{reason: reason}} ->
@@ -248,27 +293,12 @@ defmodule Appwrite.Utils.Client do
   @spec default_headers() :: Headers.t()
   defp default_headers() do
     Map.put(@headers, "X-Appwrite-Project", get_project_id())
-     |> Map.put("X-Appwrite-Key", get_secret())
+    |> Map.put("X-Appwrite-Key", get_secret())
   end
 
   @spec default_config() :: any()
   def default_config() do
     Map.put(@config, "endpoint", get_root_uri())
-
-  end
-
-  @spec build_multipart_form(Payload.t(), Headers.t()) :: {Headers.t(), any()}
-  defp build_multipart_form(params \\ %{}, headers) do
-    form_data =
-      params
-      |> Enum.reduce([], fn {key, value}, acc ->
-        cond do
-          is_binary(value) -> [{key, value} | acc]
-          true -> acc
-        end
-      end)
-
-    %{"content-type" => "multipart/form-data", "form-data" => form_data}
   end
 
   @doc """
@@ -287,11 +317,9 @@ defmodule Appwrite.Utils.Client do
   @spec chunked_upload(String.t(), String.t(), Headers.t(), Payload.t(), (UploadProgress.t() ->
                                                                             any())) :: any()
   def chunked_upload(method, url, headers \\ %{}, payload \\ %{}, on_progress \\ nil) do
-    file =
-      Enum.find(payload, fn {_, value} -> is_map(value) and Map.has_key?(value, :size) end)
-      |> elem(1)
+    file = payload["file"]
 
-    if file.size <= @chunk_size do
+    if file["size"] <= @chunk_size do
       call(method, url, headers, payload)
     else
       chunked_upload_process(method, url, headers, payload, file, on_progress)
@@ -343,9 +371,6 @@ defmodule Appwrite.Utils.Client do
     end
   end
 
-
-
-
   defp get_secret() do
     case Application.get_env(get_app_name(), :appwrite_secret) do
       nil ->
@@ -366,7 +391,6 @@ defmodule Appwrite.Utils.Client do
         project_id
     end
   end
-
 
   @doc """
   Flattens a nested map or list into a single-level map with prefixed keys.
@@ -394,9 +418,21 @@ defmodule Appwrite.Utils.Client do
     end)
   end
 
-
   def get_app_name do
     Mix.Project.config()[:app]
   end
 
+  def to_preflight_payload(file) do
+    %{
+      lastModified: file.client_last_modified,
+      name: file.client_name,
+      webkitRelativePath: Map.get(file.client_webkit_relative_path, :webkit_relative_path, nil),
+      size: file.client_size,
+      type: file.client_type,
+      meta: extract_meta(file.client_meta)
+    }
+  end
+
+  defp extract_meta(%{meta: meta}) when is_function(meta, 0), do: meta.()
+  defp extract_meta(_), do: nil
 end

@@ -2,7 +2,7 @@ defmodule Appwrite.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/iamkanishka/appwrite"
-  @version "0.1.7"
+  @version "0.1.8"
 
   def project do
     [
@@ -47,13 +47,13 @@ defmodule Appwrite.MixProject do
       licenses: ["MIT"],
       links: %{
         GitHub: @source_url,
-        Website: "https://kanishkanaik.dev/",
-        Changelog: "#{@source_url}/blob/master/CHANGELOG.md",
-        GitHub: @source_url,
         Docs: "https://hexdocs.pm/appwrite",
-        Twitter: "https://x.com/NaikKanishk1831",
-        Medium: "https://medium.com/@kanishkanaik97",
-        Linkedin: "https://www.linkedin.com/in/kanishka-naik-kannu-6b5180191/"
+        Changelog: "#{@source_url}/blob/master/CHANGELOG.md"
+
+        # Website: "https://kanishkanaik.dev/",
+        # Twitter: "https://x.com/NaikKanishk1831",
+        # Medium: "https://medium.com/@kanishkanaik97",
+        # Linkedin: "https://www.linkedin.com/in/kanishka-naik-kannu-6b5180191/"
       },
       maintainers: ["Kanishka Naik"]
     ]

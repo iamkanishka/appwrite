@@ -11,7 +11,7 @@ by adding `appwrite` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:appwrite, "~> 0.1.7"}
+    {:appwrite, "~> 0.1.8"}
   ]
 end
 ```

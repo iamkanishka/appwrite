@@ -78,7 +78,7 @@ defmodule Appwrite.Services.Accounts do
 
       cust_or_autogen_user_id =
         if user_id == nil,
-          do: String.replace(to_string(General.generate_user_id()), "-", ""),
+          do: String.replace(to_string(General.generate_uniqe_id()), "-", ""),
           else: user_id
 
       payload = %{

@@ -167,7 +167,6 @@ defmodule Appwrite.Services.Storage do
           {:ok, File.t()} | {:error, AppwriteException.t()}
   def create_file(bucket_id, file_id, file, permissions \\ nil) do
     with :ok <- ensure_not_nil(bucket_id, "bucketId"),
-         :ok <- ensure_not_nil(file_id, "fileId"),
          :ok <- ensure_not_nil(file, "file") do
       cust_or_autogen_file_id =
         if file_id == nil,
@@ -197,7 +196,7 @@ defmodule Appwrite.Services.Storage do
           error -> {:error, error}
         end
       end)
-      |> Task.await()
+      |> Task.await(:timer.hours(1))
     end
   end
 
@@ -395,19 +394,6 @@ defmodule Appwrite.Services.Storage do
   end
 
   defp ensure_not_nil(_value, _param_name), do: :ok
-
-  def to_preflight_payload(file) do
-    %{
-      lastModified: file.client_last_modified,
-      name: file.client_name,
-      webkitRelativePath: "",
-      # webkitRelativePath: Map.get(file.client_relative_path, :webkit_relative_path, nil) ||  nil,
-
-      size: file.client_size,
-      type: file.client_type,
-      meta: extract_meta(file.client_meta)
-    }
-  end
 
   defp extract_meta(%{meta: meta}) when is_function(meta, 0), do: meta.()
   defp extract_meta(_), do: nil

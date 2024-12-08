@@ -71,6 +71,97 @@ defmodule Appwrite.Services.Storage do
   ## Returns
   - `{:ok, File.t()}` on success.
   - `{:error, AppwriteException.t()}` on failure.
+
+
+  ## Usage
+
+   Step 1: Create the fileInput.js Hook
+  Navigate to the assets/js directory in your Phoenix project.
+  Create a new file called fileInput.js with the following content:
+
+  export default {
+  mounted() {
+    this.el.addEventListener("change", async (e) => {
+      let file = e.target.files[0];
+      if (file) {
+        let reader = new FileReader();
+
+        reader.onload = (event) => {
+          let base64Content = event.target.result.split(",")[1]; // Extract Base64 content
+          this.pushEvent("file_selected", {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            content: base64Content, // Send Base64 file content
+          });
+        };
+
+        reader.readAsDataURL(file); // Convert file to Base64 Data URL
+      }
+    });
+  },
+  };
+
+  Step 2: Initialize the Hook in app.js
+  Open assets/js/app.js.
+  Import and initialize the fileInput hook by adding the following code:
+
+  let Hooks = {};
+  import FileInput from "./fileInput";
+  Hooks.FileInput = FileInput;
+
+  let csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  .getAttribute("content");
+  let liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: { _csrf_token: csrfToken },
+  hooks: Hooks,
+  });
+
+
+  Step 3: Use the Hook in Your LiveView
+  Frontend (HTML)
+  Use the FileInput hook in your form input field:
+  <.form phx-submit="file_selected">
+  <input type="file" id="file-input" phx-hook="FileInput" name="inputfile" />
+  </.form>
+
+  Handle the file upload event in your LiveView module:
+  Add an event handler for file_selected:
+
+  @impl true
+  def handle_event(
+      "file_selected",
+      %{"name" => name, "size" => size, "type" => type, "content" => base64_content},
+      socket
+    ) do
+  {:noreply,
+   assign(socket, :file_content, %{
+     "name" => name,
+     "size" => size,
+     "type" => type,
+     "data" => base64_content,
+     "lastModified" => DateTime.utc_now()
+   })}
+  end
+
+  Add a handler to save the file using your storage service (e.g., Appwrite):
+  @impl true
+  def handle_event("save", _params, socket) do
+  uploaded_file =
+    Appwrite.Services.Storage.create_file(
+      bucket_id,
+      nil,
+      socket.assigns.file_content,
+      nil
+    )
+
+  {:noreply, socket}
+  end
+
+
+
   """
   @spec create_file(bucket_id(), file_id() | nil, any(), permissions() | nil) ::
           {:ok, File.t()} | {:error, AppwriteException.t()}

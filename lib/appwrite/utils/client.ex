@@ -249,7 +249,7 @@ defmodule Appwrite.Utils.Client do
       {uri, options} = prepare_request(method, api_path, headers, params)
       method = String.to_atom(method)
 
-      case HTTPoison.request(method, uri, options[:body], options[:headers], []) do
+      case HTTPoison.request(method, uri, options[:body], options[:headers], [recv_timeout: :timer.hours(1)]) do
         {:ok, %HTTPoison.Response{status_code: code, body: body, headers: response_headers}} ->
           handle_response(code, body, response_headers, response_type)
 
@@ -268,7 +268,8 @@ defmodule Appwrite.Utils.Client do
   end
 
   @spec handle_response(integer(), binary(), Headers.t(), String.t()) :: any()
-  defp handle_response(code, body, headers, response_type) when code >= 400 do
+
+  defp handle_response(code, body, _headers, response_type) when code >= 400 do
     data = if response_type == "json", do: Jason.decode!(body), else: %{"message" => body}
 
     raise AppwriteException,
@@ -336,29 +337,59 @@ defmodule Appwrite.Utils.Client do
         ) ::
           any()
   defp chunked_upload_process(method, url, headers, payload, file, on_progress) do
-    Stream.iterate(0, &(&1 + @chunk_size))
-    |> Stream.take_while(fn start -> start < file.size end)
-    |> Enum.reduce(nil, fn start, _response ->
-      end_byte = min(start + @chunk_size, file.size)
+    try do
+      Stream.iterate(0, &(&1 + @chunk_size))
+      |> Stream.take_while(fn start -> start < file["size"] end)
+      |> Enum.reduce(nil, fn start, _response ->
+        end_byte = min(start + @chunk_size, file["size"])
 
-      headers = Map.put(headers, "content-range", "bytes #{start}-#{end_byte - 1}/#{file.size}")
-      chunk = :binary.part(file.content, start, end_byte - start)
-      updated_payload = Map.put(payload, :file, %{content: chunk, name: file.name})
+        headers =
+          Map.put(headers, "content-range", "bytes #{start}-#{end_byte - 1}/#{file["size"]}")
 
-      response = call(method, url, headers, updated_payload)
+        chunk = :binary.part(Base.decode64!(file["data"]), start, end_byte - start)
 
-      if on_progress do
-        on_progress.(%UploadProgress{
-          id: Map.get(response, "$id"),
-          progress: round(end_byte / file.size * 100),
-          size_uploaded: end_byte,
-          chunks_total: div(file.size, @chunk_size) + 1,
-          chunks_uploaded: div(end_byte, @chunk_size)
-        })
-      end
+        updated_payload =
+          Map.put(payload, "file", %{
+            "data" => Base.encode64(chunk),
+            "name" => file["name"],
+            "size" => file["size"],
+            "type" => file["type"],
+            "lastModified" => DateTime.utc_now()
+          })
 
-      response
-    end)
+        # Map.put(updated_payload, "fileId", payload.fileId)
+
+        # if payload.permissions != nil do
+        #   Map.put(updated_payload, "permissions", payload.permissions)
+        # end
+
+        IO.inspect(updated_payload, label: "Updated Payload")
+        response = call(method, url, headers, updated_payload)
+        IO.inspect(response)
+
+        if on_progress do
+          on_progress.(%UploadProgress{
+            id: Map.get(response, "$id"),
+            progress: round(end_byte / file["size"] * 100),
+            size_uploaded: end_byte,
+            chunks_total: div(file["size"], @chunk_size) + 1,
+            chunks_uploaded: div(end_byte, @chunk_size)
+          })
+        end
+
+        if response && response["$id"] do
+           Map.put(headers, "x-appwrite-id", response["$id"])
+        end
+
+        response
+      end)
+
+
+    catch
+      exception ->
+        IO.puts("Error: #{exception.message}")
+        IO.inspect(__STACKTRACE__, label: "Stacktrace")
+    end
   end
 
   defp get_project_id() do
@@ -420,17 +451,6 @@ defmodule Appwrite.Utils.Client do
 
   def get_app_name do
     Mix.Project.config()[:app]
-  end
-
-  def to_preflight_payload(file) do
-    %{
-      lastModified: file.client_last_modified,
-      name: file.client_name,
-      webkitRelativePath: Map.get(file.client_webkit_relative_path, :webkit_relative_path, nil),
-      size: file.client_size,
-      type: file.client_type,
-      meta: extract_meta(file.client_meta)
-    }
   end
 
   defp extract_meta(%{meta: meta}) when is_function(meta, 0), do: meta.()

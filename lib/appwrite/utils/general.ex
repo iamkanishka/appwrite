@@ -18,4 +18,22 @@ def generate_uniqe_id do
 end
 
 
+def bytes_to_human_readable(bytes) do
+  if bytes < 1024 do
+    "#{bytes} Bytes"
+  else
+    if bytes < 1024 * 1024 do
+      "#{Float.round(bytes / 1024, 2)} KB"
+    else
+      if bytes < 1024 * 1024 * 1024 do
+        "#{Float.round(bytes / (1024 * 1024), 2)} MB"
+      else
+        "#{Float.round(bytes / (1024 * 1024 * 1024), 2)} GB"
+      end
+    end
+  end
+end
+
+
+
 end

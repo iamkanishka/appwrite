@@ -2,6 +2,10 @@
 
 Appwrite is an open-source self-hosted backend server that abstract and simplify complex and repetitive development tasks behind a very simple REST API
 
+a
+> [!WARNING]
+> This project is still in high development, expect breaking changes.
+
  
 ## Installation
 

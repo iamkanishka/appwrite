@@ -2,6 +2,7 @@ defmodule Appwrite.Utils.Client do
   @moduledoc """
   Client module for handling requests to Appwrite.
   """
+  alias Appwrite.Utils.General
   alias Appwrite.Types.Client.{Config, Payload, Headers, UploadProgress}
   alias Appwrite.Exceptions.AppwriteException
 
@@ -249,7 +250,9 @@ defmodule Appwrite.Utils.Client do
       {uri, options} = prepare_request(method, api_path, headers, params)
       method = String.to_atom(method)
 
-      case HTTPoison.request(method, uri, options[:body], options[:headers], [recv_timeout: :timer.hours(1)]) do
+      case HTTPoison.request(method, uri, options[:body], options[:headers],
+             recv_timeout: :timer.hours(1)
+           ) do
         {:ok, %HTTPoison.Response{status_code: code, body: body, headers: response_headers}} ->
           handle_response(code, body, response_headers, response_type)
 
@@ -298,7 +301,7 @@ defmodule Appwrite.Utils.Client do
   end
 
   @spec default_config() :: any()
-  def default_config() do
+  defp default_config() do
     Map.put(@config, "endpoint", get_root_uri())
   end
 
@@ -363,9 +366,34 @@ defmodule Appwrite.Utils.Client do
         #   Map.put(updated_payload, "permissions", payload.permissions)
         # end
 
-        IO.inspect(updated_payload, label: "Updated Payload")
+        # IO.inspect(updated_payload, label: "Updated Payload")
         response = call(method, url, headers, updated_payload)
-        IO.inspect(response)
+        chunks_total = response["chunksTotal"]
+        chunks_uploaded = response["chunksUploaded"]
+        size_original = response["sizeOriginal"]
+
+        # Calculate percentage uploaded and size uploaded
+        percentage_uploaded = chunks_uploaded / chunks_total * 100
+        size_uploaded = chunks_uploaded / chunks_total * size_original
+
+        # Display the results
+        # IO.puts("Percentage Uploaded: #{percentage_uploaded}%")
+        # IO.puts("Size Uploaded: #{size_uploaded} bytes")
+
+        # IO.ANSI.format([:green, "Percentage Uploaded: #{percentage_uploaded}%"])
+        # IO.ANSI.format([:blue, "Size Uploaded: #{size_uploaded} / #{size_original} bytes"])
+
+        IO.puts(IO.ANSI.format([:green, "Percentage Uploaded: #{percentage_uploaded}%"]))
+
+        IO.puts(
+          IO.ANSI.format([
+            :blue,
+            "Size Uploaded: #{General.bytes_to_human_readable(size_uploaded)} / #{General.bytes_to_human_readable(size_original)}"
+          ])
+        )
+
+        # IO.write(IO.ANSI.cursor_up(2))
+        # IO.write(IO.ANSI.clear_line())
 
         if on_progress do
           on_progress.(%UploadProgress{
@@ -378,13 +406,11 @@ defmodule Appwrite.Utils.Client do
         end
 
         if response && response["$id"] do
-           Map.put(headers, "x-appwrite-id", response["$id"])
+          Map.put(headers, "x-appwrite-id", response["$id"])
         end
 
         response
       end)
-
-
     catch
       exception ->
         IO.puts("Error: #{exception.message}")

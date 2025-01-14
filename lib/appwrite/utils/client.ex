@@ -423,7 +423,7 @@ defmodule Appwrite.Utils.Client do
   end
 
   defp get_project_id() do
-    case Application.get_env(get_app_name(), :project_id) do
+    case Application.get_env(:appwrite, :project_id) do
       nil ->
         raise Appwrite.MissingProjectIdError
 
@@ -433,7 +433,7 @@ defmodule Appwrite.Utils.Client do
   end
 
   defp get_secret() do
-    case Application.get_env(get_app_name(), :secret) do
+    case Application.get_env(:appwrite, :secret) do
       nil ->
         raise Appwrite.MissingSecretError
         ""
@@ -444,7 +444,7 @@ defmodule Appwrite.Utils.Client do
   end
 
   defp get_root_uri() do
-    case Application.get_env(get_app_name(), :root_uri) do
+    case Application.get_env(:appwrite, :root_uri) do
       nil ->
         raise Appwrite.MissingRootUriError
 

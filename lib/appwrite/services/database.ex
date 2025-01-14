@@ -14,7 +14,7 @@ defmodule Appwrite.Services.Database do
   you can assign read or write access to each document in your project for either a specific user,
   team, user role, or even grant it with public access (*).
   """
-
+  alias Appwrite.Utils.General
   alias Appwrite.Utils.Client
   alias Appwrite.Types.{Document, DocumentList}
 
@@ -67,20 +67,25 @@ defmodule Appwrite.Services.Database do
   @spec create_document(
           String.t(),
           String.t(),
-          String.t(),
+          String.t() | nil,
           map(),
           list(String.t()) | nil
         ) :: {:ok, Document.t()} | {:error, any()}
-  def create_document(database_id, collection_id, document_id, data, permissions \\ nil) do
+  def create_document(database_id, collection_id, document_id \\ nil, data, permissions \\ nil) do
     with :ok <-
            validate_params(%{
              database_id: database_id,
              collection_id: collection_id,
-             document_id: document_id,
+             #  document_id: document_id,
              data: data
            }) do
+      cust_or_autogen_document_id =
+        if document_id == nil,
+          do: String.replace(to_string(General.generate_uniqe_id()), "-", ""),
+          else: document_id
+
       api_path = "/v1/databases/#{database_id}/collections/#{collection_id}/documents"
-      payload = %{documentId: document_id, data: data, permissions: permissions}
+      payload = %{documentId: cust_or_autogen_document_id, data: data, permissions: permissions}
       api_header = %{"content-type" => "application/json"}
 
       Task.async(fn ->

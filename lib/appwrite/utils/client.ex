@@ -462,17 +462,24 @@ defmodule Appwrite.Utils.Client do
 
   """
   def flatten(data, prefix \\ "") do
-    Enum.reduce(data, %{}, fn {key, value}, acc ->
-      final_key = if prefix == "", do: key, else: "#{prefix}[#{key}]"
-
-      cond do
-        is_map(value) or is_list(value) ->
+    cond do
+      is_map(data) ->
+        Enum.reduce(data, %{}, fn {key, value}, acc ->
+          final_key = if prefix == "", do: to_string(key), else: "#{prefix}[#{key}]"
           Map.merge(acc, flatten(value, final_key))
+        end)
 
-        true ->
-          Map.put(acc, final_key, value)
-      end
-    end)
+      is_list(data) ->
+        data
+        |> Enum.with_index()
+        |> Enum.reduce(%{}, fn {value, index}, acc ->
+          final_key = "#{prefix}[#{index}]"
+          Map.merge(acc, flatten(value, final_key))
+        end)
+
+      true ->
+        %{"#{prefix}" => data}
+    end
   end
 
   def get_app_name do

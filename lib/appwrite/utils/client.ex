@@ -275,11 +275,15 @@ defmodule Appwrite.Utils.Client do
   defp handle_response(code, body, _headers, response_type) when code >= 400 do
     data = if response_type == "json", do: Jason.decode!(body), else: %{"message" => body}
 
-    raise AppwriteException,
-      message: data["message"],
-      code: code,
-      type: response_type,
-      response: nil
+    if String.contains?(data["message"], "Document with the requested ID could not be found") do
+      Jason.decode!(body)
+    else
+      raise AppwriteException,
+        message: data["message"],
+        code: code,
+        type: response_type,
+        response: nil
+    end
   end
 
   defp handle_response(_code, body, _headers, "arrayBuffer"), do: body

@@ -44,7 +44,7 @@ defmodule Appwrite.MixProject do
     [
       name: "appwrite",
       # License, e.g., MIT, Apache 2.0
-      licenses: ["Apache 2.0"],
+      licenses: ["Apache-2.0"],
       links: %{
         GitHub: @source_url,
         Docs: "https://hexdocs.pm/appwrite",

@@ -1,6 +1,4 @@
 defmodule Appwrite do
-  alias Appwrite.Utils.Client
-
   defmodule MissingProjectIdError do
     defexception message: """
                  The `project_id` is required for calls to Appwrite. Please either configure `project_id`

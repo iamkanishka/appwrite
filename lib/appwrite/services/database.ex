@@ -119,7 +119,7 @@ defmodule Appwrite.Services.Database do
              document_id: document_id
            }) do
       api_path =
-        "/v1/databases/#{database_id}/collections/#{collection_id}/documents#{document_id}"
+        "/v1/databases/#{database_id}/collections/#{collection_id}/documents/#{document_id}"
 
       payload = if queries, do: %{queries: queries}, else: %{}
       api_header = %{"content-type" => "application/json"}

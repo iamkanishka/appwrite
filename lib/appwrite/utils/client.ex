@@ -77,7 +77,6 @@ defmodule Appwrite.Utils.Client do
   Sets the session.
 
   ## Parameters
-    - `client`: The current client instance.
     - `session`: The session string.
 
   ## Returns

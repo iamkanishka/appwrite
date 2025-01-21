@@ -1526,7 +1526,6 @@ defmodule Appwrite.Services.Accounts do
   Use this endpoint to send a verification SMS to the currently logged-in user.
 
   ## Parameters
-    - `client`: Appwrite client.
 
   ## Returns
     - `{:ok, Token.t()}`: Verification token.

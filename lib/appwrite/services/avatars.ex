@@ -174,7 +174,6 @@ defmodule Appwrite.Services.Avatars do
   Fetches and optionally crops a remote image by URL.
 
   ## Parameters
-    - `client` (Client.t): The client instance.
     - `url` (string): The URL of the remote image.
     - `width` (optional, integer): The width to crop the image.
     - `height` (optional, integer): The height to crop the image.

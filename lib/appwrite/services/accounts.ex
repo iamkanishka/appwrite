@@ -1489,7 +1489,6 @@ defmodule Appwrite.Services.Accounts do
   Use this endpoint to complete the user email verification process.
 
   ## Parameters
-    - `client`: Appwrite client.
     - `user_id`: The user's ID (required).
     - `secret`: The secret key (required).
 

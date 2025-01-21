@@ -33,7 +33,7 @@ defmodule Appwrite.Services.Locale do
       {:ok, %Appwrite.Types.Locale{}}
 
   ## Params
-    - `client` (required): The Appwrite client instance.
+
 
   ## Returns
     - `{:ok, %Appwrite.Types.Locale{}}` on success.

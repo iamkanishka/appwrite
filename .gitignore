@@ -28,6 +28,6 @@ appwrite-*.tar
 
 /.vscode
 
-/config
+
 
 /lib/appwrite/testing_service/

@@ -63,7 +63,6 @@ defmodule Appwrite.Utils.Client do
   Sets the locale.
 
   ## Parameters
-    - `client`: The current client instance.
     - `locale`: The locale string.
 
   ## Returns

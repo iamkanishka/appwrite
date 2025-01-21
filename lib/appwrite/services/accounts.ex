@@ -1408,7 +1408,6 @@ defmodule Appwrite.Services.Accounts do
   A user is limited to 10 active sessions at a time by default. [Learn more about session limits](https://appwrite.io/docs/authentication-security#limits).
 
   ## Parameters
-    - `client`: Appwrite client.
     - `provider`: OAuth2 provider (required).
     - `success`: Success redirect URL (optional).
     - `failure`: Failure redirect URL (optional).

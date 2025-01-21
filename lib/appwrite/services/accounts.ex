@@ -1119,20 +1119,21 @@ defmodule Appwrite.Services.Accounts do
   Deletes a session by session ID.
 
   ## Parameters
+  - `session_map`: %{"X-Appwrite-Session" => session}.
   - `session_id`: The session ID (use "current" for the current session).
 
   ## Returns
-  - `{:ok, %{}}` on success
+  - `{:ok, nil}` on success
   - `{:error, reason}` on failure
   """
-  @spec delete_session(String.t() | nil) :: {:ok, map()} | {:error, any()}
-  def delete_session(session_id) do
+  @spec delete_session(map() ,String.t() | nil) :: {:ok, map()} | {:error, any()}
+  def delete_session(session_map, session_id) do
     if is_nil(session_id) do
       {:error, "Missing required parameter: 'session_id'"}
     else
       api_path = "/v1/account/sessions/#{session_id}"
       payload = %{}
-      api_header = %{"content-type" => "application/json"}
+      api_header = %{"content-type" => "application/json"} |> Map.merge(session_map)
 
       Task.async(fn ->
         try do

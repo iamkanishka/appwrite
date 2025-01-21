@@ -104,7 +104,6 @@ defmodule Appwrite.Services.Database do
   Retrieves a document by its ID.
 
   ## Parameters
-    - `client` (`%Client{}`): The Appwrite client instance.
     - `database_id` (`String.t`): The database ID.
     - `collection_id` (`String.t`): The collection ID.
     - `document_id` (`String.t`): The document ID.

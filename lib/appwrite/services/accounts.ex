@@ -602,7 +602,6 @@ defmodule Appwrite.Services.Accounts do
   Update the currently logged-in user's password.
 
   ## Parameters
-    - `client` (required): The Appwrite client instance.
     - `password` (required): The new password for the user.
     - `old_password` (optional): The user's current password.
 

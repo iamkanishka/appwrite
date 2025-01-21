@@ -284,6 +284,9 @@ defmodule Appwrite.Utils.Client do
     end
   end
 
+  defp handle_response(204, _body, _headers, _response_type), do: nil
+
+
   defp handle_response(_code, body, _headers, "arrayBuffer"), do: body
   defp handle_response(_code, body, _headers, "json"), do: Jason.decode!(body)
   defp handle_response(_code, body, _headers, _), do: %{"message" => body}

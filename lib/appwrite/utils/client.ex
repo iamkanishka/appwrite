@@ -6,7 +6,6 @@ defmodule Appwrite.Utils.Client do
   and response normalisation for all Appwrite service calls.
   """
 
-  alias Appwrite.Utils.General
   alias Appwrite.Types.Client.{Config, Payload, Headers, UploadProgress}
   alias Appwrite.Exceptions.AppwriteException
 

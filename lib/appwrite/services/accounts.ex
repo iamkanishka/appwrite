@@ -9,8 +9,6 @@ defmodule Appwrite.Services.Accounts do
   """
 
   alias Appwrite.Utils.General
-  alias Appwrite.Consts.OAuthProvider
-  alias Appwrite.Consts.AuthenticationFactor
   alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
 

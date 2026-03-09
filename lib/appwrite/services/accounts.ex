@@ -75,10 +75,10 @@ defmodule Appwrite.Services.Accounts do
           else: user_id
 
       payload = %{
-        userId: cust_or_autogen_user_id,
-        email: email,
-        password: password,
-        name: name
+        "userId" => cust_or_autogen_user_id,
+        "email" => email,
+        "password" => password,
+        "name" => name
       }
 
       api_header = %{"content-type" => "application/json"}
@@ -120,8 +120,8 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/email"
 
       payload = %{
-        email: email,
-        password: password
+        "email" => email,
+        "password" => password
       }
 
       api_header = %{"content-type" => "application/json"}
@@ -150,7 +150,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/identities"
 
     payload = %{
-      queries: queries
+      "queries" => queries
     }
 
     api_header = %{"content-type" => "application/json"}
@@ -224,7 +224,7 @@ defmodule Appwrite.Services.Accounts do
   def list_logs(queries \\ nil) do
     # NOTE: leading slash was missing in original — fixed
     api_path = "/v1/account/logs"
-    payload = if queries, do: %{queries: queries}, else: %{}
+    payload = if queries, do: %{"queries" => queries}, else: %{}
     api_header = %{"content-type" => "application/json"}
     try do
       logs = Client.call("get", api_path, api_header, payload)
@@ -250,7 +250,7 @@ defmodule Appwrite.Services.Accounts do
       {:error, %AppwriteException{message: "Missing required parameter: mfa"}}
     else
       api_path = "/v1/account/mfa"
-      payload = %{mfa: mfa}
+      payload = %{"mfa" => mfa}
       api_header = %{"content-type" => "application/json"}
       try do
         user = Client.call("patch", api_path, api_header, payload)
@@ -306,7 +306,7 @@ defmodule Appwrite.Services.Accounts do
          false <- is_nil(otp) do
       api_path = "/v1/account/mfa/authenticators/#{type}"
       api_header = %{"content-type" => "application/json"}
-      payload = %{otp: otp}
+      payload = %{"otp" => otp}
       try do
         user = Client.call("put", api_path, api_header, payload)
         {:ok, user}
@@ -358,12 +358,15 @@ defmodule Appwrite.Services.Accounts do
   @spec create_mfa_challenge(String.t()) ::
           {:ok, MfaChallenge.t()} | {:error, any()}
   def create_mfa_challenge(factor) do
-    if is_nil(factor) do
-      {:error, %AppwriteException{message: "Missing required parameter: factor"}}
-    else
-      api_path = "/v1/account/mfa/challenge"
-      api_header = %{"content-type" => "application/json"}
-      payload = %{factor: factor}
+    cond do
+      is_nil(factor) ->
+        {:error, %AppwriteException{message: "Missing required parameter: factor"}}
+      not Appwrite.Consts.AuthenticationFactor.valid?(factor) ->
+        {:error, %AppwriteException{message: "Invalid factor: #{inspect(factor)}. Must be one of: #{Enum.join(Appwrite.Consts.AuthenticationFactor.values(), ", ")}"}}
+      true ->
+        api_path = "/v1/account/mfa/challenge"
+        api_header = %{"content-type" => "application/json"}
+        payload = %{"factor" => factor}
       try do
         mfa_challenge = Client.call("post", api_path, api_header, payload)
         {:ok, mfa_challenge}
@@ -499,7 +502,7 @@ defmodule Appwrite.Services.Accounts do
       {:error, %AppwriteException{message: "Missing required parameter: name"}}
     else
       api_path = "/v1/account/name"
-      payload = %{name: name}
+      payload = %{"name" => name}
       api_header = %{"content-type" => "application/json"}
       try do
         user = Client.call("patch", api_path, api_header, payload)
@@ -561,8 +564,8 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/phone"
 
       payload = %{
-        phone: phone,
-        password: password
+        "phone" => phone,
+        "password" => password
       }
 
       api_header = %{"content-type" => "application/json"}
@@ -614,7 +617,7 @@ defmodule Appwrite.Services.Accounts do
     else
       api_path = "/v1/account/prefs"
       api_header = %{"content-type" => "application/json"}
-      payload = %{prefs: prefs}
+      payload = %{"prefs" => prefs}
       try do
         updated_prefs = Client.call("patch", api_path, api_header, payload)
         {:ok, updated_prefs}
@@ -640,7 +643,7 @@ defmodule Appwrite.Services.Accounts do
     with :ok <- validate_params(email: email, url: url) do
       api_path = "/v1/account/recovery"
       api_header = %{"content-type" => "application/json"}
-      payload = %{email: email, url: url}
+      payload = %{"email" => email, "url" => url}
       try do
         recovery = Client.call("post", api_path, api_header, payload)
         {:ok, recovery}
@@ -732,7 +735,7 @@ defmodule Appwrite.Services.Accounts do
       {:error, %AppwriteException{message: "Missing required parameters: 'email' or 'password'"}}
     else
       api_path = "/v1/account/sessions/email"
-      payload = %{email: email, password: password}
+      payload = %{"email" => email, "password" => password}
       api_header = %{"content-type" => "application/json"}
       try do
         session = Client.call("post", api_path, api_header, payload)
@@ -763,7 +766,7 @@ defmodule Appwrite.Services.Accounts do
       {:error, %AppwriteException{message: "Missing required parameters: 'user_id' or 'secret'"}}
     else
       api_path = "/v1/account/sessions/magic-url"
-      payload = %{userId: user_id, secret: secret}
+      payload = %{"userId" => user_id, "secret" => secret}
       api_header = %{"content-type" => "application/json"}
       try do
         session = Client.call("put", api_path, api_header, payload)
@@ -803,13 +806,16 @@ defmodule Appwrite.Services.Accounts do
         failure \\ nil,
         scopes \\ nil
       ) do
-    if is_nil(provider) do
-      {:error, %AppwriteException{message: "Missing required parameter: 'provider'"}}
-    else
-      try do
-        api_path = "/account/sessions/oauth2/#{provider}"
+    cond do
+      is_nil(provider) ->
+        {:error, %AppwriteException{message: "Missing required parameter: 'provider'"}}
+      not Appwrite.Consts.OAuthProvider.valid?(provider) ->
+        {:error, %AppwriteException{message: "Invalid provider: #{inspect(provider)}"}}
+      true ->
+        try do
+          api_path = "/account/sessions/oauth2/#{provider}"
         url = URI.merge(Client.default_config()["endpoint"], api_path)
-        payload = %{project: Client.default_config()["project"]}
+        payload = %{"project" => Client.default_config()["project"]}
 
         params =
           Enum.reduce(
@@ -849,7 +855,7 @@ defmodule Appwrite.Services.Accounts do
       {:error, %AppwriteException{message: "Missing required parameters: 'user_id' or 'secret'"}}
     else
       api_path = "/v1/account/sessions/phone"
-      payload = %{userId: user_id, secret: secret}
+      payload = %{"userId" => user_id, "secret" => secret}
       api_header = %{"content-type" => "application/json"}
       try do
         session = Client.call("put", api_path, api_header, payload)
@@ -880,7 +886,7 @@ defmodule Appwrite.Services.Accounts do
       {:error, %AppwriteException{message: "Missing required parameters: 'user_id' or 'secret'"}}
     else
       api_path = "/v1/account/sessions/token"
-      payload = %{userId: user_id, secret: secret}
+      payload = %{"userId" => user_id, "secret" => secret}
       api_header = %{"content-type" => "application/json"}
       try do
         session = Client.call("post", api_path, api_header, payload)
@@ -1237,8 +1243,8 @@ defmodule Appwrite.Services.Accounts do
   end
 
   def create_oauth2_token(provider, success, failure, scopes) do
-    if provider == "" do
-      {:error, %AppwriteException{message: "Missing required parameter: 'provider'"}}
+    if not Appwrite.Consts.OAuthProvider.valid?(provider) do
+      {:error, %AppwriteException{message: "Invalid provider: #{inspect(provider)}"}}
     else
       try do
         api_path = "/account/tokens/oauth2/#{provider}"

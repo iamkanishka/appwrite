@@ -13,7 +13,14 @@ defmodule Appwrite.Services.Teams do
 
   alias Appwrite.Exceptions.AppwriteException
   alias Appwrite.Utils.Client
-  alias Appwrite.Types.{Team, TeamList, Membership, MembershipList, Preference}
+
+  alias Appwrite.Types.{
+    Membership,
+    MembershipList,
+    Preference,
+    Team,
+    TeamList
+  }
 
   @doc """
   List all teams in which the current user is a member.

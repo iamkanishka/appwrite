@@ -13,13 +13,13 @@ defmodule Appwrite.Services.Locale do
   alias Appwrite.Utils.Client
 
   alias Appwrite.Types.{
-    Locale,
-    LocaleCodeList,
     ContinentList,
     CountryList,
-    PhoneList,
     CurrencyList,
-    LanguageList
+    LanguageList,
+    Locale,
+    LocaleCodeList,
+    PhoneList
   }
 
   @doc """

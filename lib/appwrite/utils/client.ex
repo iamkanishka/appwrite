@@ -6,8 +6,8 @@ defmodule Appwrite.Utils.Client do
   and response normalisation for all Appwrite service calls.
   """
 
-  alias Appwrite.Types.Client.{Config, Payload, Headers, UploadProgress}
   alias Appwrite.Exceptions.AppwriteException
+  alias Appwrite.Types.Client.{Config, Headers, Payload, UploadProgress}
 
   @chunk_size 1024 * 1024 * 5
 

@@ -1,36 +1,45 @@
 defmodule Appwrite.Utils.Role do
   @moduledoc """
-  A helper module for generating role strings for `Permission`.
+  Helpers for generating Appwrite role strings to use with `Appwrite.Utils.Permission`.
+
+  ## Usage
+
+      alias Appwrite.Utils.Role
+      alias Appwrite.Utils.Permission
+
+      Permission.read(Role.any())               # public read
+      Permission.write(Role.user("abc123"))      # owner write
+      Permission.read(Role.team("team1", "admin"))
+      Permission.create(Role.users("verified"))
+
   """
 
   @doc """
-  Grants access to anyone, including authenticated and unauthenticated users.
+  Grants access to anyone — authenticated and unauthenticated users alike.
 
   ## Examples
 
-      iex> Role.any()
+      iex> Appwrite.Utils.Role.any()
       "any"
+
   """
   @spec any() :: String.t()
-  def any do
-    "any"
-  end
+  def any, do: "any"
 
   @doc """
-  Grants access to a specific user by user ID. Optionally, specify `status`
-  as `"verified"` or `"unverified"` to target specific types of users.
+  Grants access to a specific user by `id`.
 
-  ## Parameters
-    - id: A string representing the user ID.
-    - status: (Optional) A string representing user verification status.
+  Optionally pass `status` as `"verified"` or `"unverified"` to target only
+  users with that email-verification state.
 
   ## Examples
 
-      iex> Role.user("12345")
+      iex> Appwrite.Utils.Role.user("12345")
       "user:12345"
 
-      iex> Role.user("12345", "verified")
+      iex> Appwrite.Utils.Role.user("12345", "verified")
       "user:12345/verified"
+
   """
   @spec user(String.t(), String.t()) :: String.t()
   def user(id, status \\ "") when is_binary(id) and is_binary(status) do
@@ -38,19 +47,18 @@ defmodule Appwrite.Utils.Role do
   end
 
   @doc """
-  Grants access to any authenticated or anonymous user. Optionally, specify
-  `status` as `"verified"` or `"unverified"`.
+  Grants access to any authenticated user.
 
-  ## Parameters
-    - status: (Optional) A string representing user verification status.
+  Optionally restrict to `"verified"` or `"unverified"` users.
 
   ## Examples
 
-      iex> Role.users()
+      iex> Appwrite.Utils.Role.users()
       "users"
 
-      iex> Role.users("verified")
+      iex> Appwrite.Utils.Role.users("verified")
       "users/verified"
+
   """
   @spec users(String.t()) :: String.t()
   def users(status \\ "") when is_binary(status) do
@@ -58,34 +66,32 @@ defmodule Appwrite.Utils.Role do
   end
 
   @doc """
-  Grants access to any guest user without a session. Authenticated users do not
-  have access to this role.
+  Grants access to unauthenticated (guest) users only.
+
+  Authenticated users do **not** match this role.
 
   ## Examples
 
-      iex> Role.guests()
+      iex> Appwrite.Utils.Role.guests()
       "guests"
+
   """
   @spec guests() :: String.t()
-  def guests do
-    "guests"
-  end
+  def guests, do: "guests"
 
   @doc """
-  Grants access to a team by team ID. Optionally, specify `role` to target
-  team members with the specified role.
+  Grants access to all members of a team identified by `id`.
 
-  ## Parameters
-    - id: A string representing the team ID.
-    - role: (Optional) A string representing the role within the team.
+  Optionally restrict to members who hold a specific `role` within that team.
 
   ## Examples
 
-      iex> Role.team("team123")
+      iex> Appwrite.Utils.Role.team("team123")
       "team:team123"
 
-      iex> Role.team("team123", "admin")
+      iex> Appwrite.Utils.Role.team("team123", "admin")
       "team:team123/admin"
+
   """
   @spec team(String.t(), String.t()) :: String.t()
   def team(id, role \\ "") when is_binary(id) and is_binary(role) do
@@ -93,35 +99,28 @@ defmodule Appwrite.Utils.Role do
   end
 
   @doc """
-  Grants access to a specific member of a team. When the member is removed from
-  the team, they will no longer have access.
+  Grants access to a specific team member by their membership `id`.
 
-  ## Parameters
-    - id: A string representing the member ID.
+  Access is revoked automatically when the member is removed from the team.
 
   ## Examples
 
-      iex> Role.member("member123")
+      iex> Appwrite.Utils.Role.member("member123")
       "member:member123"
+
   """
   @spec member(String.t()) :: String.t()
-  def member(id) when is_binary(id) do
-    "member:#{id}"
-  end
+  def member(id) when is_binary(id), do: "member:#{id}"
 
   @doc """
-  Grants access to a user with the specified label.
-
-  ## Parameters
-    - name: A string representing the label name.
+  Grants access to any user who has been assigned a specific label `name`.
 
   ## Examples
 
-      iex> Role.label("manager")
+      iex> Appwrite.Utils.Role.label("manager")
       "label:manager"
+
   """
   @spec label(String.t()) :: String.t()
-  def label(name) when is_binary(name) do
-    "label:#{name}"
-  end
+  def label(name) when is_binary(name), do: "label:#{name}"
 end

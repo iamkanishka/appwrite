@@ -1,88 +1,81 @@
 defmodule Appwrite.Utils.Permission do
   @moduledoc """
-  A helper module for generating permission strings for resources.
+  Helpers for generating Appwrite permission strings.
+
+  Each function takes a role string (produced by `Appwrite.Utils.Role`) and
+  wraps it in the appropriate permission verb expected by the Appwrite API.
+
+  ## Usage
+
+      alias Appwrite.Utils.Permission
+      alias Appwrite.Utils.Role
+
+      Permission.read(Role.any())           # => ~s|read("any")|
+      Permission.create(Role.users())       # => ~s|create("users")|
+      Permission.delete(Role.user("abc"))   # => ~s|delete("user:abc")|
+
   """
 
   @doc """
-  Generates a read permission string for the provided role.
-
-  ## Parameters
-    - role: A string representing the role.
+  Grants read access to `role`.
 
   ## Examples
 
-      iex> Permission.read("user")
-      "read(\"user\")"
+      iex> Appwrite.Utils.Permission.read("any")
+      ~s|read("any")|
+
   """
   @spec read(String.t()) :: String.t()
-  def read(role) when is_binary(role) do
-    "read(\"#{role}\")"
-  end
+  def read(role) when is_binary(role), do: ~s|read("#{role}")|
 
   @doc """
-  Generates a write permission string for the provided role.
+  Grants write access to `role`.
 
-  This is an alias of update, delete, and possibly create.
-  Avoid using `write` in combination with `update`, `delete`, or `create`.
-
-  ## Parameters
-    - role: A string representing the role.
+  This is a combined alias for create + update + delete.
+  Avoid mixing `write` with the more granular verbs on the same resource.
 
   ## Examples
 
-      iex> Permission.write("admin")
-      "write(\"admin\")"
+      iex> Appwrite.Utils.Permission.write("admin")
+      ~s|write("admin")|
+
   """
   @spec write(String.t()) :: String.t()
-  def write(role) when is_binary(role) do
-    "write(\"#{role}\")"
-  end
+  def write(role) when is_binary(role), do: ~s|write("#{role}")|
 
   @doc """
-  Generates a create permission string for the provided role.
-
-  ## Parameters
-    - role: A string representing the role.
+  Grants create access to `role`.
 
   ## Examples
 
-      iex> Permission.create("editor")
-      "create(\"editor\")"
+      iex> Appwrite.Utils.Permission.create("users")
+      ~s|create("users")|
+
   """
   @spec create(String.t()) :: String.t()
-  def create(role) when is_binary(role) do
-    "create(\"#{role}\")"
-  end
+  def create(role) when is_binary(role), do: ~s|create("#{role}")|
 
   @doc """
-  Generates an update permission string for the provided role.
-
-  ## Parameters
-    - role: A string representing the role.
+  Grants update access to `role`.
 
   ## Examples
 
-      iex> Permission.update("moderator")
-      "update(\"moderator\")"
+      iex> Appwrite.Utils.Permission.update("team:abc/admin")
+      ~s|update("team:abc/admin")|
+
   """
   @spec update(String.t()) :: String.t()
-  def update(role) when is_binary(role) do
-    "update(\"#{role}\")"
-  end
+  def update(role) when is_binary(role), do: ~s|update("#{role}")|
 
   @doc """
-  Generates a delete permission string for the provided role.
-
-  ## Parameters
-    - role: A string representing the role.
+  Grants delete access to `role`.
 
   ## Examples
 
-      iex> Permission.delete("admin")
-      "delete(\"admin\")"
+      iex> Appwrite.Utils.Permission.delete("user:123")
+      ~s|delete("user:123")|
+
   """
   @spec delete(String.t()) :: String.t()
-  def delete(role) when is_binary(role) do
-    "delete(\"#{role}\")"
-  end
+  def delete(role) when is_binary(role), do: ~s|delete("#{role}")|
 end

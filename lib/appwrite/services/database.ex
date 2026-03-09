@@ -37,7 +37,7 @@ defmodule Appwrite.Services.Database do
   def list_documents(database_id, collection_id, queries \\ nil) do
     with :ok <- validate_params(%{database_id: database_id, collection_id: collection_id}) do
       api_path = "/v1/databases/#{database_id}/collections/#{collection_id}/documents"
-      payload = if queries, do: %{queries: queries}, else: %{}
+      payload = if queries, do: %{"queries" => queries}, else: %{}
       api_header = %{"content-type" => "application/json"}
       try do
         documents = Client.call("get", api_path, api_header, payload)
@@ -82,7 +82,7 @@ defmodule Appwrite.Services.Database do
           else: document_id
 
       api_path = "/v1/databases/#{database_id}/collections/#{collection_id}/documents"
-      payload = %{documentId: cust_or_autogen_document_id, data: data, permissions: permissions}
+      payload = %{"documentId" => cust_or_autogen_document_id, "data" => data, "permissions" => permissions}
       api_header = %{"content-type" => "application/json"}
       try do
         document = Client.call("post", api_path, api_header, payload)
@@ -118,7 +118,7 @@ defmodule Appwrite.Services.Database do
       api_path =
         "/v1/databases/#{database_id}/collections/#{collection_id}/documents/#{document_id}"
 
-      payload = if queries, do: %{queries: queries}, else: %{}
+      payload = if queries, do: %{"queries" => queries}, else: %{}
       api_header = %{"content-type" => "application/json"}
       try do
         document = Client.call("get", api_path, api_header, payload)
@@ -169,7 +169,7 @@ defmodule Appwrite.Services.Database do
       api_path =
         "/v1/databases/#{database_id}/collections/#{collection_id}/documents/#{document_id}"
 
-      payload = %{data: data, permissions: permissions}
+      payload = %{"data" => data, "permissions" => permissions}
       api_header = %{"content-type" => "application/json"}
       try do
         document = Client.call("patch", api_path, api_header, payload)
@@ -221,7 +221,7 @@ defmodule Appwrite.Services.Database do
   defp validate_params(params) do
     case Enum.find(params, fn {_, v} -> is_nil(v) end) do
       nil -> :ok
-      {key, _} -> {:error, %AppwriteException{message: "Missing required parameter: \#{key}", code: 400}}
+      {key, _} -> {:error, %AppwriteException{message: "Missing required parameter: #{key}", code: 400}}
     end
   end
 end

@@ -1,19 +1,14 @@
 # Appwrite
 
-Appwrite is an open-source self-hosted backend server that abstract and simplify complex and repetitive development tasks behind a very simple REST API
-
-> [!WARNING]
-> This project is still in high development, expect breaking changes.
+Appwrite is an open-source self-hosted backend server that abstracts and simplifies complex and repetitive development tasks behind a very simple REST API.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `appwrite` to your list of dependencies in `mix.exs`:
-
+The package can be installed by adding `appwrite` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:appwrite, "~> 0.1.8"}
+    {:appwrite, "~> 0.2.0"}
   ]
 end
 ```

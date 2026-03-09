@@ -1,15 +1,17 @@
 defmodule Appwrite.Types.DocumentList do
   @moduledoc """
-  Represents a list of documents.
+  Paginated list of `Appwrite.Types.Document` records.
 
   ## Fields
 
-    - `total` (`integer`): Total number of documents that matched the query.
-    - `documents` (`[Document]`): List of documents.
+  - `total` (`non_neg_integer()`) — total documents matching the query.
+  - `documents` (`[Appwrite.Types.Document.t()]`) — current page of results.
   """
 
+  @derive Jason.Encoder
+
   @type t :: %__MODULE__{
-          total: integer(),
+          total: non_neg_integer(),
           documents: [Appwrite.Types.Document.t()]
         }
 

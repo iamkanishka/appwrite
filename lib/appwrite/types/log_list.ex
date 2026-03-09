@@ -4,12 +4,14 @@ defmodule Appwrite.Types.LogList do
 
   ## Fields
 
-    - `total` (`integer`): Total number of logs that matched the query.
-    - `logs` (`[Appwrite.Types.Log.t]`): List of logs.
+    - `total` (`non_neg_integer()`): Total number of logs that matched the query.
+    - `logs` (`[Appwrite.Types.Log.t()]`): List of logs.
   """
 
+  @derive Jason.Encoder
+
   @type t :: %__MODULE__{
-          total: integer(),
+          total: non_neg_integer(),
           logs: [Appwrite.Types.Log.t()]
         }
 

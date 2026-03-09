@@ -1,29 +1,34 @@
 defmodule Appwrite.Types.User do
   @moduledoc """
-  Represents a user, including details such as preferences, verification status, and associated targets.
+  Represents an Appwrite user account.
+
+  Contains identity information, authentication state, MFA status,
+  preferences, and the list of messaging targets owned by the user.
 
   ## Fields
 
-    - `id` (`String.t`): User ID.
-    - `created_at` (`String.t`): Creation date in ISO 8601 format.
-    - `updated_at` (`String.t`): Update date in ISO 8601 format.
-    - `name` (`String.t`): User name.
-    - `password` (`String.t | nil`): Hashed user password.
-    - `hash` (`String.t | nil`): Password hashing algorithm.
-    - `hash_options` (`map | nil`): Password hashing algorithm configuration.
-    - `registration` (`String.t`): User registration date in ISO 8601 format.
-    - `status` (`boolean`): User status. `true` for enabled, `false` for disabled.
-    - `labels` (`[String.t]`): Labels associated with the user.
-    - `password_update` (`String.t`): Password update time in ISO 8601 format.
-    - `email` (`String.t`): User email address.
-    - `phone` (`String.t`): User phone number in E.164 format.
-    - `email_verification` (`boolean`): Email verification status.
-    - `phone_verification` (`boolean`): Phone verification status.
-    - `mfa` (`boolean`): Multi-factor authentication status.
-    - `prefs` (`map`): User preferences as a key-value object.
-    - `targets` (`[Appwrite.Types.Target.t]`): List of user-owned message receivers.
-    - `accessed_at` (`String.t`): Most recent access date in ISO 8601 format.
+    - `id` (`String.t()`): User ID.
+    - `created_at` (`String.t()`): Account creation date in ISO 8601 format.
+    - `updated_at` (`String.t()`): Account update date in ISO 8601 format.
+    - `name` (`String.t()`): User display name.
+    - `password` (`String.t() | nil`): Hashed password. `nil` for OAuth2-only accounts.
+    - `hash` (`String.t() | nil`): Password hashing algorithm identifier. `nil` for OAuth2-only accounts.
+    - `hash_options` (`map() | nil`): Parameters used by the hashing algorithm. `nil` for OAuth2-only accounts.
+    - `registration` (`String.t()`): Account registration date in ISO 8601 format.
+    - `status` (`boolean()`): Account status. `true` for enabled, `false` for disabled.
+    - `labels` (`[String.t()]`): List of labels attached to the user.
+    - `password_update` (`String.t()`): Date the password was last changed in ISO 8601 format.
+    - `email` (`String.t()`): User email address (empty string if not set).
+    - `phone` (`String.t()`): User phone number in E.164 format (empty string if not set).
+    - `email_verification` (`boolean()`): Whether the email address has been verified.
+    - `phone_verification` (`boolean()`): Whether the phone number has been verified.
+    - `mfa` (`boolean()`): Whether multi-factor authentication is enabled.
+    - `prefs` (`Appwrite.Types.Preference.t()`): User preferences as a string-keyed map.
+    - `targets` (`[Appwrite.Types.Target.t()]`): List of messaging targets owned by this user.
+    - `accessed_at` (`String.t()`): Date of the most recent account access in ISO 8601 format.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           id: String.t(),
@@ -32,7 +37,7 @@ defmodule Appwrite.Types.User do
           name: String.t(),
           password: String.t() | nil,
           hash: String.t() | nil,
-          hash_options: map | nil,
+          hash_options: map() | nil,
           registration: String.t(),
           status: boolean(),
           labels: [String.t()],
@@ -42,7 +47,7 @@ defmodule Appwrite.Types.User do
           email_verification: boolean(),
           phone_verification: boolean(),
           mfa: boolean(),
-          prefs: Appwrite.Types.Preference,
+          prefs: Appwrite.Types.Preference.t(),
           targets: [Appwrite.Types.Target.t()],
           accessed_at: String.t()
         }

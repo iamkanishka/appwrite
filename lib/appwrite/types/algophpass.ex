@@ -1,15 +1,18 @@
 defmodule Appwrite.Types.AlgoPhpass do
   @moduledoc """
-  Represents the PHPass hashing algorithm.
+  Parameters for the PHPass (Portable PHP password hashing) algorithm.
+
+  PHPass is supported for legacy password migration and carries no
+  additional parameters beyond the type tag.
 
   ## Fields
 
-    - `type` (`String.t`): Algorithm type.
+  - `type` (`String.t()`) — always `"phpass"`.
   """
 
-  @type t :: %__MODULE__{
-          type: String.t()
-        }
+  @derive Jason.Encoder
+
+  @type t :: %__MODULE__{type: String.t()}
 
   defstruct [:type]
 end

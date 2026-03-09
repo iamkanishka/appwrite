@@ -1,22 +1,41 @@
 defmodule Appwrite.Types.Session do
   @moduledoc """
-  Represents a user session in the Appwrite system.
+  Represents an authenticated user session in Appwrite.
 
   ## Fields
 
-    - `id` (`String.t`): Session ID.
-    - `created_at` (`String.t`): Session creation date in ISO 8601 format.
-    - `updated_at` (`String.t`): Session update date in ISO 8601 format.
-    - `user_id` (`String.t`): User ID.
-    - `expire` (`String.t`): Session expiration date in ISO 8601 format.
-    - `provider` (`String.t`): Session provider.
-    - `provider_uid` (`String.t`): Session provider user ID.
-    - `provider_access_token` (`String.t`): Provider access token.
-    - `provider_access_token_expiry` (`String.t`): Access token expiry date.
-    - `provider_refresh_token` (`String.t`): Refresh token.
-    - `ip` (`String.t`): IP address of session creation.
-    - Additional fields describe the operating system, client, device, and geographic location details.
+    - `id` (`String.t()`): Session ID.
+    - `created_at` (`String.t()`): Session creation date in ISO 8601 format.
+    - `updated_at` (`String.t()`): Session update date in ISO 8601 format.
+    - `user_id` (`String.t()`): ID of the user this session belongs to.
+    - `expire` (`String.t()`): Session expiration date in ISO 8601 format.
+    - `provider` (`String.t()`): Authentication provider name (e.g. `"email"`, `"google"`, `"anonymous"`).
+    - `provider_uid` (`String.t()`): User ID returned by the OAuth2 provider.
+    - `provider_access_token` (`String.t()`): OAuth2 provider access token.
+    - `provider_access_token_expiry` (`String.t()`): OAuth2 access token expiry date in ISO 8601 format.
+    - `provider_refresh_token` (`String.t()`): OAuth2 provider refresh token.
+    - `ip` (`String.t()`): IP address from which the session was created.
+    - `os_code` (`String.t()`): Operating system code name. See [os.json](https://github.com/appwrite/appwrite/blob/master/docs/lists/os.json).
+    - `os_name` (`String.t()`): Operating system name.
+    - `os_version` (`String.t()`): Operating system version.
+    - `client_type` (`String.t()`): Client type (e.g. `"browser"`, `"mobile"`).
+    - `client_code` (`String.t()`): Client code name. See [clients.json](https://github.com/appwrite/appwrite/blob/master/docs/lists/clients.json).
+    - `client_name` (`String.t()`): Client name (e.g. `"Chrome"`, `"Firefox"`).
+    - `client_version` (`String.t()`): Client version string.
+    - `client_engine` (`String.t()`): Rendering engine name.
+    - `client_engine_version` (`String.t()`): Rendering engine version.
+    - `device_name` (`String.t()`): Device name.
+    - `device_brand` (`String.t()`): Device brand name.
+    - `device_model` (`String.t()`): Device model name.
+    - `country_code` (`String.t()`): Two-character ISO 3166-1 alpha country code.
+    - `country_name` (`String.t()`): Country name.
+    - `current` (`boolean()`): Whether this is the session used to make the current request.
+    - `factors` (`[String.t()]`): List of active MFA factor types for this session.
+    - `secret` (`String.t()`): Session secret (populated only at session creation time).
+    - `mfa_updated_at` (`String.t()`): Date MFA was last updated for this session in ISO 8601 format.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           id: String.t(),

@@ -4,14 +4,15 @@ defmodule Appwrite.Types.MembershipList do
 
   ## Fields
 
-    - `total` (`integer`): Total number of memberships that matched the query.
-    - `memberships` (`[Appwrite.Types.Membership.t]`): List of memberships.
+    * `total` - Total number of memberships that matched the query.
+    * `memberships` - List of memberships.
   """
 
+  @derive Jason.Encoder
+  defstruct [:total, :memberships]
+
   @type t :: %__MODULE__{
-          total: integer(),
+          total: non_neg_integer(),
           memberships: [Appwrite.Types.Membership.t()]
         }
-
-  defstruct [:total, :memberships]
 end

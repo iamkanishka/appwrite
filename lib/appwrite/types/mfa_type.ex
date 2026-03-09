@@ -1,12 +1,14 @@
 defmodule Appwrite.Types.MfaType do
   @moduledoc """
-  Represents an MFA type with its secret and URI.
+  Represents an MFA type with its TOTP secret and provisioning URI.
 
   ## Fields
 
-    - `secret` (`String.t`): Secret token used for TOTP factor.
-    - `uri` (`String.t`): URI for authenticator apps.
+    - `secret` (`String.t()`): Secret token used to configure the TOTP factor.
+    - `uri` (`String.t()`): `otpauth://` URI for importing into authenticator apps.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           secret: String.t(),

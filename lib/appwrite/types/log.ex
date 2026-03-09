@@ -1,31 +1,33 @@
 defmodule Appwrite.Types.Log do
   @moduledoc """
-  Represents a log entry in the Appwrite system.
+  Represents a user activity log entry in the Appwrite system.
 
   ## Fields
 
-    - `event` (`String.t`): Event name.
-    - `user_id` (`String.t`): User ID.
-    - `user_email` (`String.t`): User Email.
-    - `user_name` (`String.t`): User Name.
-    - `mode` (`String.t`): API mode when event triggered.
-    - `ip` (`String.t`): IP session in use when the session was created.
-    - `time` (`String.t`): Log creation date in ISO 8601 format.
-    - `os_code` (`String.t`): Operating system code name. View [available options](https://github.com/appwrite/appwrite/blob/master/docs/lists/os.json).
-    - `os_name` (`String.t`): Operating system name.
-    - `os_version` (`String.t`): Operating system version.
-    - `client_type` (`String.t`): Client type.
-    - `client_code` (`String.t`): Client code name. View [available options](https://github.com/appwrite/appwrite/blob/master/docs/lists/clients.json).
-    - `client_name` (`String.t`): Client name.
-    - `client_version` (`String.t`): Client version.
-    - `client_engine` (`String.t`): Client engine name.
-    - `client_engine_version` (`String.t`): Client engine version.
-    - `device_name` (`String.t`): Device name.
-    - `device_brand` (`String.t`): Device brand name.
-    - `device_model` (`String.t`): Device model name.
-    - `country_code` (`String.t`): Country two-character ISO 3166-1 alpha code.
-    - `country_name` (`String.t`): Country name.
+    - `event` (`String.t()`): Event name.
+    - `user_id` (`String.t()`): User ID.
+    - `user_email` (`String.t()`): User email address.
+    - `user_name` (`String.t()`): User name.
+    - `mode` (`String.t()`): API mode when the event was triggered.
+    - `ip` (`String.t()`): IP address in use when the event was triggered.
+    - `time` (`String.t()`): Log creation date in ISO 8601 format.
+    - `os_code` (`String.t()`): Operating system code name. View [available options](https://github.com/appwrite/appwrite/blob/master/docs/lists/os.json).
+    - `os_name` (`String.t()`): Operating system name.
+    - `os_version` (`String.t()`): Operating system version.
+    - `client_type` (`String.t()`): Client type.
+    - `client_code` (`String.t()`): Client code name. View [available options](https://github.com/appwrite/appwrite/blob/master/docs/lists/clients.json).
+    - `client_name` (`String.t()`): Client name.
+    - `client_version` (`String.t()`): Client version.
+    - `client_engine` (`String.t()`): Client engine name.
+    - `client_engine_version` (`String.t()`): Client engine version.
+    - `device_name` (`String.t()`): Device name.
+    - `device_brand` (`String.t()`): Device brand name.
+    - `device_model` (`String.t()`): Device model name.
+    - `country_code` (`String.t()`): Two-character ISO 3166-1 alpha country code.
+    - `country_name` (`String.t()`): Country name.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           event: String.t(),

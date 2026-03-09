@@ -1,15 +1,17 @@
 defmodule Appwrite.Types.ExecutionList do
   @moduledoc """
-  Represents a list of executions.
+  Paginated list of `Appwrite.Types.Execution` records.
 
   ## Fields
 
-    - `total` (`integer`): Total number of executions that matched the query.
-    - `executions` (`[Appwrite.Types.Execution.t]`): List of executions.
+  - `total` (`non_neg_integer()`) — total executions matching the query.
+  - `executions` (`[Appwrite.Types.Execution.t()]`) — current page of results.
   """
 
+  @derive Jason.Encoder
+
   @type t :: %__MODULE__{
-          total: integer(),
+          total: non_neg_integer(),
           executions: [Appwrite.Types.Execution.t()]
         }
 

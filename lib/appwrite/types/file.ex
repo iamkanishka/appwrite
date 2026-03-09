@@ -1,12 +1,25 @@
 defmodule Appwrite.Types.File do
   @moduledoc """
-  Represents a file in the Appwrite storage system.
+  A file stored in an Appwrite Storage bucket.
+
+  System fields (`$id`, `$createdAt`, etc.) are mapped to snake_case.
 
   ## Fields
 
-    - `id` (`String.t`): File ID.
-    - Other fields include metadata such as bucket ID, name, and file properties.
+  - `id` (`String.t()`) — file ID (`$id`).
+  - `bucket_id` (`String.t()`) — parent bucket ID (`bucketId`).
+  - `created_at` (`String.t()`) — upload timestamp in ISO 8601 (`$createdAt`).
+  - `updated_at` (`String.t()`) — last-updated timestamp in ISO 8601 (`$updatedAt`).
+  - `permissions` (`[String.t()]`) — Appwrite permission strings (`$permissions`).
+  - `name` (`String.t()`) — original file name.
+  - `signature` (`String.t()`) — MD5 signature of the file content.
+  - `mime_type` (`String.t()`) — detected MIME type.
+  - `size_original` (`non_neg_integer()`) — original file size in bytes.
+  - `chunks_total` (`non_neg_integer()`) — total chunks for chunked uploads.
+  - `chunks_uploaded` (`non_neg_integer()`) — chunks successfully uploaded so far.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           id: String.t(),

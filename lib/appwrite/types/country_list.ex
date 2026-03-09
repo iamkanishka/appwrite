@@ -1,15 +1,18 @@
 defmodule Appwrite.Types.CountryList do
   @moduledoc """
-  Represents a list of countries.
+  Paginated list of `Appwrite.Types.Country` records.
 
   ## Fields
 
-    - `total` (`integer`): Total number of countries that matched the query.
-    - `countries` (`[Appwrite.Types.Country.t]`): List of countries.
+  - `total` (`non_neg_integer()`) — total number of countries matching the
+    query.
+  - `countries` (`[Appwrite.Types.Country.t()]`) — page of results.
   """
 
+  @derive Jason.Encoder
+
   @type t :: %__MODULE__{
-          total: integer(),
+          total: non_neg_integer(),
           countries: [Appwrite.Types.Country.t()]
         }
 

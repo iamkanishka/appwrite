@@ -1,15 +1,18 @@
 defmodule Appwrite.Types.ContinentList do
   @moduledoc """
-  Represents a list of continents.
+  Paginated list of `Appwrite.Types.Continent` records.
 
   ## Fields
 
-    - `total` (`integer`): Total number of continents that matched the query.
-    - `continents` (`[Appwrite.Types.Continent.t]`): List of continents.
+  - `total` (`non_neg_integer()`) — total number of continents matching the
+    query (useful when a cursor or offset is applied).
+  - `continents` (`[Appwrite.Types.Continent.t()]`) — page of results.
   """
 
+  @derive Jason.Encoder
+
   @type t :: %__MODULE__{
-          total: integer(),
+          total: non_neg_integer(),
           continents: [Appwrite.Types.Continent.t()]
         }
 

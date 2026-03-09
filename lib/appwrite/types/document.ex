@@ -1,17 +1,25 @@
 defmodule Appwrite.Types.Document do
   @moduledoc """
-  Represents a document in the Appwrite database.
+  A document stored in an Appwrite Database collection.
+
+  System fields (`$id`, `$collectionId`, etc.) are mapped to their
+  snake_case equivalents (`:id`, `:collection_id`, etc.).
+
+  The `:data` field carries all user-defined attributes returned by the API
+  as a plain `map()`.
 
   ## Fields
 
-    - `id` (`String.t`): Document ID.
-    - `collection_id` (`String.t`): Collection ID.
-    - `database_id` (`String.t`): Database ID.
-    - `created_at` (`String.t`): Document creation date in ISO 8601 format.
-    - `updated_at` (`String.t`): Document update date in ISO 8601 format.
-    - `permissions` (`list(String.t)`): Document permissions. See [Appwrite permissions](https://appwrite.io/docs/permissions).
-    - `data` (`map`): Key-value pairs representing additional document data.
+  - `id` (`String.t()`) — document ID (`$id`).
+  - `collection_id` (`String.t()`) — parent collection ID (`$collectionId`).
+  - `database_id` (`String.t()`) — parent database ID (`$databaseId`).
+  - `created_at` (`String.t()`) — creation timestamp in ISO 8601 (`$createdAt`).
+  - `updated_at` (`String.t()`) — last-updated timestamp in ISO 8601 (`$updatedAt`).
+  - `permissions` (`[String.t()]`) — Appwrite permission strings (`$permissions`).
+  - `data` (`map()`) — user-defined attribute key-value pairs.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           id: String.t(),

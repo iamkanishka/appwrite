@@ -1,15 +1,18 @@
 defmodule Appwrite.Types.AlgoBcrypt do
   @moduledoc """
-  Represents the Bcrypt hashing algorithm.
+  Parameters for the Bcrypt password hashing algorithm.
+
+  Bcrypt derives all settings from the stored hash; no extra parameters
+  are needed beyond the algorithm type tag.
 
   ## Fields
 
-    - `type` (`String.t`): Algorithm type.
+  - `type` (`String.t()`) — always `"bcrypt"`.
   """
 
-  @type t :: %__MODULE__{
-          type: String.t()
-        }
+  @derive Jason.Encoder
+
+  @type t :: %__MODULE__{type: String.t()}
 
   defstruct [:type]
 end

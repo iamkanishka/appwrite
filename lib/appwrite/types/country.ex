@@ -1,12 +1,14 @@
 defmodule Appwrite.Types.Country do
   @moduledoc """
-  Represents a country with name and ISO code.
+  A country record returned by `GET /v1/locale/countries`.
 
   ## Fields
 
-    - `name` (`String.t`): Country name.
-    - `code` (`String.t`): Two-character ISO 3166-1 alpha code.
+  - `name` (`String.t()`) — human-readable country name (e.g. `"India"`).
+  - `code` (`String.t()`) — ISO 3166-1 alpha-2 code (e.g. `"IN"`).
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           name: String.t(),

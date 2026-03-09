@@ -1,23 +1,29 @@
 defmodule Appwrite.Types.Membership do
   @moduledoc """
-  Represents a membership in a team.
+  Represents a user's membership in an Appwrite team.
+
+  A membership is created when a user is invited to or joins a team.
+  It records the invitation and joining dates, the roles granted, and
+  whether MFA is enforced for the membership.
 
   ## Fields
 
-    - `$id` (`String.t`): Membership ID.
-    - `$created_at` (`String.t`): Creation date in ISO 8601 format.
-    - `$updated_at` (`String.t`): Update date in ISO 8601 format.
-    - `user_id` (`String.t`): User ID.
-    - `user_name` (`String.t`): User name.
-    - `user_email` (`String.t`): User email address.
-    - `team_id` (`String.t`): Team ID.
-    - `team_name` (`String.t`): Team name.
-    - `invited` (`String.t`): Invitation date in ISO 8601 format.
-    - `joined` (`String.t`): Joining date in ISO 8601 format.
-    - `confirm` (`boolean`): Confirmation status.
-    - `mfa` (`boolean`): MFA status.
-    - `roles` (`[String.t]`): List of user roles.
+    - `id` (`String.t()`): Membership ID.
+    - `created_at` (`String.t()`): Membership creation date in ISO 8601 format.
+    - `updated_at` (`String.t()`): Membership update date in ISO 8601 format.
+    - `user_id` (`String.t()`): ID of the user.
+    - `user_name` (`String.t()`): Name of the user.
+    - `user_email` (`String.t()`): Email address of the user.
+    - `team_id` (`String.t()`): ID of the team.
+    - `team_name` (`String.t()`): Name of the team.
+    - `invited` (`String.t()`): Date when the user was invited in ISO 8601 format.
+    - `joined` (`String.t()`): Date when the user accepted the invitation in ISO 8601 format.
+    - `confirm` (`boolean()`): Whether the membership invitation has been confirmed.
+    - `mfa` (`boolean()`): Whether MFA is enforced for this membership.
+    - `roles` (`[String.t()]`): List of roles assigned to the user within this team.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           id: String.t(),

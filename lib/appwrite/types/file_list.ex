@@ -1,15 +1,17 @@
 defmodule Appwrite.Types.FileList do
   @moduledoc """
-  Represents a list of files.
+  Paginated list of `Appwrite.Types.File` records.
 
   ## Fields
 
-    - `total` (`integer`): Total number of files that matched the query.
-    - `files` (`[Appwrite.Types.File.t]`): List of files.
+  - `total` (`non_neg_integer()`) — total files matching the query.
+  - `files` (`[Appwrite.Types.File.t()]`) — current page of results.
   """
 
+  @derive Jason.Encoder
+
   @type t :: %__MODULE__{
-          total: integer(),
+          total: non_neg_integer(),
           files: [Appwrite.Types.File.t()]
         }
 

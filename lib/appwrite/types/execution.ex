@@ -1,27 +1,40 @@
 defmodule Appwrite.Types.Execution do
   @moduledoc """
-  Represents a function execution, including details like status, logs, and duration.
+  A record of a single Appwrite Function execution.
+
+  System fields are mapped from `$`-prefixed API keys to plain snake_case
+  struct keys.
+
+  HTTP request/response headers are each a list of maps with `"name"` and
+  `"value"` string keys, matching the Appwrite REST response shape:
+
+      [%{"name" => "content-type", "value" => "application/json"}]
+
+  A dedicated `Header` struct may be introduced later; for now `[map()]`
+  avoids a phantom-type reference.
 
   ## Fields
 
-    - `$id` (`String.t`): Execution ID.
-    - `$created_at` (`String.t`): Creation date in ISO 8601 format.
-    - `$updated_at` (`String.t`): Update date in ISO 8601 format.
-    - `$permissions` (`[String.t]`): Execution roles.
-    - `function_id` (`String.t`): Function ID.
-    - `trigger` (`String.t`): Execution trigger (`http`, `schedule`, or `event`).
-    - `status` (`String.t`): Execution status (`waiting`, `processing`, `completed`, or `failed`).
-    - `request_method` (`String.t`): HTTP request method type.
-    - `request_path` (`String.t`): HTTP request path and query.
-    - `request_headers` (`[Appwrite.Types.Headers.t]`): HTTP request headers.
-    - `response_status_code` (`integer`): HTTP response status code.
-    - `response_body` (`String.t`): HTTP response body.
-    - `response_headers` (`[Appwrite.Types.Headers.t]`): HTTP response headers.
-    - `logs` (`String.t`): Function logs (last 4,000 characters).
-    - `errors` (`String.t`): Function errors (last 4,000 characters).
-    - `duration` (`float`): Execution duration in seconds.
-    - `scheduled_at` (`String.t | nil`): Scheduled time for execution (ISO 8601 format).
+  - `id` (`String.t()`) — execution ID (`$id`).
+  - `created_at` (`String.t()`) — creation timestamp ISO 8601 (`$createdAt`).
+  - `updated_at` (`String.t()`) — last-updated timestamp ISO 8601 (`$updatedAt`).
+  - `permissions` (`[String.t()]`) — Appwrite permission strings (`$permissions`).
+  - `function_id` (`String.t()`) — parent function ID.
+  - `trigger` (`String.t()`) — what triggered execution: `"http"`, `"schedule"`, or `"event"`.
+  - `status` (`String.t()`) — `"waiting"`, `"processing"`, `"completed"`, or `"failed"`.
+  - `request_method` (`String.t()`) — HTTP method of the triggering request.
+  - `request_path` (`String.t()`) — path and query string of the triggering request.
+  - `request_headers` (`[map()]`) — headers of the triggering request.
+  - `response_status_code` (`non_neg_integer()`) — HTTP status code returned by the function.
+  - `response_body` (`String.t()`) — response body (may be truncated).
+  - `response_headers` (`[map()]`) — headers returned by the function.
+  - `logs` (`String.t()`) — last 4 000 characters of function stdout.
+  - `errors` (`String.t()`) — last 4 000 characters of function stderr.
+  - `duration` (`float()`) — wall-clock execution time in seconds.
+  - `scheduled_at` (`String.t() | nil`) — ISO 8601 scheduled start time, or `nil`.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           id: String.t(),
@@ -33,10 +46,10 @@ defmodule Appwrite.Types.Execution do
           status: String.t(),
           request_method: String.t(),
           request_path: String.t(),
-          request_headers: [Appwrite.Types.Headers.t()],
-          response_status_code: integer(),
+          request_headers: [map()],
+          response_status_code: non_neg_integer(),
           response_body: String.t(),
-          response_headers: [Appwrite.Types.Headers.t()],
+          response_headers: [map()],
           logs: String.t(),
           errors: String.t(),
           duration: float(),

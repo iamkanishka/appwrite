@@ -1,14 +1,16 @@
 defmodule Appwrite.Types.MfaChallenge do
   @moduledoc """
-  Represents an MFA challenge.
+  Represents an MFA challenge token.
 
   ## Fields
 
-    - `$id` (`String.t`): Token ID.
-    - `$created_at` (`String.t`): Token creation date in ISO 8601 format.
-    - `user_id` (`String.t`): User ID.
-    - `expire` (`String.t`): Token expiration date in ISO 8601 format.
+    - `id` (`String.t()`): Token ID.
+    - `created_at` (`String.t()`): Token creation date in ISO 8601 format.
+    - `user_id` (`String.t()`): User ID.
+    - `expire` (`String.t()`): Token expiration date in ISO 8601 format.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           id: String.t(),

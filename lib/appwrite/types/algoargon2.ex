@@ -1,14 +1,20 @@
 defmodule Appwrite.Types.AlgoArgon2 do
   @moduledoc """
-  Represents the Argon2 hashing algorithm.
+  Parameters for the Argon2id password hashing algorithm.
+
+  Argon2id is the recommended algorithm for new Appwrite projects. The
+  three tuning knobs control the memory-hardness, time-hardness, and
+  parallelism of the hash function.
 
   ## Fields
 
-    - `type` (`String.t`): Algorithm type.
-    - `memory_cost` (`non_neg_integer`): Memory used to compute hash.
-    - `time_cost` (`non_neg_integer`): Amount of time consumed to compute hash.
-    - `threads` (`non_neg_integer`): Number of threads used to compute hash.
+  - `type` (`String.t()`) — always `"argon2"`.
+  - `memory_cost` (`non_neg_integer()`) — memory consumed in kibibytes.
+  - `time_cost` (`non_neg_integer()`) — number of iterations.
+  - `threads` (`non_neg_integer()`) — degree of parallelism.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           type: String.t(),

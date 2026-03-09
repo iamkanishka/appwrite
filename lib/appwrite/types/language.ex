@@ -4,10 +4,12 @@ defmodule Appwrite.Types.Language do
 
   ## Fields
 
-    - `name` (`String.t`): Language name.
-    - `code` (`String.t`): ISO 639-1 two-character code.
-    - `native_name` (`String.t`): Native language name.
+    - `name` (`String.t()`): Language name.
+    - `code` (`String.t()`): ISO 639-1 two-character code.
+    - `native_name` (`String.t()`): Language name written in the language itself.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           name: String.t(),

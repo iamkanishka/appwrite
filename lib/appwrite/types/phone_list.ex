@@ -1,15 +1,17 @@
 defmodule Appwrite.Types.PhoneList do
   @moduledoc """
-  Represents a list of phones.
+  Represents a list of phone dialling codes.
 
   ## Fields
 
-    - `total` (`integer`): Total number of phones that matched the query.
-    - `phones` (`[Appwrite.Types.Phone.t]`): List of phones.
+    - `total` (`non_neg_integer()`): Total number of phones that matched the query.
+    - `phones` (`[Appwrite.Types.Phone.t()]`): List of phones.
   """
 
+  @derive Jason.Encoder
+
   @type t :: %__MODULE__{
-          total: integer(),
+          total: non_neg_integer(),
           phones: [Appwrite.Types.Phone.t()]
         }
 

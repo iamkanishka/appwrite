@@ -1,23 +1,28 @@
 defmodule Appwrite.Types.Team do
   @moduledoc """
-  Represents a team with details such as name, members, and preferences.
+  Represents a team in Appwrite.
+
+  Teams allow grouping of users and are used to manage shared access to
+  resources via roles and memberships.
 
   ## Fields
 
-    - `$id` (`String.t`): Team ID.
-    - `$created_at` (`String.t`): Creation date in ISO 8601 format.
-    - `$updated_at` (`String.t`): Update date in ISO 8601 format.
-    - `name` (`String.t`): Team name.
-    - `total` (`integer`): Total number of team members.
-    - `prefs` (`map`): Team preferences as a key-value object.
+    - `id` (`String.t()`): Team ID.
+    - `created_at` (`String.t()`): Team creation date in ISO 8601 format.
+    - `updated_at` (`String.t()`): Team update date in ISO 8601 format.
+    - `name` (`String.t()`): Team name.
+    - `total` (`non_neg_integer()`): Total number of team members.
+    - `prefs` (`Appwrite.Types.Preference.t()`): Team preferences as a string-keyed map.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           id: String.t(),
           created_at: String.t(),
           updated_at: String.t(),
           name: String.t(),
-          total: integer(),
+          total: non_neg_integer(),
           prefs: Appwrite.Types.Preference.t()
         }
 

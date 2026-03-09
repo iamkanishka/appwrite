@@ -4,8 +4,10 @@ defmodule Appwrite.Types.Jwt do
 
   ## Fields
 
-    - `jwt` (`String.t`): JWT encoded string.
+    - `jwt` (`String.t()`): JWT encoded string.
   """
+
+  @derive Jason.Encoder
 
   @type t :: %__MODULE__{
           jwt: String.t()

@@ -1,15 +1,18 @@
 defmodule Appwrite.Types.CurrencyList do
   @moduledoc """
-  Represents a list of currencies.
+  Paginated list of `Appwrite.Types.Currency` records.
 
   ## Fields
 
-    - `total` (`integer`): Total number of currencies that matched the query.
-    - `currencies` (`[Appwrite.Types.Currency.t]`): List of currencies.
+  - `total` (`non_neg_integer()`) — total number of currencies matching the
+    query.
+  - `currencies` (`[Appwrite.Types.Currency.t()]`) — page of results.
   """
 
+  @derive Jason.Encoder
+
   @type t :: %__MODULE__{
-          total: integer(),
+          total: non_neg_integer(),
           currencies: [Appwrite.Types.Currency.t()]
         }
 

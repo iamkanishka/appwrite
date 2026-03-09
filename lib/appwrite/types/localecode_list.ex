@@ -4,12 +4,14 @@ defmodule Appwrite.Types.LocaleCodeList do
 
   ## Fields
 
-    - `total` (`integer`): Total number of locale codes that matched the query.
-    - `locale_codes` (`[Appwrite.Types.LocaleCode.t]`): List of locale codes.
+    - `total` (`non_neg_integer()`): Total number of locale codes that matched the query.
+    - `locale_codes` (`[Appwrite.Types.LocaleCode.t()]`): List of locale codes.
   """
 
+  @derive Jason.Encoder
+
   @type t :: %__MODULE__{
-          total: integer(),
+          total: non_neg_integer(),
           locale_codes: [Appwrite.Types.LocaleCode.t()]
         }
 

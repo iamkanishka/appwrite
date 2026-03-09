@@ -17,19 +17,19 @@ defmodule Appwrite.Services.Accounts do
   alias Appwrite.Consts.OAuthProvider
 
   alias Appwrite.Types.{
-    User,
     IdentityList,
     Jwt,
     LogList,
-    MfaType,
     MfaChallenge,
-    MfaRecoveryCodes,
     MfaFactors,
+    MfaRecoveryCodes,
+    MfaType,
     Preference,
-    Token,
     Session,
     SessionList,
-    Target
+    Target,
+    Token,
+    User
   }
 
   @doc """

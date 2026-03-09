@@ -13,14 +13,7 @@ defmodule Appwrite.Services.Teams do
 
   alias Appwrite.Exceptions.AppwriteException
   alias Appwrite.Utils.Client
-
-  alias Appwrite.Types.{
-    Membership,
-    MembershipList,
-    Preference,
-    Team,
-    TeamList
-  }
+  alias Appwrite.Types.{Membership, MembershipList, Preference, Team, TeamList}
 
   @doc """
   List all teams in which the current user is a member.
@@ -43,8 +36,12 @@ defmodule Appwrite.Services.Teams do
 
     headers = %{"content-type" => "application/json"}
 
-    Client.call("GET", "/v1/teams", headers, params)
-    |> handle_response()
+    try do
+      Client.call("GET", "/v1/teams", headers, params)
+      |> handle_response()
+    rescue
+      error -> {:error, error}
+    end
   end
 
   @doc """
@@ -80,8 +77,12 @@ defmodule Appwrite.Services.Teams do
 
         headers = %{"content-type" => "application/json"}
 
-        Client.call("POST", "/v1/teams", headers, params)
-        |> handle_response()
+        try do
+          Client.call("POST", "/v1/teams", headers, params)
+          |> handle_response()
+        rescue
+          error -> {:error, error}
+        end
     end
   end
 
@@ -104,8 +105,12 @@ defmodule Appwrite.Services.Teams do
     else
       headers = %{"content-type" => "application/json"}
 
-      Client.call("GET", "/v1/teams/#{team_id}", headers, %{})
-      |> handle_response()
+      try do
+        Client.call("GET", "/v1/teams/#{team_id}", headers, %{})
+        |> handle_response()
+      rescue
+        error -> {:error, error}
+      end
     end
   end
 
@@ -135,8 +140,12 @@ defmodule Appwrite.Services.Teams do
         headers = %{"content-type" => "application/json"}
         params = %{"name" => name}
 
-        Client.call("PUT", "/v1/teams/#{team_id}", headers, params)
-        |> handle_response()
+        try do
+          Client.call("PUT", "/v1/teams/#{team_id}", headers, params)
+          |> handle_response()
+        rescue
+          error -> {:error, error}
+        end
     end
   end
 
@@ -159,8 +168,12 @@ defmodule Appwrite.Services.Teams do
     else
       headers = %{"content-type" => "application/json"}
 
-      Client.call("DELETE", "/v1/teams/#{team_id}", headers, %{})
-      |> handle_response()
+      try do
+        Client.call("DELETE", "/v1/teams/#{team_id}", headers, %{})
+        |> handle_response()
+      rescue
+        error -> {:error, error}
+      end
     end
   end
 
@@ -191,8 +204,12 @@ defmodule Appwrite.Services.Teams do
 
       headers = %{"content-type" => "application/json"}
 
-      Client.call("GET", "/v1/teams/#{team_id}/memberships", headers, params)
-      |> handle_response()
+      try do
+        Client.call("GET", "/v1/teams/#{team_id}/memberships", headers, params)
+        |> handle_response()
+      rescue
+        error -> {:error, error}
+      end
     end
   end
 
@@ -237,8 +254,12 @@ defmodule Appwrite.Services.Teams do
 
         headers = %{"content-type" => "application/json"}
 
-        Client.call("POST", "/v1/teams/#{team_id}/memberships", headers, params)
-        |> handle_response()
+        try do
+          Client.call("POST", "/v1/teams/#{team_id}/memberships", headers, params)
+          |> handle_response()
+        rescue
+          error -> {:error, error}
+        end
     end
   end
 
@@ -268,8 +289,12 @@ defmodule Appwrite.Services.Teams do
       true ->
         headers = %{"content-type" => "application/json"}
 
-        Client.call("GET", "/v1/teams/#{team_id}/memberships/#{membership_id}", headers, %{})
-        |> handle_response()
+        try do
+          Client.call("GET", "/v1/teams/#{team_id}/memberships/#{membership_id}", headers, %{})
+          |> handle_response()
+        rescue
+          error -> {:error, error}
+        end
     end
   end
 
@@ -304,8 +329,17 @@ defmodule Appwrite.Services.Teams do
         headers = %{"content-type" => "application/json"}
         params = %{"roles" => roles}
 
-        Client.call("PATCH", "/v1/teams/#{team_id}/memberships/#{membership_id}", headers, params)
-        |> handle_response()
+        try do
+          Client.call(
+            "PATCH",
+            "/v1/teams/#{team_id}/memberships/#{membership_id}",
+            headers,
+            params
+          )
+          |> handle_response()
+        rescue
+          error -> {:error, error}
+        end
     end
   end
 
@@ -336,13 +370,17 @@ defmodule Appwrite.Services.Teams do
       true ->
         headers = %{"content-type" => "application/json"}
 
-        Client.call(
-          "DELETE",
-          "/v1/teams/#{team_id}/memberships/#{membership_id}",
-          headers,
-          %{}
-        )
-        |> handle_response()
+        try do
+          Client.call(
+            "DELETE",
+            "/v1/teams/#{team_id}/memberships/#{membership_id}",
+            headers,
+            %{}
+          )
+          |> handle_response()
+        rescue
+          error -> {:error, error}
+        end
     end
   end
 
@@ -382,13 +420,17 @@ defmodule Appwrite.Services.Teams do
         headers = %{"content-type" => "application/json"}
         params = %{"userId" => user_id, "secret" => secret}
 
-        Client.call(
-          "PATCH",
-          "/v1/teams/#{team_id}/memberships/#{membership_id}/status",
-          headers,
-          params
-        )
-        |> handle_response()
+        try do
+          Client.call(
+            "PATCH",
+            "/v1/teams/#{team_id}/memberships/#{membership_id}/status",
+            headers,
+            params
+          )
+          |> handle_response()
+        rescue
+          error -> {:error, error}
+        end
     end
   end
 
@@ -414,8 +456,12 @@ defmodule Appwrite.Services.Teams do
 
       # NOTE: Preference is a plain map type alias, not a struct.
       # handle_response returns the raw body which is already the prefs map.
-      Client.call("GET", "/v1/teams/#{team_id}/prefs", headers, %{})
-      |> handle_response()
+      try do
+        Client.call("GET", "/v1/teams/#{team_id}/prefs", headers, %{})
+        |> handle_response()
+      rescue
+        error -> {:error, error}
+      end
     end
   end
 
@@ -447,8 +493,12 @@ defmodule Appwrite.Services.Teams do
         headers = %{"content-type" => "application/json"}
         params = %{"prefs" => prefs}
 
-        Client.call("PUT", "/v1/teams/#{team_id}/prefs", headers, params)
-        |> handle_response()
+        try do
+          Client.call("PUT", "/v1/teams/#{team_id}/prefs", headers, params)
+          |> handle_response()
+        rescue
+          error -> {:error, error}
+        end
     end
   end
 
@@ -457,6 +507,5 @@ defmodule Appwrite.Services.Teams do
   defp maybe_put(map, _key, nil), do: map
   defp maybe_put(map, key, value), do: Map.put(map, key, value)
 
-  defp handle_response({:ok, body}), do: {:ok, body}
-  defp handle_response({:error, reason}), do: {:error, reason}
+  defp handle_response(body), do: {:ok, body}
 end

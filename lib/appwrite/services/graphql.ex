@@ -50,8 +50,12 @@ defmodule Appwrite.Services.GraphQL do
         "x-sdk-graphql" => "true"
       }
 
-      Client.call("POST", "/v1/graphql/mutation", headers, query)
-      |> handle_response()
+      try do
+        Client.call("POST", "/v1/graphql/mutation", headers, query)
+        |> handle_response()
+      rescue
+        error -> {:error, error}
+      end
     end
   end
 
@@ -92,13 +96,15 @@ defmodule Appwrite.Services.GraphQL do
         "x-sdk-graphql" => "true"
       }
 
-      Client.call("POST", "/v1/graphql", headers, query)
-      |> handle_response()
+      try do
+        Client.call("POST", "/v1/graphql", headers, query)
+        |> handle_response()
+      rescue
+        error -> {:error, error}
+      end
     end
   end
 
   # --- Private Helpers ---
-
-  defp handle_response({:ok, body}), do: {:ok, body}
-  defp handle_response({:error, reason}), do: {:error, reason}
+  defp handle_response(body), do: {:ok, body}
 end

@@ -11,9 +11,9 @@ defmodule Appwrite.Services.Storage do
   """
 
   alias Appwrite.Exceptions.AppwriteException
+  alias Appwrite.Types.{File, FileList}
   alias Appwrite.Utils.Client
   alias Appwrite.Utils.General
-  alias Appwrite.Types.{File, FileList}
 
   @type bucket_id :: String.t()
   @type file_id :: String.t()
@@ -106,7 +106,6 @@ defmodule Appwrite.Services.Storage do
   end
   ```
   """
-
   @spec create_file(bucket_id(), file_id() | nil, any(), permissions() | nil) ::
           {:ok, File.t()} | {:error, AppwriteException.t()}
   def create_file(bucket_id, file_id \\ nil, file, permissions \\ nil) do
@@ -114,11 +113,14 @@ defmodule Appwrite.Services.Storage do
          :ok <- ensure_not_nil(file, "file") do
       cust_or_autogen_file_id =
         if file_id == nil,
-          do: String.replace(to_string(General.generate_uniqe_id()), "-", ""),
+          do: String.replace(to_string(General.generate_unique_id()), "-", ""),
           else: file_id
 
       api_path = "/v1/storage/buckets/#{bucket_id}/files"
 
+      # NOTE: original code created `payload` then called `Map.put` on it in a
+      # separate `if` block but discarded the result (Elixir data is immutable).
+      # The permissions key is now added conditionally here.
       payload =
         %{
           "fileId" => cust_or_autogen_file_id,

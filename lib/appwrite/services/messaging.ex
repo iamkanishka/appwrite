@@ -56,8 +56,12 @@ defmodule Appwrite.Services.Messaging do
           "targetId" => target_id
         }
 
-        Client.call("POST", "/v1/messaging/topics/#{topic_id}/subscribers", headers, payload)
-        |> handle_response()
+        try do
+          Client.call("POST", "/v1/messaging/topics/#{topic_id}/subscribers", headers, payload)
+          |> handle_response()
+        rescue
+          error -> {:error, error}
+        end
     end
   end
 
@@ -90,18 +94,20 @@ defmodule Appwrite.Services.Messaging do
       true ->
         headers = %{"content-type" => "application/json"}
 
-        Client.call(
-          "DELETE",
-          "/v1/messaging/topics/#{topic_id}/subscribers/#{subscriber_id}",
-          headers,
-          %{}
-        )
-        |> handle_response()
+        try do
+          Client.call(
+            "DELETE",
+            "/v1/messaging/topics/#{topic_id}/subscribers/#{subscriber_id}",
+            headers,
+            %{}
+          )
+          |> handle_response()
+        rescue
+          error -> {:error, error}
+        end
     end
   end
 
   # --- Private Helpers ---
-
-  defp handle_response({:ok, body}), do: {:ok, body}
-  defp handle_response({:error, reason}), do: {:error, reason}
+  defp handle_response(body), do: {:ok, body}
 end

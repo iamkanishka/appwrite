@@ -12,7 +12,6 @@ defmodule Appwrite.Services.Accounts do
   alias Appwrite.Utils.Client
   alias Appwrite.Utils.General
 
-  # FIX 1: Moved these two aliases outside the Types alias block
   alias Appwrite.Consts.AuthenticationFactor
   alias Appwrite.Consts.OAuthProvider
 
@@ -207,6 +206,7 @@ defmodule Appwrite.Services.Accounts do
   """
   @spec create_jwt() :: {:ok, Jwt.t()} | {:error, any()}
   def create_jwt do
+    # NOTE: leading slash is required — "v1/..." was a bug
     api_path = "/v1/account/jwts"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
@@ -231,6 +231,7 @@ defmodule Appwrite.Services.Accounts do
   """
   @spec list_logs([String.t()] | nil) :: {:ok, LogList.t()} | {:error, any()}
   def list_logs(queries \\ nil) do
+    # NOTE: leading slash was missing in original — fixed
     api_path = "/v1/account/logs"
     payload = if queries, do: %{"queries" => queries}, else: %{}
     api_header = %{"content-type" => "application/json"}
@@ -383,7 +384,6 @@ defmodule Appwrite.Services.Accounts do
          }}
 
       true ->
-        # FIX 2: try/rescue block is now correctly inside the true -> branch
         api_path = "/v1/account/mfa/challenge"
         api_header = %{"content-type" => "application/json"}
         payload = %{"factor" => factor}
@@ -1297,7 +1297,6 @@ defmodule Appwrite.Services.Accounts do
     {:error, %AppwriteException{message: "Missing required parameter: 'provider'"}}
   end
 
-  # FIX 3: Corrected if/else/end structure — else was unreachable due to misplaced end
   def create_oauth2_token(provider, success, failure, scopes) do
     if OAuthProvider.valid?(provider) do
       try do

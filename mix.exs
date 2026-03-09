@@ -31,6 +31,8 @@ defmodule Appwrite.MixProject do
       {:ex_doc, "~> 0.28", only: :dev, runtime: false},
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.4"},
+      {:poison, "~> 6.0"},
+      {:uuid, "~> 1.1"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end

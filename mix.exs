@@ -2,7 +2,7 @@ defmodule Appwrite.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/iamkanishka/appwrite"
-  @version "0.1.8"
+  @version "0.2.0"
 
   def project do
     [
@@ -12,13 +12,13 @@ defmodule Appwrite.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: docs(),
-      # Package information for Hex
-      description: "Appwrite package for elixir",
+      description:
+        "Elixir SDK for the Appwrite backend-as-a-service platform. " <>
+          "Supports authentication, databases, storage, functions, teams, messaging, and more.",
       package: package()
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger],
@@ -26,16 +26,11 @@ defmodule Appwrite.MixProject do
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
       {:ex_doc, "~> 0.28", only: :dev, runtime: false},
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.4"},
-      {:poison, "~> 6.0"},
-      {:uuid, "~> 1.1"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
@@ -43,17 +38,11 @@ defmodule Appwrite.MixProject do
   defp package do
     [
       name: "appwrite",
-      # License, e.g., MIT, Apache 2.0
       licenses: ["Apache-2.0"],
       links: %{
         GitHub: @source_url,
         Docs: "https://hexdocs.pm/appwrite",
         Changelog: "#{@source_url}/blob/master/CHANGELOG.md"
-
-        # Website: "https://kanishkanaik.dev/",
-        # Twitter: "https://x.com/NaikKanishk1831",
-        # Medium: "https://medium.com/@kanishkanaik97",
-        # Linkedin: "https://www.linkedin.com/in/kanishka-naik-kannu-6b5180191/"
       },
       maintainers: ["Kanishka Naik"]
     ]
@@ -63,7 +52,6 @@ defmodule Appwrite.MixProject do
     [
       main: "Appwrite",
       api_reference: false,
-      # logo: "assets/oban-logo.svg",
       source_ref: "v#{@version}",
       source_url: @source_url,
       extra_section: "GUIDES",
@@ -77,7 +65,6 @@ defmodule Appwrite.MixProject do
 
   defp extras do
     [
-      # Introduction
       "guides/introduction/installation.md",
       "CHANGELOG.md": [title: "Changelog"]
     ]
@@ -86,11 +73,6 @@ defmodule Appwrite.MixProject do
   defp groups_for_extras do
     [
       Introduction: ~r{guides/introduction/[^\/]+\.md}
-      # Learning: ~r{guides/learning/[^\/]+\.md},
-      # Advanced: ~r{guides/advanced/[^\/]+\.md},
-      # Recipes: ~r{guides/recipes/.?},
-      # Testing: ~r{guides/testing/.?},
-      # "Upgrade Guides": ~r{guides/upgrading/.*}
     ]
   end
 
@@ -101,24 +83,26 @@ defmodule Appwrite.MixProject do
         Appwrite.Services.Avatars,
         Appwrite.Services.Database,
         Appwrite.Services.Functions,
+        Appwrite.Services.GraphQL,
+        Appwrite.Services.Health,
         Appwrite.Services.Locale,
         Appwrite.Services.Messaging,
         Appwrite.Services.Storage,
         Appwrite.Services.Teams
       ],
       Utils: [
+        Appwrite.Utils.Client,
+        Appwrite.Utils.General,
         Appwrite.Utils.Id,
         Appwrite.Utils.Permission,
         Appwrite.Utils.Query,
         Appwrite.Utils.Role,
-        Appwrite.Utils.Client,
-        Appwrite.Utils.Service,
-        Appwrite.Utils.General
+        Appwrite.Utils.Service
       ],
       Consts: [
         Appwrite.Consts.AuthenticationFactor,
         Appwrite.Consts.AuthenticationType,
-        Appwrite.Consts.Browsers,
+        Appwrite.Consts.Browser,
         Appwrite.Consts.CreditCard,
         Appwrite.Consts.ExecutionMethod,
         Appwrite.Consts.Flag,
@@ -131,6 +115,7 @@ defmodule Appwrite.MixProject do
         Appwrite.Types.AlgoBcrypt,
         Appwrite.Types.AlgoMd5,
         Appwrite.Types.AlgoPhpass,
+        Appwrite.Types.AlgoScrypt,
         Appwrite.Types.AlgoScryptModified,
         Appwrite.Types.AlgoSha,
         Appwrite.Types.Continent,
@@ -145,16 +130,19 @@ defmodule Appwrite.MixProject do
         Appwrite.Types.ExecutionList,
         Appwrite.Types.File,
         Appwrite.Types.FileList,
-        Appwrite.Types.Headers,
-        Appwrite.Types.Headers,
+        Appwrite.Types.HealthAntivirus,
+        Appwrite.Types.HealthCertificate,
+        Appwrite.Types.HealthQueue,
+        Appwrite.Types.HealthStatus,
+        Appwrite.Types.HealthTime,
         Appwrite.Types.Identity,
         Appwrite.Types.IdentityList,
         Appwrite.Types.Jwt,
         Appwrite.Types.Language,
         Appwrite.Types.LanguageList,
+        Appwrite.Types.Locale,
         Appwrite.Types.LocaleCode,
         Appwrite.Types.LocaleCodeList,
-        Appwrite.Types.Locale,
         Appwrite.Types.Log,
         Appwrite.Types.LogList,
         Appwrite.Types.Membership,
@@ -168,11 +156,13 @@ defmodule Appwrite.MixProject do
         Appwrite.Types.Preference,
         Appwrite.Types.Session,
         Appwrite.Types.SessionList,
+        Appwrite.Types.Subscriber,
         Appwrite.Types.Target,
         Appwrite.Types.Team,
         Appwrite.Types.TeamList,
         Appwrite.Types.Token,
         Appwrite.Types.User,
+        Appwrite.Types.Client.Config,
         Appwrite.Types.Client.Headers,
         Appwrite.Types.Client.Payload,
         Appwrite.Types.Client.Realtime,

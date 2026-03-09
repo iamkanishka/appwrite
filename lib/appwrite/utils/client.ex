@@ -318,60 +318,61 @@ defmodule Appwrite.Utils.Client do
           (UploadProgress.t() -> any()) | nil
         ) :: any()
   defp chunked_upload_process(method, url, headers, payload, file, on_progress) do
-    try do
-      Stream.iterate(0, &(&1 + @chunk_size))
-      |> Stream.take_while(fn start -> start < file["size"] end)
-      |> Enum.reduce({nil, headers}, fn start, {_response, current_headers} ->
-        end_byte = min(start + @chunk_size, file["size"])
+    Stream.iterate(0, &(&1 + @chunk_size))
+    |> Stream.take_while(fn start -> start < file["size"] end)
+    |> Enum.reduce({nil, headers}, fn start, {_response, current_headers} ->
+      end_byte = min(start + @chunk_size, file["size"])
 
-        chunk_headers =
-          Map.put(
-            current_headers,
-            "content-range",
-            "bytes #{start}-#{end_byte - 1}/#{file["size"]}"
-          )
+      chunk_headers =
+        Map.put(
+          current_headers,
+          "content-range",
+          "bytes #{start}-#{end_byte - 1}/#{file["size"]}"
+        )
 
-        chunk = :binary.part(Base.decode64!(file["data"]), start, end_byte - start)
+      chunk = :binary.part(Base.decode64!(file["data"]), start, end_byte - start)
 
-        updated_payload =
-          Map.put(payload, "file", %{
-            "data" => Base.encode64(chunk),
-            "name" => file["name"],
-            "size" => file["size"],
-            "type" => file["type"],
-            "lastModified" => DateTime.utc_now()
-          })
+      updated_payload =
+        Map.put(payload, "file", %{
+          "data" => Base.encode64(chunk),
+          "name" => file["name"],
+          "size" => file["size"],
+          "type" => file["type"],
+          "lastModified" => DateTime.utc_now()
+        })
 
-        response = call(method, url, chunk_headers, updated_payload)
+      response = call(method, url, chunk_headers, updated_payload)
 
-        if on_progress do
-          on_progress.(%UploadProgress{
-            id: Map.get(response, "$id"),
-            progress: round(end_byte / file["size"] * 100),
-            size_uploaded: end_byte,
-            chunks_total: div(file["size"], @chunk_size) + 1,
-            chunks_uploaded: div(end_byte, @chunk_size)
-          })
+      if on_progress do
+        on_progress.(%UploadProgress{
+          id: Map.get(response, "$id"),
+          progress: round(end_byte / file["size"] * 100),
+          size_uploaded: end_byte,
+          chunks_total: div(file["size"], @chunk_size) + 1,
+          chunks_uploaded: div(end_byte, @chunk_size)
+        })
+      end
+
+      next_headers =
+        if response && response["$id"] do
+          Map.put(chunk_headers, "x-appwrite-id", response["$id"])
+        else
+          chunk_headers
         end
 
-        next_headers =
-          if response && response["$id"] do
-            Map.put(chunk_headers, "x-appwrite-id", response["$id"])
-          else
-            chunk_headers
-          end
-
-        {response, next_headers}
-      end)
-      |> elem(0)
-    rescue
-      exception ->
-        raise AppwriteException,
-          message: Exception.message(exception),
-          code: 500,
-          type: "chunked_upload",
-          response: nil
-    end
+      {response, next_headers}
+    end)
+    |> elem(0)
+  rescue
+    exception ->
+      reraise AppwriteException,
+              [
+                message: Exception.message(exception),
+                code: 500,
+                type: "chunked_upload",
+                response: nil
+              ],
+              __STACKTRACE__
   end
 
   @spec get_project_id() :: String.t()

@@ -15,9 +15,9 @@ defmodule Appwrite.Services.Database do
   in your project for either a specific user, team, user role, or grant it with public access (`*`).
   """
 
-  alias Appwrite.Utils.General
-  alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
+  alias Appwrite.Utils.Client
+  alias Appwrite.Utils.General
   alias Appwrite.Types.{Document, DocumentList}
 
   @doc """

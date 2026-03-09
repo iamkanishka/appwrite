@@ -9,8 +9,8 @@ defmodule Appwrite.Services.Messaging do
   """
 
   alias Appwrite.Exceptions.AppwriteException
-  alias Appwrite.Utils.Client
   alias Appwrite.Types.Subscriber
+  alias Appwrite.Utils.Client
 
   @doc """
   Create a new subscriber for a topic.

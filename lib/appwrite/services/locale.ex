@@ -9,8 +9,8 @@ defmodule Appwrite.Services.Locale do
   and continents information in your app's language.
   """
 
-  alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
+  alias Appwrite.Utils.Client
 
   alias Appwrite.Types.{
     Locale,
@@ -33,7 +33,7 @@ defmodule Appwrite.Services.Locale do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec get() :: {:ok, Locale.t()} | {:error, AppwriteException.t()}
-  def get() do
+  def get do
     api_path = "/v1/locale"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
@@ -54,7 +54,7 @@ defmodule Appwrite.Services.Locale do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec list_codes() :: {:ok, LocaleCodeList.t()} | {:error, AppwriteException.t()}
-  def list_codes() do
+  def list_codes do
     api_path = "/v1/locale/codes"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
@@ -75,7 +75,7 @@ defmodule Appwrite.Services.Locale do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec list_continents() :: {:ok, ContinentList.t()} | {:error, AppwriteException.t()}
-  def list_continents() do
+  def list_continents do
     api_path = "/v1/locale/continents"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
@@ -96,7 +96,7 @@ defmodule Appwrite.Services.Locale do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec list_countries() :: {:ok, CountryList.t()} | {:error, AppwriteException.t()}
-  def list_countries() do
+  def list_countries do
     api_path = "/v1/locale/countries"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
@@ -117,7 +117,7 @@ defmodule Appwrite.Services.Locale do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec list_countries_eu() :: {:ok, CountryList.t()} | {:error, AppwriteException.t()}
-  def list_countries_eu() do
+  def list_countries_eu do
     api_path = "/v1/locale/countries/eu"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
@@ -138,7 +138,7 @@ defmodule Appwrite.Services.Locale do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec list_countries_phones() :: {:ok, PhoneList.t()} | {:error, AppwriteException.t()}
-  def list_countries_phones() do
+  def list_countries_phones do
     api_path = "/v1/locale/countries/phones"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
@@ -159,7 +159,7 @@ defmodule Appwrite.Services.Locale do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec list_currencies() :: {:ok, CurrencyList.t()} | {:error, AppwriteException.t()}
-  def list_currencies() do
+  def list_currencies do
     api_path = "/v1/locale/currencies"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
@@ -180,7 +180,7 @@ defmodule Appwrite.Services.Locale do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec list_languages() :: {:ok, LanguageList.t()} | {:error, AppwriteException.t()}
-  def list_languages() do
+  def list_languages do
     api_path = "/v1/locale/languages"
     payload = %{}
     api_header = %{"content-type" => "application/json"}

@@ -9,8 +9,8 @@ defmodule Appwrite.Services.Avatars do
   quality for maximum performance and visibility in your app.
   """
 
-  alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
+  alias Appwrite.Utils.Client
 
   @doc """
   Get a browser icon URL.

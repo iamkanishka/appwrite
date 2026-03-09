@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Consistency.ExceptionNames
 defmodule Appwrite.Exceptions.AppwriteException do
   @moduledoc """
   Represents an error returned by the Appwrite API or the HTTP layer.

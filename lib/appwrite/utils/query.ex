@@ -102,12 +102,12 @@ defmodule Appwrite.Utils.Query do
   # ---------------------------------------------------------------------------
 
   @doc "Match documents where `attribute` is `null`."
-  @spec is_null(String.t()) :: t()
-  def is_null(attribute), do: new("isNull", attribute)
+  @spec null?(String.t()) :: t()
+  def null?(attribute), do: new("isNull", attribute)
 
   @doc "Match documents where `attribute` is not `null`."
-  @spec is_not_null(String.t()) :: t()
-  def is_not_null(attribute), do: new("isNotNull", attribute)
+  @spec not_null?(String.t()) :: t()
+  def not_null?(attribute), do: new("isNotNull", attribute)
 
   # ---------------------------------------------------------------------------
   # String matching

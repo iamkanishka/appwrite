@@ -8,9 +8,13 @@ defmodule Appwrite.Services.Accounts do
   Once the user is authenticated, a new session object will be created to allow the user to access their private data and settings.
   """
 
-  alias Appwrite.Utils.General
-  alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
+  alias Appwrite.Utils.Client
+  alias Appwrite.Utils.General
+
+  # FIX 1: Moved these two aliases outside the Types alias block
+  alias Appwrite.Consts.AuthenticationFactor
+  alias Appwrite.Consts.OAuthProvider
 
   alias Appwrite.Types.{
     User,
@@ -36,7 +40,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, reason}` on failure
   """
   @spec get() :: {:ok, User.t()} | {:error, any()}
-  def get() do
+  def get do
     api_path = "/v1/account"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
@@ -202,8 +206,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, reason}` on failure
   """
   @spec create_jwt() :: {:ok, Jwt.t()} | {:error, any()}
-  def create_jwt() do
-    # NOTE: leading slash is required — "v1/..." was a bug
+  def create_jwt do
     api_path = "/v1/account/jwts"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
@@ -228,7 +231,6 @@ defmodule Appwrite.Services.Accounts do
   """
   @spec list_logs([String.t()] | nil) :: {:ok, LogList.t()} | {:error, any()}
   def list_logs(queries \\ nil) do
-    # NOTE: leading slash was missing in original — fixed
     api_path = "/v1/account/logs"
     payload = if queries, do: %{"queries" => queries}, else: %{}
     api_header = %{"content-type" => "application/json"}
@@ -373,14 +375,15 @@ defmodule Appwrite.Services.Accounts do
       is_nil(factor) ->
         {:error, %AppwriteException{message: "Missing required parameter: factor"}}
 
-      not Appwrite.Consts.AuthenticationFactor.valid?(factor) ->
+      not AuthenticationFactor.valid?(factor) ->
         {:error,
          %AppwriteException{
            message:
-             "Invalid factor: #{inspect(factor)}. Must be one of: #{Enum.join(Appwrite.Consts.AuthenticationFactor.values(), ", ")}"
+             "Invalid factor: #{inspect(factor)}. Must be one of: #{Enum.join(AuthenticationFactor.values(), ", ")}"
          }}
 
       true ->
+        # FIX 2: try/rescue block is now correctly inside the true -> branch
         api_path = "/v1/account/mfa/challenge"
         api_header = %{"content-type" => "application/json"}
         payload = %{"factor" => factor}
@@ -409,19 +412,21 @@ defmodule Appwrite.Services.Accounts do
   """
   @spec update_mfa_challenge(String.t(), String.t()) :: {:ok, map()} | {:error, any()}
   def update_mfa_challenge(challenge_id, otp) do
-    with :ok <- validate_params(challenge_id: challenge_id, otp: otp) do
-      api_path = "/v1/account/mfa/challenge"
-      api_header = %{"content-type" => "application/json"}
-      payload = %{"challengeId" => challenge_id, "otp" => otp}
+    case validate_params(challenge_id: challenge_id, otp: otp) do
+      :ok ->
+        api_path = "/v1/account/mfa/challenge"
+        api_header = %{"content-type" => "application/json"}
+        payload = %{"challengeId" => challenge_id, "otp" => otp}
 
-      try do
-        updated_mfa_challenge = Client.call("put", api_path, api_header, payload)
-        {:ok, updated_mfa_challenge}
-      rescue
-        error -> {:error, error}
-      end
-    else
-      {:error, reason} -> {:error, reason}
+        try do
+          updated_mfa_challenge = Client.call("put", api_path, api_header, payload)
+          {:ok, updated_mfa_challenge}
+        rescue
+          error -> {:error, error}
+        end
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
@@ -433,7 +438,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, reason}` on failure
   """
   @spec list_mfa_factors() :: {:ok, MfaFactors.t()} | {:error, any()}
-  def list_mfa_factors() do
+  def list_mfa_factors do
     api_path = "/v1/account/mfa/factors"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
@@ -454,7 +459,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, reason}` on failure
   """
   @spec get_mfa_recovery_codes() :: {:ok, MfaRecoveryCodes.t()} | {:error, any()}
-  def get_mfa_recovery_codes() do
+  def get_mfa_recovery_codes do
     api_path = "/v1/account/mfa/recovery-codes"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
@@ -475,7 +480,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, reason}` on failure
   """
   @spec create_mfa_recovery_codes() :: {:ok, MfaRecoveryCodes.t()} | {:error, any()}
-  def create_mfa_recovery_codes() do
+  def create_mfa_recovery_codes do
     api_path = "/v1/account/mfa/recovery-codes"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
@@ -496,7 +501,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, reason}` on failure
   """
   @spec update_mfa_recovery_codes() :: {:ok, MfaRecoveryCodes.t()} | {:error, any()}
-  def update_mfa_recovery_codes() do
+  def update_mfa_recovery_codes do
     api_path = "/v1/account/mfa/recovery-codes"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
@@ -612,7 +617,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, reason}` on failure
   """
   @spec get_prefs() :: {:ok, Preference.t()} | {:error, any()}
-  def get_prefs() do
+  def get_prefs do
     api_path = "/v1/account/prefs"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
@@ -690,7 +695,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, reason}` on failure
   """
   @spec list_sessions() :: {:ok, SessionList.t()} | {:error, any()}
-  def list_sessions() do
+  def list_sessions do
     api_path = "/v1/account/sessions"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
@@ -711,7 +716,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, reason}` on failure
   """
   @spec delete_sessions() :: {:ok, map()} | {:error, any()}
-  def delete_sessions() do
+  def delete_sessions do
     api_path = "/v1/account/sessions"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
@@ -734,7 +739,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, reason}` on failure
   """
   @spec create_anonymous_session() :: {:ok, Session.t()} | {:error, any()}
-  def create_anonymous_session() do
+  def create_anonymous_session do
     api_path = "/v1/account/sessions/anonymous"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
@@ -844,7 +849,7 @@ defmodule Appwrite.Services.Accounts do
       is_nil(provider) ->
         {:error, %AppwriteException{message: "Missing required parameter: 'provider'"}}
 
-      not Appwrite.Consts.OAuthProvider.valid?(provider) ->
+      not OAuthProvider.valid?(provider) ->
         {:error, %AppwriteException{message: "Invalid provider: #{inspect(provider)}"}}
 
       true ->
@@ -1039,7 +1044,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, AppwriteException.t()}` on failure
   """
   @spec update_status() :: {:ok, User.t()} | {:error, AppwriteException.t()}
-  def update_status() do
+  def update_status do
     api_path = "/v1/account/status"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
@@ -1292,10 +1297,9 @@ defmodule Appwrite.Services.Accounts do
     {:error, %AppwriteException{message: "Missing required parameter: 'provider'"}}
   end
 
+  # FIX 3: Corrected if/else/end structure — else was unreachable due to misplaced end
   def create_oauth2_token(provider, success, failure, scopes) do
-    if not Appwrite.Consts.OAuthProvider.valid?(provider) do
-      {:error, %AppwriteException{message: "Invalid provider: #{inspect(provider)}"}}
-    else
+    if OAuthProvider.valid?(provider) do
       try do
         api_path = "/account/tokens/oauth2/#{provider}"
         url = URI.merge(Client.default_config()["endpoint"], api_path)
@@ -1316,6 +1320,8 @@ defmodule Appwrite.Services.Accounts do
         exception ->
           {:error, %AppwriteException{message: Exception.message(exception)}}
       end
+    else
+      {:error, %AppwriteException{message: "Invalid provider: #{inspect(provider)}"}}
     end
   end
 
@@ -1392,7 +1398,7 @@ defmodule Appwrite.Services.Accounts do
   - `{:error, reason}` on failure
   """
   @spec create_phone_verification() :: {:ok, Token.t()} | {:error, any()}
-  def create_phone_verification() do
+  def create_phone_verification do
     api_path = "/v1/account/verification/phone"
     api_header = %{"content-type" => "application/json"}
     payload = %{}

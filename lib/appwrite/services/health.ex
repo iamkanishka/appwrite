@@ -12,7 +12,7 @@ defmodule Appwrite.Services.Health do
 
   alias Appwrite.Exceptions.AppwriteException
   alias Appwrite.Utils.Client
-  alias Appwrite.Types.{HealthStatus, HealthQueue, HealthAntivirus, HealthTime, HealthCertificate}
+  alias Appwrite.Types.{HealthAntivirus, HealthCertificate, HealthQueue, HealthStatus, HealthTime}
 
   @doc """
   Check the Appwrite HTTP server is up and responsive.
@@ -22,7 +22,7 @@ defmodule Appwrite.Services.Health do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec get() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
-  def get() do
+  def get do
     Client.call("GET", "/v1/health", %{}, %{})
     |> handle_response()
   end
@@ -37,7 +37,7 @@ defmodule Appwrite.Services.Health do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec get_antivirus() :: {:ok, HealthAntivirus.t()} | {:error, AppwriteException.t()}
-  def get_antivirus() do
+  def get_antivirus do
     Client.call("GET", "/v1/health/anti-virus", %{}, %{})
     |> handle_response()
   end
@@ -50,7 +50,7 @@ defmodule Appwrite.Services.Health do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec get_cache() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
-  def get_cache() do
+  def get_cache do
     Client.call("GET", "/v1/health/cache", %{}, %{})
     |> handle_response()
   end
@@ -82,7 +82,7 @@ defmodule Appwrite.Services.Health do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec get_db() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
-  def get_db() do
+  def get_db do
     Client.call("GET", "/v1/health/db", %{}, %{})
     |> handle_response()
   end
@@ -95,7 +95,7 @@ defmodule Appwrite.Services.Health do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec get_pub_sub() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
-  def get_pub_sub() do
+  def get_pub_sub do
     Client.call("GET", "/v1/health/pubsub", %{}, %{})
     |> handle_response()
   end
@@ -331,7 +331,7 @@ defmodule Appwrite.Services.Health do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec get_storage_local() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
-  def get_storage_local() do
+  def get_storage_local do
     Client.call("GET", "/v1/health/storage/local", %{}, %{})
     |> handle_response()
   end
@@ -344,7 +344,7 @@ defmodule Appwrite.Services.Health do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec get_storage() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
-  def get_storage() do
+  def get_storage do
     Client.call("GET", "/v1/health/storage", %{}, %{})
     |> handle_response()
   end
@@ -360,7 +360,7 @@ defmodule Appwrite.Services.Health do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec get_time() :: {:ok, HealthTime.t()} | {:error, AppwriteException.t()}
-  def get_time() do
+  def get_time do
     Client.call("GET", "/v1/health/time", %{}, %{})
     |> handle_response()
   end
@@ -373,7 +373,7 @@ defmodule Appwrite.Services.Health do
   - `{:error, AppwriteException.t()}` on failure.
   """
   @spec get_queue() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
-  def get_queue() do
+  def get_queue do
     Client.call("GET", "/v1/health/queue", %{}, %{})
     |> handle_response()
   end

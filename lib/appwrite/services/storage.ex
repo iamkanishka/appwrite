@@ -10,9 +10,9 @@ defmodule Appwrite.Services.Storage do
   the resulting image's dimensions, quality, and file format for optimal delivery.
   """
 
-  alias Appwrite.Utils.General
-  alias Appwrite.Utils.Client
   alias Appwrite.Exceptions.AppwriteException
+  alias Appwrite.Utils.Client
+  alias Appwrite.Utils.General
   alias Appwrite.Types.{File, FileList}
 
   @type bucket_id :: String.t()
@@ -106,6 +106,7 @@ defmodule Appwrite.Services.Storage do
   end
   ```
   """
+
   @spec create_file(bucket_id(), file_id() | nil, any(), permissions() | nil) ::
           {:ok, File.t()} | {:error, AppwriteException.t()}
   def create_file(bucket_id, file_id \\ nil, file, permissions \\ nil) do

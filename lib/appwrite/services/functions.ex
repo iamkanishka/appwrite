@@ -8,8 +8,8 @@ defmodule Appwrite.Services.Functions do
   Your code is stored in a secure way on your Appwrite instance and is executed in an isolated environment.
   """
 
-  alias Appwrite.Utils.Client
   alias Appwrite.Consts.ExecutionMethod
+  alias Appwrite.Utils.Client
   alias Appwrite.Types.{Execution, ExecutionList}
 
   @doc """
@@ -27,24 +27,26 @@ defmodule Appwrite.Services.Functions do
   @spec list_executions(String.t(), [String.t()] | nil, String.t() | nil) ::
           {:ok, ExecutionList.t()} | {:error, any()}
   def list_executions(function_id, queries \\ nil, search \\ nil) do
-    with :ok <- validate_not_nil(function_id, "function_id") do
-      api_path = "/v1/functions/#{function_id}/executions"
+    case validate_not_nil(function_id, "function_id") do
+      :ok ->
+        api_path = "/v1/functions/#{function_id}/executions"
 
-      payload = %{
-        "queries" => queries,
-        "search" => search
-      }
+        payload = %{
+          "queries" => queries,
+          "search" => search
+        }
 
-      api_header = %{"content-type" => "application/json"}
+        api_header = %{"content-type" => "application/json"}
 
-      try do
-        executions = Client.call("get", api_path, api_header, payload)
-        {:ok, executions}
-      rescue
-        error -> {:error, error}
-      end
-    else
-      {:error, reason} -> {:error, reason}
+        try do
+          executions = Client.call("get", api_path, api_header, payload)
+          {:ok, executions}
+        rescue
+          error -> {:error, error}
+        end
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 

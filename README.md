@@ -8,7 +8,7 @@ The package can be installed by adding `appwrite` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:appwrite, "~> 0.2.0"}
+    {:appwrite, "~> 0.2.1"}
   ]
 end
 ```

@@ -158,5 +158,5 @@
                              poison,uuid]},
               {description,"Elixir SDK for the Appwrite backend-as-a-service platform. Supports authentication, databases, storage, functions, teams, messaging, and more."},
               {registered,[]},
-              {vsn,"0.2.0"},
+              {vsn,"0.2.1"},
               {mod,{'Elixir.Appwrite.Application',[]}}]}.

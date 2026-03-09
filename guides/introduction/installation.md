@@ -5,7 +5,7 @@ Appwrite is published on [Hex](https://hex.pm/packages/appwrite). Add it to your
 # mix.exs
 def deps do
   [
-    {:appwrite, "~> 0.2.0"}
+    {:appwrite, "~> 0.2.1"}
   ]
 end
 ```

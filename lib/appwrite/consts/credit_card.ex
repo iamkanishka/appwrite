@@ -1,109 +1,30 @@
 defmodule Appwrite.Consts.CreditCard do
   @moduledoc """
-  Provides constants and validation functions for different credit card types.
+  Credit card type codes used by the Appwrite Avatars service.
 
-  This module defines the allowed credit card types and provides helper functions
-  to validate them, ensuring only recognized credit card types are used within the application.
+  | Card                   | Code                  |
+  |------------------------|-----------------------|
+  | American Express       | `"amex"`              |
+  | Argencard              | `"argencard"`         |
+  | Cabal                  | `"cabal"`             |
+  | Cencosud               | `"cencosud"`          |
+  | Diners Club            | `"diners"`            |
+  | Discover               | `"discover"`          |
+  | Elo                    | `"elo"`               |
+  | Hipercard              | `"hipercard"`         |
+  | JCB                    | `"jcb"`               |
+  | Mastercard             | `"mastercard"`        |
+  | Naranja                | `"naranja"`           |
+  | Tarjeta Shopping       | `"targeta-shopping"`  |
+  | Union China Pay        | `"union-china-pay"`   |
+  | Visa                   | `"visa"`              |
+  | Mir                    | `"mir"`               |
+  | Maestro                | `"maestro"`           |
   """
 
-  @american_express "amex"
-  @argencard "argencard"
-  @cabal "cabal"
-  @cencosud "cencosud"
-  @diners_club "diners"
-  @discover "discover"
-  @elo "elo"
-  @hipercard "hipercard"
-  @jcb "jcb"
-  @mastercard "mastercard"
-  @naranja "naranja"
-  @tarjeta_shopping "targeta-shopping"
-  @union_china_pay "union-china-pay"
-  @visa "visa"
-  @mir "mir"
-  @maestro "maestro"
-
-  @all_credit_cards [
-    @american_express,
-    @argencard,
-    @cabal,
-    @cencosud,
-    @diners_club,
-    @discover,
-    @elo,
-    @hipercard,
-    @jcb,
-    @mastercard,
-    @naranja,
-    @tarjeta_shopping,
-    @union_china_pay,
-    @visa,
-    @mir,
-    @maestro
-  ]
-
-  @doc """
-  Guard clause to check if a given credit card type is valid.
-
-  ## Examples
-
-      iex> CreditCard.valid_credit_card("amex")
-      true
-
-      iex> CreditCard.valid_credit_card("unknown")
-      false
-  """
-  @spec valid_credit_card(String.t()) :: boolean()
-  defguard valid_credit_card(card) when card in @all_credit_cards
-
-  @doc """
-  Validates the given `credit_card` type and returns `{:ok, credit_card}` if it is valid,
-  or `{:error, "Invalid credit card type"}` otherwise.
-
-  ## Examples
-
-      iex> CreditCard.validate_credit_card("amex")
-      {:ok, "amex"}
-
-      iex> CreditCard.validate_credit_card("unknown")
-      {:error, "Invalid credit card type"}
-  """
-  @spec validate_credit_card(String.t()) :: {:ok, String.t()} | {:error, String.t()}
-  def validate_credit_card(card) when valid_credit_card(card), do: {:ok, card}
-  def validate_credit_card(_card), do: {:error, "Invalid credit card type"}
-
-  @doc """
-  Returns `true` if the given `credit_card` type is valid, otherwise `false`.
-
-  ## Examples
-
-      iex> CreditCard.is_valid_credit_card?("mastercard")
-      true
-
-      iex> CreditCard.is_valid_credit_card?("unknown")
-      false
-  """
-  @spec is_valid_credit_card?(String.t()) :: boolean()
-  def is_valid_credit_card?(card), do: card in @all_credit_cards
-
-  @doc """
-  Validates the given `credit_card` type and returns it if it is valid. Raises an
-  `ArgumentError` if the `credit_card` type is invalid.
-
-  ## Examples
-
-      iex> CreditCard.validate_credit_card!("visa")
-      "visa"
-
-      iex> CreditCard.validate_credit_card!("unknown")
-      ** (ArgumentError) Invalid credit card type: "unknown"
-  """
-  @spec validate_credit_card!(String.t()) :: String.t()
-  def validate_credit_card!(card) do
-    if card in @all_credit_cards do
-      card
-    else
-      raise ArgumentError, "Invalid credit card type: #{inspect(card)}"
-    end
-  end
+  use Appwrite.Consts.Behaviour,
+    values: ~w(amex argencard cabal cencosud diners discover elo hipercard
+               jcb mastercard naranja targeta-shopping union-china-pay
+               visa mir maestro),
+    name:   "credit card"
 end

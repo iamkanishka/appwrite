@@ -1,81 +1,16 @@
 defmodule Appwrite.Consts.AuthenticationFactor do
- @moduledoc """
-  Provides constants and validation functions for different authentication factors.
+  @moduledoc """
+  Valid MFA authentication factor identifiers.
 
-  This module defines the allowed authentication factors and provides helper functions
-  to validate them. It ensures that only recognized authentication factors are used
-  within the application.
+  | Constant        | Value            |
+  |-----------------|------------------|
+  | email           | `"email"`        |
+  | phone           | `"phone"`        |
+  | totp            | `"totp"`         |
+  | recovery code   | `"recoverycode"` |
   """
 
-  @email "email"
-  @phone "phone"
-  @totp "totp"
-  @recovery_code "recoverycode"
-
-  @all_factors [@email, @phone, @totp, @recovery_code]
-
-  @doc """
-  Guard clause to check if a given factor is a valid authentication factor.
-
-  ## Examples
-
-      iex> AuthenticationFactor.valid_factor("email")
-      true
-
-      iex> AuthenticationFactor.valid_factor("unknown")
-      false
-  """
-  @spec valid_factor(String.t()) :: boolean()
-  defguard valid_factor(factor) when factor in @all_factors
-
-  @doc """
-  Validates the given `factor` and returns `{:ok, factor}` if it is valid,
-  or `{:error, "Invalid authentication factor"}` otherwise.
-
-  ## Examples
-
-      iex> AuthenticationFactor.validate_factor("email")
-      {:ok, "email"}
-
-      iex> AuthenticationFactor.validate_factor("unknown")
-      {:error, "Invalid authentication factor"}
-  """
-  @spec validate_factor(String.t()) :: {:ok, String.t()} | {:error, String.t()}
-  def validate_factor(factor) when valid_factor(factor), do: {:ok, factor}
-  def validate_factor(_factor), do: {:error, "Invalid authentication factor"}
-
-  @doc """
-  Returns `true` if the given `factor` is a valid authentication factor, otherwise `false`.
-
-  ## Examples
-
-      iex> AuthenticationFactor.is_valid_factor?("totp")
-      true
-
-      iex> AuthenticationFactor.is_valid_factor?("unknown")
-      false
-  """
-  @spec is_valid_factor?(String.t()) :: boolean()
-  def is_valid_factor?(factor), do: factor in @all_factors
-
-  @doc """
-  Validates the given `factor` and returns it if it is valid. Raises an
-  `ArgumentError` if the `factor` is invalid.
-
-  ## Examples
-
-      iex> AuthenticationFactor.validate_factor!("phone")
-      "phone"
-
-      iex> AuthenticationFactor.validate_factor!("unknown")
-      ** (ArgumentError) Invalid authentication factor: "unknown"
-  """
-  @spec validate_factor!(String.t()) :: String.t()
-  def validate_factor!(factor) do
-    if factor in @all_factors do
-      factor
-    else
-      raise ArgumentError, "Invalid authentication factor: #{inspect(factor)}"
-    end
-  end
+  use Appwrite.Consts.Behaviour,
+    values: ~w(email phone totp recoverycode),
+    name:   "authentication factor"
 end

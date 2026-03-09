@@ -1,90 +1,18 @@
 defmodule Appwrite.Consts.ExecutionMethod do
   @moduledoc """
-  Provides constants and validation functions for different HTTP methods.
+  HTTP methods accepted by the Appwrite Functions execution endpoint.
 
-  This module defines the allowed HTTP methods (GET, POST, PUT, PATCH, DELETE, OPTIONS)
-  and provides helper functions to validate them, ensuring only recognized methods are used
-  within the application.
+  | Method    | Value       |
+  |-----------|-------------|
+  | GET       | `"GET"`     |
+  | POST      | `"POST"`    |
+  | PUT       | `"PUT"`     |
+  | PATCH     | `"PATCH"`   |
+  | DELETE    | `"DELETE"`  |
+  | OPTIONS   | `"OPTIONS"` |
   """
 
-  @get "GET"
-  @post "POST"
-  @put "PUT"
-  @patch "PATCH"
-  @delete "DELETE"
-  @options "OPTIONS"
-
-  @all_methods [
-    @get,
-    @post,
-    @put,
-    @patch,
-    @delete,
-    @options
-  ]
-
-  @doc """
-  Guard clause to check if a given HTTP method is valid.
-
-  ## Examples
-
-      iex> ExecutionMethod.valid_method("GET")
-      true
-
-      iex> ExecutionMethod.valid_method("UNKNOWN")
-      false
-  """
-  @spec valid_method(String.t()) :: boolean()
-  defguard valid_method(method) when method in @all_methods
-
-  @doc """
-  Validates the given `method` and returns `{:ok, method}` if it is valid,
-  or `{:error, "Invalid HTTP method"}` otherwise.
-
-  ## Examples
-
-      iex> ExecutionMethod.validate_method("POST")
-      {:ok, "POST"}
-
-      iex> ExecutionMethod.validate_method("UNKNOWN")
-      {:error, "Invalid HTTP method"}
-  """
-  @spec validate_method(String.t()) :: {:ok, String.t()} | {:error, String.t()}
-  def validate_method(method) when valid_method(method), do: {:ok, method}
-  def validate_method(_method), do: {:error, "Invalid HTTP method"}
-
-  @doc """
-  Returns `true` if the given `method` is a valid HTTP method, otherwise `false`.
-
-  ## Examples
-
-      iex> ExecutionMethod.is_valid_method?("PUT")
-      true
-
-      iex> ExecutionMethod.is_valid_method?("UNKNOWN")
-      false
-  """
-  @spec is_valid_method?(String.t()) :: boolean()
-  def is_valid_method?(method), do: method in @all_methods
-
-  @doc """
-  Validates the given `method` and returns it if it is valid. Raises an
-  `ArgumentError` if the `method` is invalid.
-
-  ## Examples
-
-      iex> ExecutionMethod.validate_method!("PATCH")
-      "PATCH"
-
-      iex> ExecutionMethod.validate_method!("UNKNOWN")
-      ** (ArgumentError) Invalid HTTP method: "UNKNOWN"
-  """
-  @spec validate_method!(String.t()) :: String.t()
-  def validate_method!(method) do
-    if method in @all_methods do
-      method
-    else
-      raise ArgumentError, "Invalid HTTP method: #{inspect(method)}"
-    end
-  end
+  use Appwrite.Consts.Behaviour,
+    values: ~w(GET POST PUT PATCH DELETE OPTIONS),
+    name:   "execution method"
 end

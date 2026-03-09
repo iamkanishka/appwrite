@@ -154,9 +154,8 @@
                         'Elixir.Jason.Encoder.Appwrite.Types.Token',
                         'Elixir.Jason.Encoder.Appwrite.Types.User']},
               {optional_applications,[]},
-              {applications,[kernel,stdlib,elixir,logger,httpoison,jason,
-                             poison,uuid]},
-              {description,"Appwrite package for elixir"},
+              {applications,[kernel,stdlib,elixir,logger,httpoison,jason]},
+              {description,"Elixir SDK for the Appwrite backend-as-a-service platform. Supports authentication, databases, storage, functions, teams, messaging, and more."},
               {registered,[]},
               {vsn,"0.2.0"},
               {mod,{'Elixir.Appwrite.Application',[]}}]}.

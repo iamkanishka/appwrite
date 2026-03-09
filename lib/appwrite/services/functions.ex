@@ -31,8 +31,8 @@ defmodule Appwrite.Services.Functions do
       api_path = "/v1/functions/#{function_id}/executions"
 
       payload = %{
-        queries: queries,
-        search: search
+        "queries" => queries,
+        "search" => search
       }
 
       api_header = %{"content-type" => "application/json"}
@@ -86,12 +86,12 @@ defmodule Appwrite.Services.Functions do
       api_path = "/v1/functions/#{function_id}/executions"
 
       payload = %{
-        body: body,
-        async: async,
-        path: xpath,
-        method: method,
-        headers: headers,
-        scheduledAt: scheduled_at
+        "body" => body,
+        "async" => async,
+        "path" => xpath,
+        "method" => method,
+        "headers" => headers,
+        "scheduledAt" => scheduled_at
       }
 
       api_header = %{"content-type" => "application/json"}
@@ -145,7 +145,7 @@ defmodule Appwrite.Services.Functions do
   defp validate_method(nil), do: :ok
 
   defp validate_method(method) do
-    case ExecutionMethod.validate_method(method) do
+    case ExecutionMethod.validate(method) do
       {:ok, _} -> :ok
       {:error, _} -> {:error, "Invalid execution method: #{method}"}
     end

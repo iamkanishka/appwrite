@@ -13,5 +13,5 @@ defmodule Appwrite.Consts.ImageFormat do
 
   use Appwrite.Consts.Behaviour,
     values: ~w(jpg jpeg gif png webp),
-    name:   "image format"
+    name: "image format"
 end

@@ -22,7 +22,7 @@ defmodule Appwrite.Consts.Behaviour do
   @doc false
   defmacro __using__(opts) do
     values = Keyword.fetch!(opts, :values)
-    name   = Keyword.fetch!(opts, :name)
+    name = Keyword.fetch!(opts, :name)
 
     quote do
       @behaviour Appwrite.Consts.Behaviour
@@ -77,10 +77,11 @@ defmodule Appwrite.Consts.Behaviour do
       @impl Appwrite.Consts.Behaviour
       @spec validate!(String.t()) :: String.t()
       def validate!(value) when value in @all_values, do: value
+
       def validate!(value),
         do: raise(ArgumentError, "Invalid #{unquote(name)}: #{inspect(value)}")
 
-      defoverridable [valid?: 1, validate: 1, validate!: 1, values: 0]
+      defoverridable valid?: 1, validate: 1, validate!: 1, values: 0
     end
   end
 end

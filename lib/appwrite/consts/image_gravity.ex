@@ -17,5 +17,5 @@ defmodule Appwrite.Consts.ImageGravity do
 
   use Appwrite.Consts.Behaviour,
     values: ~w(center top-left top top-right left right bottom-left bottom bottom-right),
-    name:   "image gravity"
+    name: "image gravity"
 end

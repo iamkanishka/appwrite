@@ -36,6 +36,7 @@ defmodule Appwrite.Services.Functions do
       }
 
       api_header = %{"content-type" => "application/json"}
+
       try do
         executions = Client.call("get", api_path, api_header, payload)
         {:ok, executions}
@@ -95,6 +96,7 @@ defmodule Appwrite.Services.Functions do
       }
 
       api_header = %{"content-type" => "application/json"}
+
       try do
         execution = Client.call("post", api_path, api_header, payload)
         {:ok, execution}
@@ -125,6 +127,7 @@ defmodule Appwrite.Services.Functions do
       api_path = "/v1/functions/#{function_id}/executions/#{execution_id}"
       payload = %{}
       api_header = %{"content-type" => "application/json"}
+
       try do
         execution = Client.call("get", api_path, api_header, payload)
         {:ok, execution}

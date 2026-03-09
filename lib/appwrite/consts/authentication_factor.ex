@@ -12,5 +12,5 @@ defmodule Appwrite.Consts.AuthenticationFactor do
 
   use Appwrite.Consts.Behaviour,
     values: ~w(email phone totp recoverycode),
-    name:   "authentication factor"
+    name: "authentication factor"
 end

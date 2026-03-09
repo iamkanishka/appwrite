@@ -66,7 +66,7 @@ defmodule Appwrite.Utils.Id do
   # :millisecond.
   @spec hex_timestamp() :: String.t()
   defp hex_timestamp do
-    now_sec  = :os.system_time(:second)
+    now_sec = :os.system_time(:second)
     now_msec = :os.system_time(:millisecond)
     msec_part = now_msec - now_sec * 1_000
 

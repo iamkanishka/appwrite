@@ -178,8 +178,15 @@ defmodule Appwrite.Utils.Client do
   - `on_progress`: Optional 1-arity function called with `UploadProgress.t()`
     after each chunk.
   """
-  @spec chunked_upload(String.t(), String.t(), Headers.t(), Payload.t(), (UploadProgress.t() ->
-                                                                            any()) | nil) :: any()
+  @spec chunked_upload(
+          String.t(),
+          String.t(),
+          Headers.t(),
+          Payload.t(),
+          (UploadProgress.t() ->
+             any())
+          | nil
+        ) :: any()
   def chunked_upload(method, url, headers \\ %{}, payload \\ %{}, on_progress \\ nil) do
     file = payload["file"]
 

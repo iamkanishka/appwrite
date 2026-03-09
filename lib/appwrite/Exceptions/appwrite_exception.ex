@@ -21,9 +21,9 @@ defmodule Appwrite.Exceptions.AppwriteException do
   defexception [:message, :code, :type, :response]
 
   @type t :: %__MODULE__{
-          message:  String.t(),
-          code:     non_neg_integer(),
-          type:     String.t(),
+          message: String.t(),
+          code: non_neg_integer(),
+          type: String.t(),
           response: map() | nil
         }
 
@@ -40,9 +40,9 @@ defmodule Appwrite.Exceptions.AppwriteException do
   @spec new(String.t(), non_neg_integer(), String.t(), any()) :: t()
   def new(message \\ "An error occurred", code \\ 0, type \\ "unknown", response \\ nil) do
     %__MODULE__{
-      message:  message,
-      code:     code,
-      type:     type,
+      message: message,
+      code: code,
+      type: type,
       response: response
     }
   end

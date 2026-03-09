@@ -14,5 +14,5 @@ defmodule Appwrite.Consts.ExecutionMethod do
 
   use Appwrite.Consts.Behaviour,
     values: ~w(GET POST PUT PATCH DELETE OPTIONS),
-    name:   "execution method"
+    name: "execution method"
 end

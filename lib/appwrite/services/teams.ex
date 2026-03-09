@@ -60,8 +60,12 @@ defmodule Appwrite.Services.Teams do
           {:ok, Team.t()} | {:error, AppwriteException.t()}
   def create(team_id, name, roles \\ nil) do
     cond do
-      is_nil(team_id) -> {:error, %AppwriteException{message: "team_id is required"}}
-      is_nil(name) -> {:error, %AppwriteException{message: "name is required"}}
+      is_nil(team_id) ->
+        {:error, %AppwriteException{message: "team_id is required"}}
+
+      is_nil(name) ->
+        {:error, %AppwriteException{message: "name is required"}}
+
       true ->
         params =
           %{"teamId" => team_id, "name" => name}
@@ -114,8 +118,12 @@ defmodule Appwrite.Services.Teams do
   @spec update(String.t(), String.t()) :: {:ok, Team.t()} | {:error, AppwriteException.t()}
   def update(team_id, name) do
     cond do
-      is_nil(team_id) -> {:error, %AppwriteException{message: "team_id is required"}}
-      is_nil(name) -> {:error, %AppwriteException{message: "name is required"}}
+      is_nil(team_id) ->
+        {:error, %AppwriteException{message: "team_id is required"}}
+
+      is_nil(name) ->
+        {:error, %AppwriteException{message: "name is required"}}
+
       true ->
         headers = %{"content-type" => "application/json"}
         params = %{"name" => name}
@@ -244,8 +252,12 @@ defmodule Appwrite.Services.Teams do
           {:ok, Membership.t()} | {:error, AppwriteException.t()}
   def get_membership(team_id, membership_id) do
     cond do
-      is_nil(team_id) -> {:error, %AppwriteException{message: "team_id is required"}}
-      is_nil(membership_id) -> {:error, %AppwriteException{message: "membership_id is required"}}
+      is_nil(team_id) ->
+        {:error, %AppwriteException{message: "team_id is required"}}
+
+      is_nil(membership_id) ->
+        {:error, %AppwriteException{message: "membership_id is required"}}
+
       true ->
         headers = %{"content-type" => "application/json"}
 
@@ -272,9 +284,15 @@ defmodule Appwrite.Services.Teams do
           {:ok, Membership.t()} | {:error, AppwriteException.t()}
   def update_membership(team_id, membership_id, roles) do
     cond do
-      is_nil(team_id) -> {:error, %AppwriteException{message: "team_id is required"}}
-      is_nil(membership_id) -> {:error, %AppwriteException{message: "membership_id is required"}}
-      is_nil(roles) -> {:error, %AppwriteException{message: "roles is required"}}
+      is_nil(team_id) ->
+        {:error, %AppwriteException{message: "team_id is required"}}
+
+      is_nil(membership_id) ->
+        {:error, %AppwriteException{message: "membership_id is required"}}
+
+      is_nil(roles) ->
+        {:error, %AppwriteException{message: "roles is required"}}
+
       true ->
         headers = %{"content-type" => "application/json"}
         params = %{"roles" => roles}
@@ -302,8 +320,12 @@ defmodule Appwrite.Services.Teams do
           {:ok, map()} | {:error, AppwriteException.t()}
   def delete_membership(team_id, membership_id) do
     cond do
-      is_nil(team_id) -> {:error, %AppwriteException{message: "team_id is required"}}
-      is_nil(membership_id) -> {:error, %AppwriteException{message: "membership_id is required"}}
+      is_nil(team_id) ->
+        {:error, %AppwriteException{message: "team_id is required"}}
+
+      is_nil(membership_id) ->
+        {:error, %AppwriteException{message: "membership_id is required"}}
+
       true ->
         headers = %{"content-type" => "application/json"}
 
@@ -337,10 +359,18 @@ defmodule Appwrite.Services.Teams do
           {:ok, Membership.t()} | {:error, AppwriteException.t()}
   def update_membership_status(team_id, membership_id, user_id, secret) do
     cond do
-      is_nil(team_id) -> {:error, %AppwriteException{message: "team_id is required"}}
-      is_nil(membership_id) -> {:error, %AppwriteException{message: "membership_id is required"}}
-      is_nil(user_id) -> {:error, %AppwriteException{message: "user_id is required"}}
-      is_nil(secret) -> {:error, %AppwriteException{message: "secret is required"}}
+      is_nil(team_id) ->
+        {:error, %AppwriteException{message: "team_id is required"}}
+
+      is_nil(membership_id) ->
+        {:error, %AppwriteException{message: "membership_id is required"}}
+
+      is_nil(user_id) ->
+        {:error, %AppwriteException{message: "user_id is required"}}
+
+      is_nil(secret) ->
+        {:error, %AppwriteException{message: "secret is required"}}
+
       true ->
         headers = %{"content-type" => "application/json"}
         params = %{"userId" => user_id, "secret" => secret}
@@ -400,8 +430,12 @@ defmodule Appwrite.Services.Teams do
           {:ok, Preference.t()} | {:error, AppwriteException.t()}
   def update_prefs(team_id, prefs) do
     cond do
-      is_nil(team_id) -> {:error, %AppwriteException{message: "team_id is required"}}
-      is_nil(prefs) -> {:error, %AppwriteException{message: "prefs is required"}}
+      is_nil(team_id) ->
+        {:error, %AppwriteException{message: "team_id is required"}}
+
+      is_nil(prefs) ->
+        {:error, %AppwriteException{message: "prefs is required"}}
+
       true ->
         headers = %{"content-type" => "application/json"}
         params = %{"prefs" => prefs}

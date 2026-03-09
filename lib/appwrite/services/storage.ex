@@ -44,6 +44,7 @@ defmodule Appwrite.Services.Storage do
       }
 
       api_header = %{"content-type" => "application/json"}
+
       try do
         file_list = Client.call("get", api_path, api_header, payload)
         {:ok, file_list}
@@ -105,37 +106,37 @@ defmodule Appwrite.Services.Storage do
   end
   ```
   """
- @spec create_file(bucket_id(), file_id() | nil, any(), permissions() | nil) ::
-        {:ok, File.t()} | {:error, AppwriteException.t()}
-def create_file(bucket_id, file_id \\ nil, file, permissions \\ nil) do
-  with :ok <- ensure_not_nil(bucket_id, "bucketId"),
-       :ok <- ensure_not_nil(file, "file") do
-    cust_or_autogen_file_id =
-      if file_id == nil,
-        do: String.replace(to_string(General.generate_uniqe_id()), "-", ""),
-        else: file_id
+  @spec create_file(bucket_id(), file_id() | nil, any(), permissions() | nil) ::
+          {:ok, File.t()} | {:error, AppwriteException.t()}
+  def create_file(bucket_id, file_id \\ nil, file, permissions \\ nil) do
+    with :ok <- ensure_not_nil(bucket_id, "bucketId"),
+         :ok <- ensure_not_nil(file, "file") do
+      cust_or_autogen_file_id =
+        if file_id == nil,
+          do: String.replace(to_string(General.generate_uniqe_id()), "-", ""),
+          else: file_id
 
-    api_path = "/v1/storage/buckets/#{bucket_id}/files"
+      api_path = "/v1/storage/buckets/#{bucket_id}/files"
 
-    payload =
-      %{
-        "fileId" => cust_or_autogen_file_id,
-        "file" => file
-      }
-      |> then(fn p ->
-        if permissions != nil, do: Map.put(p, "permissions", permissions), else: p
-      end)
+      payload =
+        %{
+          "fileId" => cust_or_autogen_file_id,
+          "file" => file
+        }
+        |> then(fn p ->
+          if permissions != nil, do: Map.put(p, "permissions", permissions), else: p
+        end)
 
-    api_header = %{"content-type" => "multipart/form-data"}
+      api_header = %{"content-type" => "multipart/form-data"}
 
-    try do
-      uploaded_file = Client.chunked_upload("post", api_path, api_header, payload, nil)
-      {:ok, uploaded_file}
-    rescue
-      error -> {:error, error}
+      try do
+        uploaded_file = Client.chunked_upload("post", api_path, api_header, payload, nil)
+        {:ok, uploaded_file}
+      rescue
+        error -> {:error, error}
+      end
     end
   end
-end
 
   @doc """
   Get a file's metadata by its unique ID.
@@ -155,6 +156,7 @@ end
       api_path = "/v1/storage/buckets/#{bucket_id}/files/#{file_id}"
       payload = %{}
       api_header = %{"content-type" => "application/json"}
+
       try do
         file = Client.call("get", api_path, api_header, payload)
         {:ok, file}
@@ -183,6 +185,7 @@ end
       api_path = "/v1/storage/buckets/#{bucket_id}/files/#{file_id}"
       payload = %{}
       api_header = %{"content-type" => "application/json"}
+
       try do
         # NOTE: delete uses Client.call, not chunked_upload
         Client.call("delete", api_path, api_header, payload)

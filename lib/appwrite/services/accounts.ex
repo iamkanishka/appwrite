@@ -40,6 +40,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       user = Client.call("get", api_path, api_header, payload)
       {:ok, user}
@@ -82,6 +83,7 @@ defmodule Appwrite.Services.Accounts do
       }
 
       api_header = %{"content-type" => "application/json"}
+
       try do
         user = Client.call("post", api_path, api_header, payload)
         {:ok, user}
@@ -125,6 +127,7 @@ defmodule Appwrite.Services.Accounts do
       }
 
       api_header = %{"content-type" => "application/json"}
+
       try do
         user = Client.call("patch", api_path, api_header, payload)
         {:ok, user}
@@ -154,6 +157,7 @@ defmodule Appwrite.Services.Accounts do
     }
 
     api_header = %{"content-type" => "application/json"}
+
     try do
       identity_list = Client.call("get", api_path, api_header, payload)
       {:ok, identity_list}
@@ -180,6 +184,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/identities/#{identity_id}"
       api_header = %{"content-type" => "application/json"}
       payload = %{}
+
       try do
         deleted_identity = Client.call("delete", api_path, api_header, payload)
         {:ok, deleted_identity}
@@ -202,6 +207,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/jwts"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
+
     try do
       jwt = Client.call("post", api_path, api_header, payload)
       {:ok, jwt}
@@ -226,6 +232,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/logs"
     payload = if queries, do: %{"queries" => queries}, else: %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       logs = Client.call("get", api_path, api_header, payload)
       {:ok, logs}
@@ -252,6 +259,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/mfa"
       payload = %{"mfa" => mfa}
       api_header = %{"content-type" => "application/json"}
+
       try do
         user = Client.call("patch", api_path, api_header, payload)
         {:ok, user}
@@ -279,6 +287,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/mfa/authenticators/#{type}"
       api_header = %{"content-type" => "application/json"}
       payload = %{}
+
       try do
         mfa_type = Client.call("post", api_path, api_header, payload)
         {:ok, mfa_type}
@@ -307,6 +316,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/mfa/authenticators/#{type}"
       api_header = %{"content-type" => "application/json"}
       payload = %{"otp" => otp}
+
       try do
         user = Client.call("put", api_path, api_header, payload)
         {:ok, user}
@@ -336,6 +346,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/mfa/authenticators/#{type}"
       api_header = %{"content-type" => "application/json"}
       payload = %{}
+
       try do
         deleted_mfa_authenticator = Client.call("delete", api_path, api_header, payload)
         {:ok, deleted_mfa_authenticator}
@@ -361,18 +372,25 @@ defmodule Appwrite.Services.Accounts do
     cond do
       is_nil(factor) ->
         {:error, %AppwriteException{message: "Missing required parameter: factor"}}
+
       not Appwrite.Consts.AuthenticationFactor.valid?(factor) ->
-        {:error, %AppwriteException{message: "Invalid factor: #{inspect(factor)}. Must be one of: #{Enum.join(Appwrite.Consts.AuthenticationFactor.values(), ", ")}"}}
+        {:error,
+         %AppwriteException{
+           message:
+             "Invalid factor: #{inspect(factor)}. Must be one of: #{Enum.join(Appwrite.Consts.AuthenticationFactor.values(), ", ")}"
+         }}
+
       true ->
         api_path = "/v1/account/mfa/challenge"
         api_header = %{"content-type" => "application/json"}
         payload = %{"factor" => factor}
-      try do
-        mfa_challenge = Client.call("post", api_path, api_header, payload)
-        {:ok, mfa_challenge}
-      rescue
-        error -> {:error, error}
-      end
+
+        try do
+          mfa_challenge = Client.call("post", api_path, api_header, payload)
+          {:ok, mfa_challenge}
+        rescue
+          error -> {:error, error}
+        end
     end
   end
 
@@ -395,6 +413,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/mfa/challenge"
       api_header = %{"content-type" => "application/json"}
       payload = %{"challengeId" => challenge_id, "otp" => otp}
+
       try do
         updated_mfa_challenge = Client.call("put", api_path, api_header, payload)
         {:ok, updated_mfa_challenge}
@@ -418,6 +437,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/mfa/factors"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
+
     try do
       mfa_factors = Client.call("get", api_path, api_header, payload)
       {:ok, mfa_factors}
@@ -438,6 +458,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/mfa/recovery-codes"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
+
     try do
       mfa_recovery_codes = Client.call("get", api_path, api_header, payload)
       {:ok, mfa_recovery_codes}
@@ -458,6 +479,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/mfa/recovery-codes"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
+
     try do
       mfa_recovery_codes = Client.call("post", api_path, api_header, payload)
       {:ok, mfa_recovery_codes}
@@ -478,6 +500,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/mfa/recovery-codes"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
+
     try do
       mfa_recovery_codes = Client.call("patch", api_path, api_header, payload)
       {:ok, mfa_recovery_codes}
@@ -504,6 +527,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/name"
       payload = %{"name" => name}
       api_header = %{"content-type" => "application/json"}
+
       try do
         user = Client.call("patch", api_path, api_header, payload)
         {:ok, user}
@@ -538,6 +562,7 @@ defmodule Appwrite.Services.Accounts do
         |> Map.new()
 
       api_header = %{"content-type" => "application/json"}
+
       try do
         user = Client.call("patch", api_path, api_header, payload)
         {:ok, user}
@@ -569,6 +594,7 @@ defmodule Appwrite.Services.Accounts do
       }
 
       api_header = %{"content-type" => "application/json"}
+
       try do
         user = Client.call("patch", api_path, api_header, payload)
         {:ok, user}
@@ -590,6 +616,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/prefs"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       preference = Client.call("get", api_path, api_header, payload)
       {:ok, preference}
@@ -618,6 +645,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/prefs"
       api_header = %{"content-type" => "application/json"}
       payload = %{"prefs" => prefs}
+
       try do
         updated_prefs = Client.call("patch", api_path, api_header, payload)
         {:ok, updated_prefs}
@@ -644,6 +672,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/recovery"
       api_header = %{"content-type" => "application/json"}
       payload = %{"email" => email, "url" => url}
+
       try do
         recovery = Client.call("post", api_path, api_header, payload)
         {:ok, recovery}
@@ -665,6 +694,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/sessions"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
+
     try do
       session_list = Client.call("get", api_path, api_header, payload)
       {:ok, session_list}
@@ -685,6 +715,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/sessions"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
+
     try do
       result = Client.call("delete", api_path, api_header, payload)
       {:ok, result}
@@ -707,6 +738,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/sessions/anonymous"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
+
     try do
       session = Client.call("post", api_path, api_header, payload)
       {:ok, session}
@@ -737,6 +769,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/sessions/email"
       payload = %{"email" => email, "password" => password}
       api_header = %{"content-type" => "application/json"}
+
       try do
         session = Client.call("post", api_path, api_header, payload)
         {:ok, session}
@@ -768,6 +801,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/sessions/magic-url"
       payload = %{"userId" => user_id, "secret" => secret}
       api_header = %{"content-type" => "application/json"}
+
       try do
         session = Client.call("put", api_path, api_header, payload)
         {:ok, session}
@@ -809,29 +843,31 @@ defmodule Appwrite.Services.Accounts do
     cond do
       is_nil(provider) ->
         {:error, %AppwriteException{message: "Missing required parameter: 'provider'"}}
+
       not Appwrite.Consts.OAuthProvider.valid?(provider) ->
         {:error, %AppwriteException{message: "Invalid provider: #{inspect(provider)}"}}
+
       true ->
         try do
           api_path = "/account/sessions/oauth2/#{provider}"
-        url = URI.merge(Client.default_config()["endpoint"], api_path)
-        payload = %{"project" => Client.default_config()["project"]}
+          url = URI.merge(Client.default_config()["endpoint"], api_path)
+          payload = %{"project" => Client.default_config()["project"]}
 
-        params =
-          Enum.reduce(
-            [{"success", success}, {"failure", failure}, {"scopes", scopes}],
-            payload,
-            fn
-              {key, value}, acc when not is_nil(value) -> Map.put(acc, key, value)
-              _, acc -> acc
-            end
-          )
+          params =
+            Enum.reduce(
+              [{"success", success}, {"failure", failure}, {"scopes", scopes}],
+              payload,
+              fn
+                {key, value}, acc when not is_nil(value) -> Map.put(acc, key, value)
+                _, acc -> acc
+              end
+            )
 
-        query_string = URI.encode_query(Client.flatten(params))
-        {:ok, to_string(url) <> "?" <> query_string}
-      rescue
-        e in RuntimeError -> {:error, %AppwriteException{message: e.message}}
-      end
+          query_string = URI.encode_query(Client.flatten(params))
+          {:ok, to_string(url) <> "?" <> query_string}
+        rescue
+          e in RuntimeError -> {:error, %AppwriteException{message: e.message}}
+        end
     end
   end
 
@@ -857,6 +893,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/sessions/phone"
       payload = %{"userId" => user_id, "secret" => secret}
       api_header = %{"content-type" => "application/json"}
+
       try do
         session = Client.call("put", api_path, api_header, payload)
         {:ok, session}
@@ -888,6 +925,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/sessions/token"
       payload = %{"userId" => user_id, "secret" => secret}
       api_header = %{"content-type" => "application/json"}
+
       try do
         session = Client.call("post", api_path, api_header, payload)
         {:ok, session}
@@ -920,6 +958,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/sessions/#{session_id}"
       payload = %{}
       api_header = %{"content-type" => "application/json"} |> Map.merge(session_map)
+
       try do
         session = Client.call("patch", api_path, api_header, payload)
         {:ok, session}
@@ -949,6 +988,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/sessions/#{session_id}"
       payload = %{}
       api_header = %{"content-type" => "application/json"} |> Map.merge(session_map)
+
       try do
         session = Client.call("get", api_path, api_header, payload)
         {:ok, session}
@@ -978,6 +1018,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/sessions/#{session_id}"
       payload = %{}
       api_header = %{"content-type" => "application/json"} |> Map.merge(session_map)
+
       try do
         result = Client.call("delete", api_path, api_header, payload)
         {:ok, result}
@@ -1002,6 +1043,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/status"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       user = Client.call("patch", api_path, api_header, payload)
       {:ok, user}
@@ -1026,7 +1068,8 @@ defmodule Appwrite.Services.Accounts do
           {:ok, Target.t()} | {:error, any()}
   def create_push_target(target_id, identifier, provider_id \\ nil) do
     if is_nil(target_id) or is_nil(identifier) do
-      {:error, %AppwriteException{message: "Missing required parameters: 'targetId' or 'identifier'"}}
+      {:error,
+       %AppwriteException{message: "Missing required parameters: 'targetId' or 'identifier'"}}
     else
       api_path = "/v1/account/targets/push"
       api_header = %{"content-type" => "application/json"}
@@ -1039,6 +1082,7 @@ defmodule Appwrite.Services.Accounts do
         }
         |> Enum.reject(fn {_k, v} -> is_nil(v) end)
         |> Map.new()
+
       try do
         target = Client.call("post", api_path, api_header, payload)
         {:ok, target}
@@ -1063,11 +1107,13 @@ defmodule Appwrite.Services.Accounts do
           {:ok, Target.t()} | {:error, any()}
   def update_push_target(target_id, identifier) do
     if is_nil(target_id) or is_nil(identifier) do
-      {:error, %AppwriteException{message: "Missing required parameters: 'targetId' or 'identifier'"}}
+      {:error,
+       %AppwriteException{message: "Missing required parameters: 'targetId' or 'identifier'"}}
     else
       api_path = "/v1/account/targets/#{target_id}/push"
       api_header = %{"content-type" => "application/json"}
       payload = %{"identifier" => identifier}
+
       try do
         target = Client.call("put", api_path, api_header, payload)
         {:ok, target}
@@ -1095,6 +1141,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/targets/#{target_id}/push"
       api_header = %{"content-type" => "application/json"}
       payload = %{}
+
       try do
         result = Client.call("delete", api_path, api_header, payload)
         {:ok, result}
@@ -1131,6 +1178,7 @@ defmodule Appwrite.Services.Accounts do
         %{"userId" => user_id, "email" => email, "phrase" => phrase}
         |> Enum.reject(fn {_k, v} -> is_nil(v) end)
         |> Map.new()
+
       try do
         token = Client.call("post", api_path, api_header, payload)
         {:ok, token}
@@ -1173,6 +1221,7 @@ defmodule Appwrite.Services.Accounts do
         %{"userId" => user_id, "email" => email, "url" => url, "phrase" => phrase}
         |> Enum.reject(fn {_k, v} -> is_nil(v) end)
         |> Map.new()
+
       try do
         token = Client.call("post", api_path, api_header, payload)
         {:ok, token}
@@ -1204,6 +1253,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/tokens/phone"
       api_header = %{"content-type" => "application/json"}
       payload = %{"userId" => user_id, "phone" => phone}
+
       try do
         token = Client.call("post", api_path, api_header, payload)
         {:ok, token}
@@ -1290,6 +1340,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/verification"
       api_header = %{"content-type" => "application/json"}
       payload = %{"url" => url}
+
       try do
         verification = Client.call("post", api_path, api_header, payload)
         {:ok, verification}
@@ -1320,6 +1371,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/verification"
       api_header = %{"content-type" => "application/json"}
       payload = %{"userId" => user_id, "secret" => secret}
+
       try do
         verification_token = Client.call("put", api_path, api_header, payload)
         {:ok, verification_token}
@@ -1344,6 +1396,7 @@ defmodule Appwrite.Services.Accounts do
     api_path = "/v1/account/verification/phone"
     api_header = %{"content-type" => "application/json"}
     payload = %{}
+
     try do
       verification_token = Client.call("post", api_path, api_header, payload)
       {:ok, verification_token}
@@ -1373,6 +1426,7 @@ defmodule Appwrite.Services.Accounts do
       api_path = "/v1/account/verification/phone"
       api_header = %{"content-type" => "application/json"}
       payload = %{"userId" => user_id, "secret" => secret}
+
       try do
         verification_token = Client.call("put", api_path, api_header, payload)
         {:ok, verification_token}

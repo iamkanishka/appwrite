@@ -37,6 +37,7 @@ defmodule Appwrite.Services.Locale do
     api_path = "/v1/locale"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       locale = Client.call("get", api_path, api_header, payload)
       {:ok, locale}
@@ -57,6 +58,7 @@ defmodule Appwrite.Services.Locale do
     api_path = "/v1/locale/codes"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       locale_codes = Client.call("get", api_path, api_header, payload)
       {:ok, locale_codes}
@@ -77,6 +79,7 @@ defmodule Appwrite.Services.Locale do
     api_path = "/v1/locale/continents"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       continent_list = Client.call("get", api_path, api_header, payload)
       {:ok, continent_list}
@@ -97,6 +100,7 @@ defmodule Appwrite.Services.Locale do
     api_path = "/v1/locale/countries"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       country_list = Client.call("get", api_path, api_header, payload)
       {:ok, country_list}
@@ -117,6 +121,7 @@ defmodule Appwrite.Services.Locale do
     api_path = "/v1/locale/countries/eu"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       country_list = Client.call("get", api_path, api_header, payload)
       {:ok, country_list}
@@ -137,6 +142,7 @@ defmodule Appwrite.Services.Locale do
     api_path = "/v1/locale/countries/phones"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       phone_list = Client.call("get", api_path, api_header, payload)
       {:ok, phone_list}
@@ -157,6 +163,7 @@ defmodule Appwrite.Services.Locale do
     api_path = "/v1/locale/currencies"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       currency_list = Client.call("get", api_path, api_header, payload)
       {:ok, currency_list}
@@ -177,6 +184,7 @@ defmodule Appwrite.Services.Locale do
     api_path = "/v1/locale/languages"
     payload = %{}
     api_header = %{"content-type" => "application/json"}
+
     try do
       language_list = Client.call("get", api_path, api_header, payload)
       {:ok, language_list}

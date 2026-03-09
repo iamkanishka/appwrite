@@ -26,5 +26,5 @@ defmodule Appwrite.Consts.CreditCard do
     values: ~w(amex argencard cabal cencosud diners discover elo hipercard
                jcb mastercard naranja targeta-shopping union-china-pay
                visa mir maestro),
-    name:   "credit card"
+    name: "credit card"
 end

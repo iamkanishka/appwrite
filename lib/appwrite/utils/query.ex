@@ -29,9 +29,9 @@ defmodule Appwrite.Utils.Query do
   # Types
   # ---------------------------------------------------------------------------
 
-  @type scalar      :: String.t() | number() | boolean()
+  @type scalar :: String.t() | number() | boolean()
   @type query_value :: scalar() | [scalar() | map()]
-  @type t           :: String.t()
+  @type t :: String.t()
 
   # ---------------------------------------------------------------------------
   # Core builder

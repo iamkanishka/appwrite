@@ -22,5 +22,5 @@ defmodule Appwrite.Consts.Browser do
 
   use Appwrite.Consts.Behaviour,
     values: ~w(aa an ch ci cm cr ff sf mf ps oi om op on),
-    name:   "browser"
+    name: "browser"
 end

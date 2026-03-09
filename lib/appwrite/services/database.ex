@@ -39,6 +39,7 @@ defmodule Appwrite.Services.Database do
       api_path = "/v1/databases/#{database_id}/collections/#{collection_id}/documents"
       payload = if queries, do: %{"queries" => queries}, else: %{}
       api_header = %{"content-type" => "application/json"}
+
       try do
         documents = Client.call("get", api_path, api_header, payload)
         {:ok, documents}
@@ -82,8 +83,15 @@ defmodule Appwrite.Services.Database do
           else: document_id
 
       api_path = "/v1/databases/#{database_id}/collections/#{collection_id}/documents"
-      payload = %{"documentId" => cust_or_autogen_document_id, "data" => data, "permissions" => permissions}
+
+      payload = %{
+        "documentId" => cust_or_autogen_document_id,
+        "data" => data,
+        "permissions" => permissions
+      }
+
       api_header = %{"content-type" => "application/json"}
+
       try do
         document = Client.call("post", api_path, api_header, payload)
         {:ok, document}
@@ -120,6 +128,7 @@ defmodule Appwrite.Services.Database do
 
       payload = if queries, do: %{"queries" => queries}, else: %{}
       api_header = %{"content-type" => "application/json"}
+
       try do
         document = Client.call("get", api_path, api_header, payload)
         {:ok, document}
@@ -171,6 +180,7 @@ defmodule Appwrite.Services.Database do
 
       payload = %{"data" => data, "permissions" => permissions}
       api_header = %{"content-type" => "application/json"}
+
       try do
         document = Client.call("patch", api_path, api_header, payload)
         {:ok, document}
@@ -207,6 +217,7 @@ defmodule Appwrite.Services.Database do
 
       payload = %{}
       api_header = %{"content-type" => "application/json"}
+
       try do
         result = Client.call("delete", api_path, api_header, payload)
         {:ok, result}
@@ -220,8 +231,11 @@ defmodule Appwrite.Services.Database do
 
   defp validate_params(params) do
     case Enum.find(params, fn {_, v} -> is_nil(v) end) do
-      nil -> :ok
-      {key, _} -> {:error, %AppwriteException{message: "Missing required parameter: #{key}", code: 400}}
+      nil ->
+        :ok
+
+      {key, _} ->
+        {:error, %AppwriteException{message: "Missing required parameter: #{key}", code: 400}}
     end
   end
 end

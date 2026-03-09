@@ -9,5 +9,5 @@ defmodule Appwrite.Consts.AuthenticationType do
 
   use Appwrite.Consts.Behaviour,
     values: ~w(totp),
-    name:   "authenticator type"
+    name: "authenticator type"
 end

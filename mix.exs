@@ -69,7 +69,7 @@ defmodule Appwrite.MixProject do
         guides
         .formatter.exs
         CHANGELOG.md
-        LICENSE.txt
+        LICENSE
         mix.exs
         README.md
       )
@@ -96,7 +96,8 @@ defmodule Appwrite.MixProject do
     [
       "guides/introduction/installation.md",
       "guides/introduction/configuration.md",
-      "CHANGELOG.md"
+      "CHANGELOG.md",
+      "README.md"
     ]
   end
 

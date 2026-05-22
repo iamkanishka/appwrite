@@ -2,307 +2,275 @@ defmodule Appwrite.Services.Storage do
   @moduledoc """
   The Storage service allows you to manage your project files.
 
-  Using the Storage service, you can upload, view, download, and query all your project files.
-  Each file in the service is granted read and write permissions to manage who has access to
-  view or edit it.
+  ## File format for uploads
 
-  The preview endpoint allows you to generate preview images for your files and manipulate
-  the resulting image's dimensions, quality, and file format for optimal delivery.
-  """
+  The `file_info` argument accepted by `create_file/5` must be a map with the
+  following string keys:
 
-  alias Appwrite.Exceptions.AppwriteException
-  alias Appwrite.Types.{File, FileList}
-  alias Appwrite.Utils.Client
-  alias Appwrite.Utils.General
-
-  @type bucket_id :: String.t()
-  @type file_id :: String.t()
-  @type permissions :: [String.t()]
-  @type queries :: [String.t()]
-
-  @doc """
-  List files in a bucket.
-
-  ## Parameters
-  - `bucket_id` (`String.t()`): The ID of the bucket.
-  - `queries` (`[String.t()] | nil`): Query strings to filter the results.
-  - `search` (`String.t() | nil`): Search term to filter files by name.
-
-  ## Returns
-  - `{:ok, FileList.t()}` on success.
-  - `{:error, AppwriteException.t()}` on failure.
-  """
-  @spec list_files(bucket_id(), queries() | nil, String.t() | nil) ::
-          {:ok, FileList.t()} | {:error, AppwriteException.t()}
-  def list_files(bucket_id, queries \\ nil, search \\ nil) do
-    with :ok <- ensure_not_nil(bucket_id, "bucketId") do
-      api_path = "/v1/storage/buckets/#{bucket_id}/files"
-
-      payload = %{
-        "queries" => queries,
-        "search" => search
+      %{
+        "name" => "report.pdf",          # display filename
+        "data" => <<binary content>>,    # raw binary — NOT base64 at call site
+        "type" => "application/pdf",     # MIME type
+        "size" => 204_800                # byte length (integer)
       }
 
-      api_header = %{"content-type" => "application/json"}
+  The SDK handles base64 encoding internally for chunked uploads.
 
-      try do
-        file_list = Client.call("get", api_path, api_header, payload)
-        {:ok, file_list}
-      rescue
-        error -> {:error, error}
-      end
-    end
-  end
+  See `CHANGELOG.md` for version history.
+  """
+
+  use Appwrite.Services.Base
+
+  @chunk_size 5 * 1024 * 1024
+
+  # ---------------------------------------------------------------------------
+  # List
+  # ---------------------------------------------------------------------------
 
   @doc """
-  Create (upload) a new file in a bucket.
-
-  Accepts the file as a map with base64-encoded content (e.g. from a LiveView file hook).
+  List files in a storage bucket.
 
   ## Parameters
-  - `bucket_id` (`String.t()`): The ID of the bucket.
-  - `file_id` (`String.t() | nil`): Unique file ID. Auto-generated if `nil`.
-  - `file` (any): The file data to upload.
-  - `permissions` (`[String.t()] | nil`): Optional permission strings.
-
-  ## Returns
-  - `{:ok, File.t()}` on success.
-  - `{:error, AppwriteException.t()}` on failure.
-
-  ## LiveView Usage
-
-  ### Step 1 — `fileInput.js` hook
-
-  ```javascript
-  export default {
-    mounted() {
-      this.el.addEventListener("change", async (e) => {
-        let file = e.target.files[0];
-        if (file) {
-          let reader = new FileReader();
-          reader.onload = (event) => {
-            let base64Content = event.target.result.split(",")[1];
-            this.pushEvent("file_selected", {
-              name: file.name, size: file.size, type: file.type, content: base64Content
-            });
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-    },
-  };
-  ```
-
-  ### Step 2 — Handle in LiveView
-
-  ```elixir
-  def handle_event("file_selected", %{"name" => name, "content" => content, ...}, socket) do
-    {:noreply, assign(socket, :file_content, %{"name" => name, "data" => content, ...})}
-  end
-
-  def handle_event("save", _params, socket) do
-    {:ok, _file} = Appwrite.Services.Storage.create_file(bucket_id, nil, socket.assigns.file_content)
-    {:noreply, socket}
-  end
-  ```
+  - `bucket_id` (required)
+  - `queries` (optional) — list of query strings
+  - `search` (optional) — text search term
+  - `total` (optional) — when `false`, skips count calculation for performance
   """
-  @spec create_file(bucket_id(), file_id() | nil, any(), permissions() | nil) ::
-          {:ok, File.t()} | {:error, AppwriteException.t()}
-  def create_file(bucket_id, file_id \\ nil, file, permissions \\ nil) do
-    with :ok <- ensure_not_nil(bucket_id, "bucketId"),
-         :ok <- ensure_not_nil(file, "file") do
-      cust_or_autogen_file_id =
-        if file_id == nil,
-          do: String.replace(to_string(General.generate_unique_id()), "-", ""),
-          else: file_id
-
-      api_path = "/v1/storage/buckets/#{bucket_id}/files"
-
-      # NOTE: original code created `payload` then called `Map.put` on it in a
-      # separate `if` block but discarded the result (Elixir data is immutable).
-      # The permissions key is now added conditionally here.
+  @spec list_files(String.t(), [String.t()] | nil, String.t() | nil, boolean() | nil) ::
+          {:ok, map()} | {:error, any()}
+  def list_files(bucket_id, queries \\ nil, search \\ nil, total \\ nil) do
+    with :ok <- require_all(bucket_id: bucket_id) do
       payload =
-        %{
-          "fileId" => cust_or_autogen_file_id,
-          "file" => file
-        }
-        |> then(fn p ->
-          if permissions != nil, do: Map.put(p, "permissions", permissions), else: p
-        end)
+        %{}
+        |> maybe_put("queries", queries)
+        |> maybe_put("search", search)
+        |> maybe_put("total", total)
 
-      api_header = %{"content-type" => "multipart/form-data"}
+      json_call("get", "/v1/storage/buckets/#{bucket_id}/files", payload)
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Create
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Create (upload) a new file. Files larger than 5 MB are uploaded in chunks
+  automatically using `Client.chunked_upload/5`.
+
+  ## Parameters
+  - `bucket_id` (required)
+  - `file_id` (required) — use `Appwrite.Utils.Id.unique()` to auto-generate
+  - `file_info` (required) — map with string keys:
+    - `"name"` — display filename (e.g. `"report.pdf"`)
+    - `"data"` — raw binary content
+    - `"type"` — MIME type (e.g. `"application/pdf"`)
+    - `"size"` — byte length as integer
+  - `permissions` (optional) — list of permission strings
+  - `on_progress` (optional) — 1-arity callback called after each chunk with
+    `%Appwrite.Types.Client.UploadProgress{}`
+  """
+  @spec create_file(
+          String.t(),
+          String.t(),
+          %{String.t() => String.t() | binary() | integer()},
+          [String.t()] | nil,
+          (map() -> any()) | nil
+        ) :: {:ok, map()} | {:error, any()}
+  def create_file(bucket_id, file_id, file_info, permissions \\ nil, on_progress \\ nil) do
+    with :ok <- require_all(bucket_id: bucket_id, file_id: file_id),
+         :ok <- validate_file_info(file_info) do
+      api_path = "/v1/storage/buckets/#{bucket_id}/files"
+      file_size = file_info["size"] || byte_size(file_info["data"])
+
+      # Build the file map expected by Client.process_payload:
+      # "data" must be base64-encoded; raw binary is encoded here.
+      encoded_file = %{
+        "name" => file_info["name"],
+        "data" => Base.encode64(file_info["data"]),
+        "type" => file_info["type"] || "application/octet-stream",
+        "size" => file_size
+      }
+
+      payload =
+        %{"fileId" => file_id, "file" => encoded_file}
+        |> maybe_put("permissions", permissions)
 
       try do
-        uploaded_file = Client.chunked_upload("post", api_path, api_header, payload, nil)
-        {:ok, uploaded_file}
+        if file_size <= @chunk_size do
+          {:ok, Client.call("post", api_path, multipart_header(), payload)}
+        else
+          {:ok, Client.chunked_upload("post", api_path, multipart_header(), payload, on_progress)}
+        end
       rescue
-        error -> {:error, error}
+        e -> {:error, e}
       end
     end
   end
 
-  @doc """
-  Get a file's metadata by its unique ID.
+  # ---------------------------------------------------------------------------
+  # Read
+  # ---------------------------------------------------------------------------
 
-  ## Parameters
-  - `bucket_id` (`String.t()`): The ID of the bucket.
-  - `file_id` (`String.t()`): The ID of the file.
-
-  ## Returns
-  - `{:ok, File.t()}` on success.
-  - `{:error, AppwriteException.t()}` on failure.
-  """
-  @spec get_file(bucket_id(), file_id()) :: {:ok, File.t()} | {:error, AppwriteException.t()}
+  @doc "Get file metadata by its unique ID."
+  @spec get_file(String.t(), String.t()) :: {:ok, map()} | {:error, any()}
   def get_file(bucket_id, file_id) do
-    with :ok <- ensure_not_nil(bucket_id, "bucketId"),
-         :ok <- ensure_not_nil(file_id, "fileId") do
-      api_path = "/v1/storage/buckets/#{bucket_id}/files/#{file_id}"
-      payload = %{}
-      api_header = %{"content-type" => "application/json"}
-
-      try do
-        file = Client.call("get", api_path, api_header, payload)
-        {:ok, file}
-      rescue
-        error -> {:error, error}
-      end
+    with :ok <- require_all(bucket_id: bucket_id, file_id: file_id) do
+      json_call("get", "/v1/storage/buckets/#{bucket_id}/files/#{file_id}", %{})
     end
   end
+
+  # ---------------------------------------------------------------------------
+  # Update
+  # ---------------------------------------------------------------------------
 
   @doc """
-  Delete a file by its unique ID.
+  Update a file's display name and/or permissions.
 
   ## Parameters
-  - `bucket_id` (`String.t()`): The ID of the bucket.
-  - `file_id` (`String.t()`): The ID of the file.
-
-  ## Returns
-  - `{:ok, :deleted}` on success.
-  - `{:error, AppwriteException.t()}` on failure.
+  - `bucket_id` (required)
+  - `file_id` (required)
+  - `name` (optional) — new display name
+  - `permissions` (optional) — replacement permission list
   """
-  @spec delete_file(bucket_id(), file_id()) ::
-          {:ok, :deleted} | {:error, AppwriteException.t()}
-  def delete_file(bucket_id, file_id) do
-    with :ok <- ensure_not_nil(bucket_id, "bucketId"),
-         :ok <- ensure_not_nil(file_id, "fileId") do
-      api_path = "/v1/storage/buckets/#{bucket_id}/files/#{file_id}"
-      payload = %{}
-      api_header = %{"content-type" => "application/json"}
+  @spec update_file(String.t(), String.t(), String.t() | nil, [String.t()] | nil) ::
+          {:ok, map()} | {:error, any()}
+  def update_file(bucket_id, file_id, name \\ nil, permissions \\ nil) do
+    with :ok <- require_all(bucket_id: bucket_id, file_id: file_id) do
+      payload =
+        %{}
+        |> maybe_put("name", name)
+        |> maybe_put("permissions", permissions)
 
-      try do
-        # NOTE: delete uses Client.call, not chunked_upload
-        Client.call("delete", api_path, api_header, payload)
-        {:ok, :deleted}
-      rescue
-        error -> {:error, error}
-      end
+      json_call("put", "/v1/storage/buckets/#{bucket_id}/files/#{file_id}", payload)
     end
   end
+
+  # ---------------------------------------------------------------------------
+  # Delete
+  # ---------------------------------------------------------------------------
+
+  @doc "Delete a file by its unique ID."
+  @spec delete_file(String.t(), String.t()) :: {:ok, map()} | {:error, any()}
+  def delete_file(bucket_id, file_id) do
+    with :ok <- require_all(bucket_id: bucket_id, file_id: file_id) do
+      json_call("delete", "/v1/storage/buckets/#{bucket_id}/files/#{file_id}", %{})
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # URL builders (return a download/view/preview URL string, no HTTP call)
+  # ---------------------------------------------------------------------------
 
   @doc """
   Build a file download URL.
 
-  Returns a URL that, when visited, triggers a browser download of the file
-  (via a `Content-Disposition: attachment` header).
+  ## Parameters
+  - `bucket_id` (required)
+  - `file_id` (required)
+  - `token` (optional) — file token for unauthenticated access via the Tokens API
+  """
+  @spec get_file_download(String.t(), String.t(), String.t() | nil) ::
+          {:ok, String.t()} | {:error, any()}
+  def get_file_download(bucket_id, file_id, token \\ nil) do
+    with :ok <- require_all(bucket_id: bucket_id, file_id: file_id) do
+      {:ok, build_file_url("download", bucket_id, file_id, token: token)}
+    end
+  end
+
+  @doc """
+  Build a file view URL (inline browser display).
 
   ## Parameters
-  - `bucket_id` (`String.t()`): The ID of the bucket.
-  - `file_id` (`String.t()`): The ID of the file.
-
-  ## Returns
-  - `{:ok, String.t()}` containing the download URL on success.
-  - `{:error, AppwriteException.t()}` if parameters are missing.
+  - `bucket_id` (required)
+  - `file_id` (required)
+  - `token` (optional) — file token for unauthenticated access
   """
-  @spec get_file_download(String.t(), String.t()) ::
-          {:ok, String.t()} | {:error, AppwriteException.t()}
-  def get_file_download(bucket_id, file_id) do
-    with :ok <- ensure_not_nil(bucket_id, "bucketId"),
-         :ok <- ensure_not_nil(file_id, "fileId") do
-      api_path = "/v1/storage/buckets/#{bucket_id}/files/#{file_id}/download"
-      uri = URI.merge(Client.default_config()["endpoint"], api_path)
-
-      query_string =
-        %{project: Client.default_config()["project"]}
-        |> Client.flatten()
-        |> URI.encode_query()
-
-      {:ok, URI.append_query(uri, query_string) |> URI.to_string()}
+  @spec get_file_view(String.t(), String.t(), String.t() | nil) ::
+          {:ok, String.t()} | {:error, any()}
+  def get_file_view(bucket_id, file_id, token \\ nil) do
+    with :ok <- require_all(bucket_id: bucket_id, file_id: file_id) do
+      {:ok, build_file_url("view", bucket_id, file_id, token: token)}
     end
   end
 
   @doc """
   Build a file preview URL.
 
-  Generates a preview of an image file. Supports optional resize and customization
-  options as a keyword list.
-
   ## Parameters
-  - `bucket_id` (`String.t()`): The ID of the bucket.
-  - `file_id` (`String.t()`): The ID of the file.
-  - `options` (`keyword()`): Optional preview settings such as `width`, `height`,
-    `gravity`, `quality`, `border_width`, `border_color`, `border_radius`,
-    `opacity`, `rotation`, `background`, `output`.
-
-  ## Returns
-  - `{:ok, String.t()}` containing the preview URL on success.
-  - `{:error, AppwriteException.t()}` if parameters are missing.
+  - `bucket_id` (required)
+  - `file_id` (required)
+  - `opts` — optional keyword list:
+    - `:width`, `:height`, `:gravity`, `:quality`
+    - `:border_width`, `:border_color`, `:border_radius`
+    - `:opacity`, `:rotation`, `:background`, `:output`
+    - `:token` — file token for unauthenticated access
   """
   @spec get_file_preview(String.t(), String.t(), keyword()) ::
-          {:ok, String.t()} | {:error, AppwriteException.t()}
-  def get_file_preview(bucket_id, file_id, options \\ []) do
-    with :ok <- ensure_not_nil(bucket_id, "bucketId"),
-         :ok <- ensure_not_nil(file_id, "fileId") do
-      api_path = "/v1/storage/buckets/#{bucket_id}/files/#{file_id}/preview"
-      uri = URI.merge(Client.default_config()["endpoint"], api_path)
+          {:ok, String.t()} | {:error, any()}
+  def get_file_preview(bucket_id, file_id, opts \\ []) do
+    with :ok <- require_all(bucket_id: bucket_id, file_id: file_id) do
+      extra = [
+        width: opts[:width],
+        height: opts[:height],
+        gravity: opts[:gravity],
+        quality: opts[:quality],
+        borderWidth: opts[:border_width],
+        borderColor: opts[:border_color],
+        borderRadius: opts[:border_radius],
+        opacity: opts[:opacity],
+        rotation: opts[:rotation],
+        background: opts[:background],
+        output: opts[:output],
+        token: opts[:token]
+      ]
 
-      query_string =
-        options
-        |> Enum.map(fn {k, v} -> {to_string(k), v} end)
-        |> Map.new()
-        |> Map.put("project", Client.default_config()["project"])
-        |> Client.flatten()
-        |> URI.encode_query()
-
-      {:ok, URI.append_query(uri, query_string) |> URI.to_string()}
+      {:ok, build_file_url("preview", bucket_id, file_id, extra)}
     end
   end
 
-  @doc """
-  Build a file view URL.
+  # ---------------------------------------------------------------------------
+  # Private helpers
+  # ---------------------------------------------------------------------------
 
-  Returns a URL that renders the file inline in the browser
-  (no `Content-Disposition: attachment` header).
+  @spec build_file_url(String.t(), String.t(), String.t(), keyword()) :: String.t()
+  defp build_file_url(operation, bucket_id, file_id, opts) do
+    base =
+      "#{Client.default_config()["endpoint"]}/v1/storage/buckets/#{bucket_id}/files/#{file_id}/#{operation}"
 
-  ## Parameters
-  - `bucket_id` (`String.t()`): The ID of the bucket.
-  - `file_id` (`String.t()`): The ID of the file.
+    params =
+      opts
+      |> Enum.reject(fn {_, v} -> is_nil(v) end)
+      |> Enum.into(%{}, fn {k, v} -> {to_string(k), v} end)
+      |> Map.put("project", Client.default_config()["project"])
 
-  ## Returns
-  - `{:ok, String.t()}` containing the view URL on success.
-  - `{:error, AppwriteException.t()}` if parameters are missing.
-  """
-  @spec get_file_view(String.t(), String.t()) ::
-          {:ok, String.t()} | {:error, AppwriteException.t()}
-  def get_file_view(bucket_id, file_id) do
-    with :ok <- ensure_not_nil(bucket_id, "bucketId"),
-         :ok <- ensure_not_nil(file_id, "fileId") do
-      api_path = "/v1/storage/buckets/#{bucket_id}/files/#{file_id}/view"
-      uri = URI.merge(Client.default_config()["endpoint"], api_path)
+    "#{base}?#{URI.encode_query(params)}"
+  end
 
-      query_string =
-        %{"project" => Client.default_config()["project"]}
-        |> Client.flatten()
-        |> URI.encode_query()
+  @spec validate_file_info(map() | nil) :: :ok | {:error, AppwriteException.t()}
+  defp validate_file_info(nil) do
+    {:error, %AppwriteException{message: "Missing required parameter: file_info"}}
+  end
 
-      {:ok, URI.append_query(uri, query_string) |> URI.to_string()}
+  defp validate_file_info(info) when is_map(info) do
+    cond do
+      is_nil(info["name"]) ->
+        {:error, %AppwriteException{message: "file_info must include \"name\""}}
+
+      is_nil(info["data"]) ->
+        {:error, %AppwriteException{message: "file_info must include \"data\" (binary content)"}}
+
+      not is_binary(info["data"]) ->
+        {:error, %AppwriteException{message: "file_info[\"data\"] must be a binary"}}
+
+      true ->
+        :ok
     end
   end
 
-  # --- Private Helpers ---
-
-  defp ensure_not_nil(nil, param_name) do
-    {:error, %AppwriteException{message: "#{param_name} is required.", code: 400}}
+  defp validate_file_info(_) do
+    {:error, %AppwriteException{message: "file_info must be a map"}}
   end
 
-  defp ensure_not_nil(_value, _param_name), do: :ok
+  defp multipart_header, do: %{"content-type" => "multipart/form-data"}
 end

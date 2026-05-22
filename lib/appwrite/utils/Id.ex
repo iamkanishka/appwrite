@@ -6,16 +6,16 @@ defmodule Appwrite.Utils.Id do
 
       alias Appwrite.Utils.Id
 
-      Id.unique()        # "67a3f1b2c0d4e5f6a" — timestamp + random padding
-      Id.unique(10)      # longer padding
-      Id.custom("myId")  # pass through a caller-supplied ID
+      Id.unique()           # "67a3f1b20001f3a4b5"  — timestamp + random padding
+      Id.unique(10)         # longer padding
+      Id.custom("myId")     # pass-through a caller-supplied ID
 
   """
 
   @doc """
   Returns the provided custom ID unchanged.
 
-  Use this when you want to supply your own ID instead of generating one.
+  Use this when you want to supply your own ID rather than having one generated.
 
   ## Examples
 
@@ -27,24 +27,26 @@ defmodule Appwrite.Utils.Id do
   def custom(id) when is_binary(id), do: id
 
   @doc """
-  Generates a unique ID by combining a hex-encoded timestamp with random
-  hex padding.
+  Generates a unique ID by combining a hex-encoded timestamp with
+  cryptographically-random hex padding.
 
-  The timestamp portion replicates PHP's `uniqid()` behaviour (seconds +
-  millisecond fraction, both hex-encoded). The random padding reduces the
-  chance of collision when multiple IDs are generated within the same
-  millisecond.
+  The timestamp portion mirrors PHP's `uniqid()` (seconds + millisecond
+  fraction, both hex-encoded). Random padding uses `:crypto.strong_rand_bytes/1`
+  so successive IDs generated in the same millisecond are still unguessable.
 
   ## Parameters
-  - `padding` — number of additional random hex digits appended after the
-    timestamp (default: `7`, minimum: `1`).
+
+  - `padding` — extra random hex bytes appended after the timestamp.
+    Default `7`. Each byte produces two hex characters, so `padding: 7`
+    adds 14 hex characters.
 
   ## Examples
 
-      iex> Appwrite.Utils.Id.unique()
-      # => something like "67a3f1b2c0001f3a4b5"  (length varies with time)
+      iex> id = Appwrite.Utils.Id.unique()
+      iex> is_binary(id) and byte_size(id) > 0
+      true
 
-      iex> String.length(Appwrite.Utils.Id.unique(10)) > String.length(Appwrite.Utils.Id.unique(5))
+      iex> String.length(Appwrite.Utils.Id.unique(10)) > String.length(Appwrite.Utils.Id.unique(3))
       true
 
   """
@@ -57,13 +59,12 @@ defmodule Appwrite.Utils.Id do
   # Private helpers
   # ---------------------------------------------------------------------------
 
-  # Builds a hex timestamp string that mirrors PHP's uniqid():
-  #   hex(seconds) <> left-padded hex(milliseconds within current second)
+  # Builds the timestamp portion matching PHP's uniqid():
+  #   hex(seconds) <> zero-padded hex(milliseconds within current second)
   #
-  # FIX: The original code used :os.system_time(:seconds) and
-  # :os.system_time(:milli_seconds) — both are INVALID Erlang atoms and raise
-  # `badarg` at runtime.  The correct singular atoms are :second and
-  # :millisecond.
+  # NOTE: The correct Erlang time-unit atoms are `:second` and `:millisecond`
+  # (singular). The original package used `:seconds` / `:milli_seconds` which
+  # are INVALID atoms and raise `badarg` at runtime — this has been corrected.
   @spec hex_timestamp() :: String.t()
   defp hex_timestamp do
     now_sec = :os.system_time(:second)
@@ -74,12 +75,14 @@ defmodule Appwrite.Utils.Id do
       String.pad_leading(Integer.to_string(msec_part, 16), 5, "0")
   end
 
-  # Generates `n` random hex characters.
+  # Generates `n` random bytes and hex-encodes them.
+  # Using :crypto.strong_rand_bytes/1 instead of :rand.uniform/1 for
+  # cryptographically-secure randomness (avoids birthday collisions when
+  # many IDs are generated in rapid succession).
   @spec random_hex(pos_integer()) :: String.t()
   defp random_hex(n) do
-    for _ <- 1..n, into: "" do
-      # :rand.uniform(16) returns 1..16; subtract 1 for 0..15
-      Integer.to_string(:rand.uniform(16) - 1, 16)
-    end
+    n
+    |> :crypto.strong_rand_bytes()
+    |> Base.encode16(case: :lower)
   end
 end

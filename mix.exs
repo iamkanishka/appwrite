@@ -2,38 +2,52 @@ defmodule Appwrite.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/iamkanishka/appwrite"
-  @version "0.2.1"
+  @version "1.0.0"
 
   def project do
     [
       app: :appwrite,
       version: @version,
-      elixir: "~> 1.17",
+      elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: docs(),
       description:
         "Elixir SDK for the Appwrite backend-as-a-service platform. " <>
-          "Supports authentication, databases, storage, functions, teams, messaging, and more.",
-      package: package()
+          "Covers Auth, Databases, TablesDB, Storage, Functions, Sites, " <>
+          "Tokens, Teams, Messaging, GraphQL, and more.",
+      package: package(),
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        plt_add_apps: [:mix, :crypto]
+      ],
+      test_coverage: [summary: [threshold: 60]],
+      preferred_cli_env: [
+        "test.coverage": :test,
+        ci: :test
+      ],
+      aliases: aliases()
     ]
   end
 
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :crypto],
       mod: {Appwrite.Application, []}
     ]
   end
 
   defp deps do
     [
-      {:ex_doc, "~> 0.28", only: :dev, runtime: false},
+      # HTTP client
       {:httpoison, "~> 2.0"},
+      # JSON codec — only one needed (poison removed as it was unused)
       {:jason, "~> 1.4"},
-      {:poison, "~> 6.0"},
-      {:uuid, "~> 1.1"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+      # Dev / test tooling
+      {:ex_doc, "~> 0.40", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:mox, "~> 1.2", only: :test}
     ]
   end
 
@@ -42,20 +56,33 @@ defmodule Appwrite.MixProject do
       name: "appwrite",
       licenses: ["Apache-2.0"],
       links: %{
-        GitHub: @source_url,
-        Docs: "https://hexdocs.pm/appwrite",
-        Changelog: "#{@source_url}/blob/master/CHANGELOG.md"
+        "GitHub" => @source_url,
+        "Changelog" => "#{@source_url}/blob/main/CHANGELOG.md",
+        "Docs" => "https://hexdocs.pm/appwrite"
       },
-      maintainers: ["Kanishka Naik"]
+      maintainers: ["Kanishka Naik"],
+      # Critical: without `files`, `mix hex.publish` uploads the whole tree
+      # (including .git, doc/, priv/plts, etc.).
+      files: ~w(
+        lib
+        config
+        guides
+        .formatter.exs
+        CHANGELOG.md
+        LICENSE.txt
+        mix.exs
+        README.md
+      )
     ]
   end
 
   defp docs do
     [
-      main: "Appwrite",
-      api_reference: false,
+      main: "readme",
+      api_reference: true,
       source_ref: "v#{@version}",
       source_url: @source_url,
+      source_url_pattern: "#{@source_url}/blob/v#{@version}/%{path}#L%{line}",
       extra_section: "GUIDES",
       formatters: ["html"],
       extras: extras(),
@@ -68,19 +95,41 @@ defmodule Appwrite.MixProject do
   defp extras do
     [
       "guides/introduction/installation.md",
-      "CHANGELOG.md": [title: "Changelog"]
+      "guides/introduction/configuration.md",
+      "CHANGELOG.md"
     ]
   end
 
   defp groups_for_extras do
     [
-      Introduction: ~r{guides/introduction/[^\/]+\.md}
+      Introduction: ~r{guides/introduction/[^\/]+\.md},
+      Changelog: ["CHANGELOG.md"]
+    ]
+  end
+
+  defp aliases do
+    [
+      setup: ["deps.get", "compile"],
+      quality: [
+        "format --check-formatted",
+        "credo --strict",
+        "dialyzer"
+      ],
+      "test.coverage": ["test --cover"],
+      ci: [
+        "format --check-formatted",
+        "deps.unlock --check-unused",
+        "credo --strict",
+        "dialyzer",
+        "test --cover"
+      ]
     ]
   end
 
   defp groups_for_modules do
     [
       Services: [
+        Appwrite.Services.Base,
         Appwrite.Services.Accounts,
         Appwrite.Services.Avatars,
         Appwrite.Services.Database,
@@ -89,8 +138,11 @@ defmodule Appwrite.MixProject do
         Appwrite.Services.Health,
         Appwrite.Services.Locale,
         Appwrite.Services.Messaging,
+        Appwrite.Services.Sites,
         Appwrite.Services.Storage,
-        Appwrite.Services.Teams
+        Appwrite.Services.TablesDB,
+        Appwrite.Services.Teams,
+        Appwrite.Services.Tokens
       ],
       Utils: [
         Appwrite.Utils.Client,
@@ -176,6 +228,12 @@ defmodule Appwrite.MixProject do
         Appwrite.Types.Client.RealtimeResponseError,
         Appwrite.Types.Client.RealtimeResponseEvent,
         Appwrite.Types.Client.UploadProgress
+      ],
+      Exceptions: [
+        Appwrite.Exceptions.AppwriteException,
+        Appwrite.MissingProjectIdError,
+        Appwrite.MissingSecretError,
+        Appwrite.MissingRootUriError
       ]
     ]
   end

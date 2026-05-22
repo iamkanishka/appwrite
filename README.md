@@ -2,8 +2,7 @@
 
 [![Hex.pm](https://img.shields.io/hexpm/v/appwrite.svg)](https://hex.pm/packages/appwrite)
 [![Docs](https://img.shields.io/badge/docs-hexdocs-blue.svg)](https://hexdocs.pm/appwrite)
-[![CI](https://github.com/iamkanishka/appwrite/actions/workflows/ci.yml/badge.svg)](https://github.com/iamkanishka/appwrite/actions/workflows/ci.yml)
-[![License](https://img.shields.io/hexpm/l/appwrite.svg)](LICENSE.txt)
+[![License](https://img.shields.io/hexpm/l/appwrite.svg)](LICENSE)
 
 Elixir client SDK for [Appwrite](https://appwrite.io) — the open-source
 backend-as-a-service platform. Covers all client-facing APIs:
@@ -174,4 +173,4 @@ end
 
 ## License
 
-Apache 2.0 — see [LICENSE.txt](LICENSE.txt).
+Apache 2.0 — see [LICENSE](LICENSE).

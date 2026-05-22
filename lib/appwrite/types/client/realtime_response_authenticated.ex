@@ -21,5 +21,7 @@ defmodule Appwrite.Types.Client.RealtimeResponseAuthenticated do
           user: map()
         }
 
-  defstruct [:to, :success, :user]
+  defstruct to: nil,
+            success: false,
+            user: nil
 end

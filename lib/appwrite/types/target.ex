@@ -31,14 +31,12 @@ defmodule Appwrite.Types.Target do
           identifier: String.t()
         }
 
-  defstruct [
-    :id,
-    :created_at,
-    :updated_at,
-    :name,
-    :user_id,
-    :provider_id,
-    :provider_type,
-    :identifier
-  ]
+  defstruct id: nil,
+            created_at: nil,
+            updated_at: nil,
+            name: nil,
+            user_id: nil,
+            provider_id: nil,
+            provider_type: nil,
+            identifier: nil
 end

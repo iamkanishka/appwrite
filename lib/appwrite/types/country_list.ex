@@ -16,5 +16,6 @@ defmodule Appwrite.Types.CountryList do
           countries: [Appwrite.Types.Country.t()]
         }
 
-  defstruct [:total, :countries]
+  defstruct total: 0,
+            countries: []
 end

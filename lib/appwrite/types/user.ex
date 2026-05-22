@@ -52,25 +52,23 @@ defmodule Appwrite.Types.User do
           accessed_at: String.t()
         }
 
-  defstruct [
-    :id,
-    :created_at,
-    :updated_at,
-    :name,
-    :password,
-    :hash,
-    :hash_options,
-    :registration,
-    :status,
-    :labels,
-    :password_update,
-    :email,
-    :phone,
-    :email_verification,
-    :phone_verification,
-    :mfa,
-    :prefs,
-    :targets,
-    :accessed_at
-  ]
+  defstruct id: nil,
+            created_at: nil,
+            updated_at: nil,
+            name: nil,
+            password: nil,
+            hash: nil,
+            hash_options: [],
+            registration: nil,
+            status: false,
+            labels: [],
+            password_update: nil,
+            email: nil,
+            phone: nil,
+            email_verification: false,
+            phone_verification: false,
+            mfa: false,
+            prefs: %{},
+            targets: [],
+            accessed_at: nil
 end

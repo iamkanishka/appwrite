@@ -9,10 +9,10 @@ defmodule Appwrite.Types.MembershipList do
   """
 
   @derive Jason.Encoder
-  defstruct [:total, :memberships]
-
   @type t :: %__MODULE__{
           total: non_neg_integer(),
           memberships: [Appwrite.Types.Membership.t()]
         }
+
+  defstruct total: 0, memberships: []
 end

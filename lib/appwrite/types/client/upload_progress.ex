@@ -26,11 +26,9 @@ defmodule Appwrite.Types.Client.UploadProgress do
           chunks_uploaded: non_neg_integer()
         }
 
-  defstruct [
-    :id,
-    :progress,
-    :size_uploaded,
-    :chunks_total,
-    :chunks_uploaded
-  ]
+  defstruct id: nil,
+            progress: 0,
+            size_uploaded: 0,
+            chunks_total: 0,
+            chunks_uploaded: 0
 end

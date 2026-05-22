@@ -15,5 +15,6 @@ defmodule Appwrite.Types.LogList do
           logs: [Appwrite.Types.Log.t()]
         }
 
-  defstruct [:total, :logs]
+  defstruct total: 0,
+            logs: []
 end

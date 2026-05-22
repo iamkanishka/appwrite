@@ -15,5 +15,6 @@ defmodule Appwrite.Types.Country do
           code: String.t()
         }
 
-  defstruct [:name, :code]
+  defstruct name: nil,
+            code: nil
 end

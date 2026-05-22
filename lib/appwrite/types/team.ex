@@ -26,5 +26,10 @@ defmodule Appwrite.Types.Team do
           prefs: Appwrite.Types.Preference.t()
         }
 
-  defstruct [:id, :created_at, :updated_at, :name, :total, :prefs]
+  defstruct id: nil,
+            created_at: nil,
+            updated_at: nil,
+            name: nil,
+            total: 0,
+            prefs: %{}
 end

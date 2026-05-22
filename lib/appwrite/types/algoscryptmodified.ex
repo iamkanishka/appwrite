@@ -22,5 +22,8 @@ defmodule Appwrite.Types.AlgoScryptModified do
           signer_key: String.t()
         }
 
-  defstruct [:type, :salt, :salt_separator, :signer_key]
+  defstruct type: nil,
+            salt: nil,
+            salt_separator: nil,
+            signer_key: nil
 end

@@ -15,5 +15,6 @@ defmodule Appwrite.Types.DocumentList do
           documents: [Appwrite.Types.Document.t()]
         }
 
-  defstruct [:total, :documents]
+  defstruct total: 0,
+            documents: []
 end

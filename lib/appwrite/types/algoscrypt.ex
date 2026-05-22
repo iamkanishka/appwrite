@@ -22,5 +22,9 @@ defmodule Appwrite.Types.AlgoScrypt do
           length: non_neg_integer()
         }
 
-  defstruct [:type, :cpu_cost, :memory_cost, :parallel, :length]
+  defstruct type: nil,
+            cpu_cost: nil,
+            memory_cost: nil,
+            parallel: nil,
+            length: nil
 end

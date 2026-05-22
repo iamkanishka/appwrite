@@ -16,5 +16,6 @@ defmodule Appwrite.Types.ContinentList do
           continents: [Appwrite.Types.Continent.t()]
         }
 
-  defstruct [:total, :continents]
+  defstruct total: 0,
+            continents: []
 end

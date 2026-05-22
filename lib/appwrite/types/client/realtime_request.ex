@@ -20,5 +20,6 @@ defmodule Appwrite.Types.Client.RealtimeRequest do
           data: Appwrite.Types.Client.RealtimeRequestAuthenticate.t()
         }
 
-  defstruct [:type, :data]
+  defstruct type: nil,
+            data: nil
 end

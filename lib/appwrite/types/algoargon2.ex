@@ -23,5 +23,8 @@ defmodule Appwrite.Types.AlgoArgon2 do
           threads: non_neg_integer()
         }
 
-  defstruct [:type, :memory_cost, :time_cost, :threads]
+  defstruct type: nil,
+            memory_cost: nil,
+            time_cost: nil,
+            threads: nil
 end

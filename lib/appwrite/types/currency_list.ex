@@ -16,5 +16,6 @@ defmodule Appwrite.Types.CurrencyList do
           currencies: [Appwrite.Types.Currency.t()]
         }
 
-  defstruct [:total, :currencies]
+  defstruct total: 0,
+            currencies: []
 end

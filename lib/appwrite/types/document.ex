@@ -31,13 +31,11 @@ defmodule Appwrite.Types.Document do
           data: map()
         }
 
-  defstruct [
-    :id,
-    :collection_id,
-    :database_id,
-    :created_at,
-    :updated_at,
-    :permissions,
-    :data
-  ]
+  defstruct id: nil,
+            collection_id: nil,
+            database_id: nil,
+            created_at: nil,
+            updated_at: nil,
+            permissions: [],
+            data: nil
 end

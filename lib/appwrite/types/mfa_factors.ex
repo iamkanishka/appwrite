@@ -19,5 +19,8 @@ defmodule Appwrite.Types.MfaFactors do
           recovery_code: boolean()
         }
 
-  defstruct [:totp, :phone, :email, :recovery_code]
+  defstruct totp: nil,
+            phone: nil,
+            email: nil,
+            recovery_code: nil
 end

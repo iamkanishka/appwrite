@@ -15,5 +15,6 @@ defmodule Appwrite.Types.FileList do
           files: [Appwrite.Types.File.t()]
         }
 
-  defstruct [:total, :files]
+  defstruct total: 0,
+            files: []
 end

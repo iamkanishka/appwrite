@@ -13,5 +13,5 @@ defmodule Appwrite.Types.MfaRecoveryCodes do
           recovery_codes: [String.t()]
         }
 
-  defstruct [:recovery_codes]
+  defstruct recovery_codes: []
 end

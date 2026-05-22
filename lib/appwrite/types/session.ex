@@ -15,11 +15,11 @@ defmodule Appwrite.Types.Session do
     - `provider_access_token_expiry` (`String.t()`): OAuth2 access token expiry date in ISO 8601 format.
     - `provider_refresh_token` (`String.t()`): OAuth2 provider refresh token.
     - `ip` (`String.t()`): IP address from which the session was created.
-    - `os_code` (`String.t()`): Operating system code name. See [os.json](https://github.com/appwrite/appwrite/blob/master/docs/lists/os.json).
+    - `os_code` (`String.t()`): Operating system code name (e.g. `"windows"`, `"mac"`).
     - `os_name` (`String.t()`): Operating system name.
     - `os_version` (`String.t()`): Operating system version.
     - `client_type` (`String.t()`): Client type (e.g. `"browser"`, `"mobile"`).
-    - `client_code` (`String.t()`): Client code name. See [clients.json](https://github.com/appwrite/appwrite/blob/master/docs/lists/clients.json).
+    - `client_code` (`String.t()`): Client code name (e.g. `"chrome"`, `"firefox"`).
     - `client_name` (`String.t()`): Client name (e.g. `"Chrome"`, `"Firefox"`).
     - `client_version` (`String.t()`): Client version string.
     - `client_engine` (`String.t()`): Rendering engine name.
@@ -69,35 +69,33 @@ defmodule Appwrite.Types.Session do
           mfa_updated_at: String.t()
         }
 
-  defstruct [
-    :id,
-    :created_at,
-    :updated_at,
-    :user_id,
-    :expire,
-    :provider,
-    :provider_uid,
-    :provider_access_token,
-    :provider_access_token_expiry,
-    :provider_refresh_token,
-    :ip,
-    :os_code,
-    :os_name,
-    :os_version,
-    :client_type,
-    :client_code,
-    :client_name,
-    :client_version,
-    :client_engine,
-    :client_engine_version,
-    :device_name,
-    :device_brand,
-    :device_model,
-    :country_code,
-    :country_name,
-    :current,
-    :factors,
-    :secret,
-    :mfa_updated_at
-  ]
+  defstruct id: nil,
+            created_at: nil,
+            updated_at: nil,
+            user_id: nil,
+            expire: nil,
+            provider: nil,
+            provider_uid: nil,
+            provider_access_token: nil,
+            provider_access_token_expiry: nil,
+            provider_refresh_token: nil,
+            ip: nil,
+            os_code: nil,
+            os_name: nil,
+            os_version: nil,
+            client_type: nil,
+            client_code: nil,
+            client_name: nil,
+            client_version: nil,
+            client_engine: nil,
+            client_engine_version: nil,
+            device_name: nil,
+            device_brand: nil,
+            device_model: nil,
+            country_code: nil,
+            country_name: nil,
+            current: false,
+            factors: [],
+            secret: nil,
+            mfa_updated_at: nil
 end

@@ -26,5 +26,11 @@ defmodule Appwrite.Types.Currency do
           name_plural: String.t()
         }
 
-  defstruct [:symbol, :name, :symbol_native, :decimal_digits, :rounding, :code, :name_plural]
+  defstruct symbol: nil,
+            name: nil,
+            symbol_native: nil,
+            decimal_digits: nil,
+            rounding: nil,
+            code: nil,
+            name_plural: nil
 end

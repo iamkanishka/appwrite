@@ -27,12 +27,10 @@ defmodule Appwrite.Types.Token do
           phrase: String.t()
         }
 
-  defstruct [
-    :id,
-    :created_at,
-    :user_id,
-    :secret,
-    :expire,
-    :phrase
-  ]
+  defstruct id: nil,
+            created_at: nil,
+            user_id: nil,
+            secret: nil,
+            expire: nil,
+            phrase: nil
 end

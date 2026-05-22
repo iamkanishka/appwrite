@@ -17,5 +17,7 @@ defmodule Appwrite.Types.Language do
           native_name: String.t()
         }
 
-  defstruct [:name, :code, :native_name]
+  defstruct name: nil,
+            code: nil,
+            native_name: nil
 end

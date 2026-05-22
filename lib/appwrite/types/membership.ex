@@ -41,19 +41,17 @@ defmodule Appwrite.Types.Membership do
           roles: [String.t()]
         }
 
-  defstruct [
-    :id,
-    :created_at,
-    :updated_at,
-    :user_id,
-    :user_name,
-    :user_email,
-    :team_id,
-    :team_name,
-    :invited,
-    :joined,
-    :confirm,
-    :mfa,
-    :roles
-  ]
+  defstruct id: nil,
+            created_at: nil,
+            updated_at: nil,
+            user_id: nil,
+            user_name: nil,
+            user_email: nil,
+            team_id: nil,
+            team_name: nil,
+            invited: nil,
+            joined: nil,
+            confirm: false,
+            mfa: false,
+            roles: []
 end

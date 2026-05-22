@@ -35,17 +35,15 @@ defmodule Appwrite.Types.File do
           chunks_uploaded: non_neg_integer()
         }
 
-  defstruct [
-    :id,
-    :bucket_id,
-    :created_at,
-    :updated_at,
-    :permissions,
-    :name,
-    :signature,
-    :mime_type,
-    :size_original,
-    :chunks_total,
-    :chunks_uploaded
-  ]
+  defstruct id: nil,
+            bucket_id: nil,
+            created_at: nil,
+            updated_at: nil,
+            permissions: [],
+            name: nil,
+            signature: nil,
+            mime_type: nil,
+            size_original: nil,
+            chunks_total: 0,
+            chunks_uploaded: 0
 end

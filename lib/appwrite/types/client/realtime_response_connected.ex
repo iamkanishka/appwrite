@@ -21,5 +21,6 @@ defmodule Appwrite.Types.Client.RealtimeResponseConnected do
           user: map() | nil
         }
 
-  defstruct [:channels, :user]
+  defstruct channels: [],
+            user: nil
 end

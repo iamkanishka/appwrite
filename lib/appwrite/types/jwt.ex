@@ -13,5 +13,5 @@ defmodule Appwrite.Types.Jwt do
           jwt: String.t()
         }
 
-  defstruct [:jwt]
+  defstruct jwt: nil
 end

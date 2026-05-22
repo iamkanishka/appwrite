@@ -15,5 +15,6 @@ defmodule Appwrite.Types.LanguageList do
           languages: [Appwrite.Types.Language.t()]
         }
 
-  defstruct [:total, :languages]
+  defstruct total: 0,
+            languages: []
 end

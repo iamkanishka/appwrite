@@ -15,5 +15,6 @@ defmodule Appwrite.Types.PhoneList do
           phones: [Appwrite.Types.Phone.t()]
         }
 
-  defstruct [:total, :phones]
+  defstruct total: 0,
+            phones: []
 end

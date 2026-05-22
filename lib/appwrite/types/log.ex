@@ -11,11 +11,11 @@ defmodule Appwrite.Types.Log do
     - `mode` (`String.t()`): API mode when the event was triggered.
     - `ip` (`String.t()`): IP address in use when the event was triggered.
     - `time` (`String.t()`): Log creation date in ISO 8601 format.
-    - `os_code` (`String.t()`): Operating system code name. View [available options](https://github.com/appwrite/appwrite/blob/master/docs/lists/os.json).
+    - `os_code` (`String.t()`): Operating system code name (e.g. `"windows"`, `"mac"`).
     - `os_name` (`String.t()`): Operating system name.
     - `os_version` (`String.t()`): Operating system version.
     - `client_type` (`String.t()`): Client type.
-    - `client_code` (`String.t()`): Client code name. View [available options](https://github.com/appwrite/appwrite/blob/master/docs/lists/clients.json).
+    - `client_code` (`String.t()`): Client code name (e.g. `"chrome"`, `"firefox"`).
     - `client_name` (`String.t()`): Client name.
     - `client_version` (`String.t()`): Client version.
     - `client_engine` (`String.t()`): Client engine name.
@@ -53,27 +53,25 @@ defmodule Appwrite.Types.Log do
           country_name: String.t()
         }
 
-  defstruct [
-    :event,
-    :user_id,
-    :user_email,
-    :user_name,
-    :mode,
-    :ip,
-    :time,
-    :os_code,
-    :os_name,
-    :os_version,
-    :client_type,
-    :client_code,
-    :client_name,
-    :client_version,
-    :client_engine,
-    :client_engine_version,
-    :device_name,
-    :device_brand,
-    :device_model,
-    :country_code,
-    :country_name
-  ]
+  defstruct event: nil,
+            user_id: nil,
+            user_email: nil,
+            user_name: nil,
+            mode: nil,
+            ip: nil,
+            time: nil,
+            os_code: nil,
+            os_name: nil,
+            os_version: nil,
+            client_type: nil,
+            client_code: nil,
+            client_name: nil,
+            client_version: nil,
+            client_engine: nil,
+            client_engine_version: nil,
+            device_name: nil,
+            device_brand: nil,
+            device_model: nil,
+            country_code: nil,
+            country_name: nil
 end

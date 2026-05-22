@@ -25,13 +25,11 @@ defmodule Appwrite.Types.Locale do
           currency: String.t()
         }
 
-  defstruct [
-    :ip,
-    :country_code,
-    :country,
-    :continent_code,
-    :continent,
-    :eu,
-    :currency
-  ]
+  defstruct ip: nil,
+            country_code: nil,
+            country: nil,
+            continent_code: nil,
+            continent: nil,
+            eu: false,
+            currency: nil
 end

@@ -56,23 +56,21 @@ defmodule Appwrite.Types.Execution do
           scheduled_at: String.t() | nil
         }
 
-  defstruct [
-    :id,
-    :created_at,
-    :updated_at,
-    :permissions,
-    :function_id,
-    :trigger,
-    :status,
-    :request_method,
-    :request_path,
-    :request_headers,
-    :response_status_code,
-    :response_body,
-    :response_headers,
-    :logs,
-    :errors,
-    :duration,
-    :scheduled_at
-  ]
+  defstruct id: nil,
+            created_at: nil,
+            updated_at: nil,
+            permissions: [],
+            function_id: nil,
+            trigger: nil,
+            status: false,
+            request_method: nil,
+            request_path: nil,
+            request_headers: [],
+            response_status_code: nil,
+            response_body: nil,
+            response_headers: [],
+            logs: [],
+            errors: nil,
+            duration: nil,
+            scheduled_at: nil
 end

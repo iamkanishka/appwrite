@@ -19,5 +19,6 @@ defmodule Appwrite.Types.Client.RealtimeResponseError do
           message: String.t()
         }
 
-  defstruct [:code, :message]
+  defstruct code: nil,
+            message: nil
 end

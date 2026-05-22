@@ -17,5 +17,5 @@ defmodule Appwrite.Types.Client.RealtimeRequestAuthenticate do
           session: String.t()
         }
 
-  defstruct [:session]
+  defstruct session: nil
 end

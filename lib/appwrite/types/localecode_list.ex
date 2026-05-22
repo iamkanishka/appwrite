@@ -15,5 +15,6 @@ defmodule Appwrite.Types.LocaleCodeList do
           locale_codes: [Appwrite.Types.LocaleCode.t()]
         }
 
-  defstruct [:total, :locale_codes]
+  defstruct total: 0,
+            locale_codes: []
 end

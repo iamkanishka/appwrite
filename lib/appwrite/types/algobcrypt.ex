@@ -14,5 +14,5 @@ defmodule Appwrite.Types.AlgoBcrypt do
 
   @type t :: %__MODULE__{type: String.t()}
 
-  defstruct [:type]
+  defstruct type: nil
 end

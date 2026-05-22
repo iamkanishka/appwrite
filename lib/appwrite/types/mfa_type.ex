@@ -15,5 +15,6 @@ defmodule Appwrite.Types.MfaType do
           uri: String.t()
         }
 
-  defstruct [:secret, :uri]
+  defstruct secret: nil,
+            uri: nil
 end

@@ -29,5 +29,6 @@ defmodule Appwrite.Types.Client.RealtimeResponse do
             | Appwrite.Types.Client.RealtimeResponseError.t()
         }
 
-  defstruct [:type, :data]
+  defstruct type: nil,
+            data: nil
 end

@@ -15,5 +15,6 @@ defmodule Appwrite.Types.SessionList do
           sessions: [Appwrite.Types.Session.t()]
         }
 
-  defstruct [:total, :sessions]
+  defstruct total: 0,
+            sessions: []
 end

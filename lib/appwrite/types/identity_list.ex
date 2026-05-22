@@ -15,5 +15,6 @@ defmodule Appwrite.Types.IdentityList do
           identities: [Appwrite.Types.Identity.t()]
         }
 
-  defstruct [:total, :identities]
+  defstruct total: 0,
+            identities: []
 end

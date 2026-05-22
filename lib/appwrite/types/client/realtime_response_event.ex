@@ -27,5 +27,8 @@ defmodule Appwrite.Types.Client.RealtimeResponseEvent do
           payload: Appwrite.Types.Client.Payload.t()
         }
 
-  defstruct [:events, :channels, :timestamp, :payload]
+  defstruct events: nil,
+            channels: [],
+            timestamp: nil,
+            payload: nil
 end

@@ -15,5 +15,6 @@ defmodule Appwrite.Types.LocaleCode do
           name: String.t()
         }
 
-  defstruct [:code, :name]
+  defstruct code: nil,
+            name: nil
 end

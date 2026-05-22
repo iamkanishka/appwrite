@@ -56,17 +56,15 @@ defmodule Appwrite.Types.Client.Realtime do
   # @derive Jason.Encoder is intentionally omitted: this struct holds
   # a MapSet (channels) and function-value callbacks (subscriptions) that
   # cannot be JSON-serialised. It is internal connection state only.
-  defstruct [
-    :socket,
-    :timeout,
-    :url,
-    :last_message,
-    :channels,
-    :subscriptions,
-    :subscriptions_counter,
-    :reconnect,
-    :reconnect_attempts
-  ]
+  defstruct socket: nil,
+            timeout: nil,
+            url: nil,
+            last_message: nil,
+            channels: [],
+            subscriptions: nil,
+            subscriptions_counter: 0,
+            reconnect: false,
+            reconnect_attempts: 0
 
   @doc """
   Returns a new `Realtime` struct with default values.

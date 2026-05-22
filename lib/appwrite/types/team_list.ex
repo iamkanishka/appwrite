@@ -15,5 +15,6 @@ defmodule Appwrite.Types.TeamList do
           teams: [Appwrite.Types.Team.t()]
         }
 
-  defstruct [:total, :teams]
+  defstruct total: 0,
+            teams: []
 end

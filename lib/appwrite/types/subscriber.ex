@@ -33,15 +33,13 @@ defmodule Appwrite.Types.Subscriber do
           provider_type: String.t()
         }
 
-  defstruct [
-    :id,
-    :created_at,
-    :updated_at,
-    :target_id,
-    :target,
-    :user_id,
-    :user_name,
-    :topic_id,
-    :provider_type
-  ]
+  defstruct id: nil,
+            created_at: nil,
+            updated_at: nil,
+            target_id: nil,
+            target: nil,
+            user_id: nil,
+            user_name: nil,
+            topic_id: nil,
+            provider_type: nil
 end

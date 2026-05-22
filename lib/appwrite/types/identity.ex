@@ -31,16 +31,14 @@ defmodule Appwrite.Types.Identity do
           provider_refresh_token: String.t()
         }
 
-  defstruct [
-    :id,
-    :created_at,
-    :updated_at,
-    :user_id,
-    :provider,
-    :provider_uid,
-    :provider_email,
-    :provider_access_token,
-    :provider_access_token_expiry,
-    :provider_refresh_token
-  ]
+  defstruct id: nil,
+            created_at: nil,
+            updated_at: nil,
+            user_id: nil,
+            provider: nil,
+            provider_uid: nil,
+            provider_email: nil,
+            provider_access_token: nil,
+            provider_access_token_expiry: nil,
+            provider_refresh_token: nil
 end

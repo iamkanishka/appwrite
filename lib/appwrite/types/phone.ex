@@ -17,5 +17,7 @@ defmodule Appwrite.Types.Phone do
           country_name: String.t()
         }
 
-  defstruct [:code, :country_code, :country_name]
+  defstruct code: nil,
+            country_code: nil,
+            country_name: nil
 end

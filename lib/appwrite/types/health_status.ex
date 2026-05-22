@@ -17,7 +17,9 @@ defmodule Appwrite.Types.HealthStatus do
           status: String.t()
         }
 
-  defstruct [:name, :ping, :status]
+  defstruct name: nil,
+            ping: nil,
+            status: false
 end
 
 defmodule Appwrite.Types.HealthAntivirus do
@@ -37,7 +39,8 @@ defmodule Appwrite.Types.HealthAntivirus do
           status: String.t()
         }
 
-  defstruct [:version, :status]
+  defstruct version: nil,
+            status: false
 end
 
 defmodule Appwrite.Types.HealthQueue do
@@ -55,7 +58,7 @@ defmodule Appwrite.Types.HealthQueue do
           size: non_neg_integer()
         }
 
-  defstruct [:size]
+  defstruct size: nil
 end
 
 defmodule Appwrite.Types.HealthTime do
@@ -77,7 +80,9 @@ defmodule Appwrite.Types.HealthTime do
           diff: integer()
         }
 
-  defstruct [:remote_time, :local_time, :diff]
+  defstruct remote_time: nil,
+            local_time: nil,
+            diff: nil
 end
 
 defmodule Appwrite.Types.HealthCertificate do
@@ -103,5 +108,9 @@ defmodule Appwrite.Types.HealthCertificate do
           cn: String.t()
         }
 
-  defstruct [:name, :subject, :valid_from, :valid_till, :cn]
+  defstruct name: nil,
+            subject: nil,
+            valid_from: nil,
+            valid_till: nil,
+            cn: nil
 end

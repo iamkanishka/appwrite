@@ -19,5 +19,8 @@ defmodule Appwrite.Types.MfaChallenge do
           expire: String.t()
         }
 
-  defstruct [:id, :created_at, :user_id, :expire]
+  defstruct id: nil,
+            created_at: nil,
+            user_id: nil,
+            expire: nil
 end

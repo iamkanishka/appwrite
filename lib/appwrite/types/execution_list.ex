@@ -15,5 +15,6 @@ defmodule Appwrite.Types.ExecutionList do
           executions: [Appwrite.Types.Execution.t()]
         }
 
-  defstruct [:total, :executions]
+  defstruct total: 0,
+            executions: []
 end

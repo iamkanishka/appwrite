@@ -8,51 +8,35 @@ defmodule Appwrite.Services.GraphQL do
   an optional variables map.
   """
 
-  alias Appwrite.Exceptions.AppwriteException
-  alias Appwrite.Utils.Client
+  use Appwrite.Services.Base
+
+  @graphql_headers %{
+    "content-type" => "application/json",
+    "x-sdk-graphql" => "true"
+  }
 
   @doc """
   Execute a GraphQL mutation.
 
   ## Parameters
 
-  - `query` (`map()`): The GraphQL mutation document as a map with the `"query"` key
-    (required) and optionally `"variables"` and `"operationName"` keys.
-
-    ```elixir
-    %{
-      "query" => "mutation CreateUser($email: String!) { createAccount(email: $email) { _id } }",
-      "variables" => %{"email" => "user@example.com"}
-    }
-    ```
+  - `query` (`map()`): The GraphQL mutation document. Must include a `"query"` key,
+    and optionally `"variables"` and `"operationName"` keys.
 
   ## Returns
 
   - `{:ok, map()}` containing the GraphQL response data on success.
   - `{:error, AppwriteException.t()}` on failure.
-
-  ## Examples
-
-      iex> Appwrite.Services.GraphQL.mutation(%{
-      ...>   "query" => "mutation { createAccount(email: \\"user@example.com\\", password: \\"password\\") { _id } }"
-      ...> })
-      {:ok, %{"data" => %{"createAccount" => %{"_id" => "..."}}}}
   """
   @spec mutation(map()) :: {:ok, map()} | {:error, AppwriteException.t()}
   def mutation(query) do
     if is_nil(query) do
       {:error, %AppwriteException{message: "query is required"}}
     else
-      # NOTE: x-sdk-graphql header must be combined with content-type.
-      # Client.call signature: (method, path, headers, payload)
-      headers = %{
-        "content-type" => "application/json",
-        "x-sdk-graphql" => "true"
-      }
-
+      # FIX: was `Client.call(...) |> handle_response()` — Credo flags single-function
+      # pipe chains. Replaced with direct tuple wrapping. `handle_response/1` removed.
       try do
-        Client.call("POST", "/v1/graphql/mutation", headers, query)
-        |> handle_response()
+        {:ok, Client.call("POST", "/v1/graphql/mutation", @graphql_headers, query)}
       rescue
         error -> {:error, error}
       end
@@ -64,47 +48,24 @@ defmodule Appwrite.Services.GraphQL do
 
   ## Parameters
 
-  - `query` (`map()`): The GraphQL query document as a map with the `"query"` key
-    (required) and optionally `"variables"` and `"operationName"` keys.
-
-    ```elixir
-    %{
-      "query" => "query GetUser($id: String!) { getAccount { _id name email } }",
-      "variables" => %{"id" => "user123"}
-    }
-    ```
+  - `query` (`map()`): The GraphQL query document. Must include a `"query"` key,
+    and optionally `"variables"` and `"operationName"` keys.
 
   ## Returns
 
   - `{:ok, map()}` containing the GraphQL response data on success.
   - `{:error, AppwriteException.t()}` on failure.
-
-  ## Examples
-
-      iex> Appwrite.Services.GraphQL.query(%{
-      ...>   "query" => "{ getAccount { _id name email } }"
-      ...> })
-      {:ok, %{"data" => %{"getAccount" => %{"_id" => "...", "name" => "...", "email" => "..."}}}}
   """
   @spec query(map()) :: {:ok, map()} | {:error, AppwriteException.t()}
   def query(query) do
     if is_nil(query) do
       {:error, %AppwriteException{message: "query is required"}}
     else
-      headers = %{
-        "content-type" => "application/json",
-        "x-sdk-graphql" => "true"
-      }
-
       try do
-        Client.call("POST", "/v1/graphql", headers, query)
-        |> handle_response()
+        {:ok, Client.call("POST", "/v1/graphql", @graphql_headers, query)}
       rescue
         error -> {:error, error}
       end
     end
   end
-
-  # --- Private Helpers ---
-  defp handle_response(body), do: {:ok, body}
 end

@@ -24,7 +24,7 @@ defmodule Appwrite.Exceptions.AppwriteException do
   @type t :: %__MODULE__{
           message: String.t(),
           code: non_neg_integer(),
-          type: String.t(),
+          type: String.t() | nil,
           response: map() | nil
         }
 
@@ -48,7 +48,8 @@ defmodule Appwrite.Exceptions.AppwriteException do
     }
   end
 
-  @impl true
+  # FIX: was @impl true — corrected to @impl Exception (Credo.Check.Readability.ImplTrue)
+  @impl Exception
   def message(%__MODULE__{message: msg, code: code, type: type}) do
     "AppwriteException [#{code}] (#{type}): #{msg}"
   end

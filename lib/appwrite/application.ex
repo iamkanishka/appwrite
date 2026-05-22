@@ -5,7 +5,7 @@ defmodule Appwrite.Application do
 
   use Application
 
-  @impl true
+  @impl Application
   def start(_type, _args) do
     children = [
       # Starts a worker by calling: Appwrite.Worker.start_link(arg)

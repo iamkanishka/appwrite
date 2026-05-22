@@ -8,9 +8,9 @@ defmodule Appwrite.Services.Messaging do
   configured in the Appwrite console.
   """
 
-  alias Appwrite.Exceptions.AppwriteException
+  use Appwrite.Services.Base
+
   alias Appwrite.Types.Subscriber
-  alias Appwrite.Utils.Client
 
   @doc """
   Create a new subscriber for a topic.
@@ -37,31 +37,10 @@ defmodule Appwrite.Services.Messaging do
   @spec create_subscriber(String.t(), String.t(), String.t()) ::
           {:ok, Subscriber.t()} | {:error, AppwriteException.t()}
   def create_subscriber(topic_id, subscriber_id, target_id) do
-    cond do
-      is_nil(topic_id) ->
-        {:error, %AppwriteException{message: "topic_id is required"}}
-
-      is_nil(subscriber_id) ->
-        {:error, %AppwriteException{message: "subscriber_id is required"}}
-
-      is_nil(target_id) ->
-        {:error, %AppwriteException{message: "target_id is required"}}
-
-      true ->
-        # NOTE: Client.call signature is (method, path, headers, payload)
-        headers = %{"content-type" => "application/json"}
-
-        payload = %{
-          "subscriberId" => subscriber_id,
-          "targetId" => target_id
-        }
-
-        try do
-          Client.call("POST", "/v1/messaging/topics/#{topic_id}/subscribers", headers, payload)
-          |> handle_response()
-        rescue
-          error -> {:error, error}
-        end
+    with :ok <-
+           require_all(topic_id: topic_id, subscriber_id: subscriber_id, target_id: target_id) do
+      payload = %{"subscriberId" => subscriber_id, "targetId" => target_id}
+      json_call("POST", "/v1/messaging/topics/\#{topic_id}/subscribers", payload)
     end
   end
 
@@ -84,30 +63,8 @@ defmodule Appwrite.Services.Messaging do
   @spec delete_subscriber(String.t(), String.t()) ::
           {:ok, map()} | {:error, AppwriteException.t()}
   def delete_subscriber(topic_id, subscriber_id) do
-    cond do
-      is_nil(topic_id) ->
-        {:error, %AppwriteException{message: "topic_id is required"}}
-
-      is_nil(subscriber_id) ->
-        {:error, %AppwriteException{message: "subscriber_id is required"}}
-
-      true ->
-        headers = %{"content-type" => "application/json"}
-
-        try do
-          Client.call(
-            "DELETE",
-            "/v1/messaging/topics/#{topic_id}/subscribers/#{subscriber_id}",
-            headers,
-            %{}
-          )
-          |> handle_response()
-        rescue
-          error -> {:error, error}
-        end
+    with :ok <- require_all(topic_id: topic_id, subscriber_id: subscriber_id) do
+      json_call("DELETE", "/v1/messaging/topics/\#{topic_id}/subscribers/\#{subscriber_id}", %{})
     end
   end
-
-  # --- Private Helpers ---
-  defp handle_response(body), do: {:ok, body}
 end

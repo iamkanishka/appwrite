@@ -10,9 +10,12 @@ defmodule Appwrite.Services.Health do
   It is not intended for use in client-side code.
   """
 
-  alias Appwrite.Exceptions.AppwriteException
-  alias Appwrite.Utils.Client
-  alias Appwrite.Types.{HealthAntivirus, HealthCertificate, HealthQueue, HealthStatus, HealthTime}
+  use Appwrite.Services.Base
+  alias Appwrite.Types.HealthAntivirus
+  alias Appwrite.Types.HealthCertificate
+  alias Appwrite.Types.HealthQueue
+  alias Appwrite.Types.HealthStatus
+  alias Appwrite.Types.HealthTime
 
   @doc """
   Check the Appwrite HTTP server is up and responsive.
@@ -23,8 +26,7 @@ defmodule Appwrite.Services.Health do
   """
   @spec get() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
   def get do
-    Client.call("GET", "/v1/health", %{}, %{})
-    |> handle_response()
+    json_call("GET", "/v1/health", %{})
   rescue
     error -> {:error, error}
   end
@@ -40,8 +42,7 @@ defmodule Appwrite.Services.Health do
   """
   @spec get_antivirus() :: {:ok, HealthAntivirus.t()} | {:error, AppwriteException.t()}
   def get_antivirus do
-    Client.call("GET", "/v1/health/anti-virus", %{}, %{})
-    |> handle_response()
+    json_call("GET", "/v1/health/anti-virus", %{})
   rescue
     error -> {:error, error}
   end
@@ -55,8 +56,7 @@ defmodule Appwrite.Services.Health do
   """
   @spec get_cache() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
   def get_cache do
-    Client.call("GET", "/v1/health/cache", %{}, %{})
-    |> handle_response()
+    json_call("GET", "/v1/health/cache", %{})
   rescue
     error -> {:error, error}
   end
@@ -76,8 +76,7 @@ defmodule Appwrite.Services.Health do
   def get_certificate(domain \\ nil) do
     params = maybe_put(%{}, "domain", domain)
 
-    Client.call("GET", "/v1/health/certificate", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/certificate", params)
   rescue
     error -> {:error, error}
   end
@@ -91,8 +90,7 @@ defmodule Appwrite.Services.Health do
   """
   @spec get_db() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
   def get_db do
-    Client.call("GET", "/v1/health/db", %{}, %{})
-    |> handle_response()
+    json_call("GET", "/v1/health/db", %{})
   rescue
     error -> {:error, error}
   end
@@ -106,8 +104,7 @@ defmodule Appwrite.Services.Health do
   """
   @spec get_pub_sub() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
   def get_pub_sub do
-    Client.call("GET", "/v1/health/pubsub", %{}, %{})
-    |> handle_response()
+    json_call("GET", "/v1/health/pubsub", %{})
   rescue
     error -> {:error, error}
   end
@@ -128,8 +125,7 @@ defmodule Appwrite.Services.Health do
   def get_queue_builds(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/builds", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/builds", params)
   rescue
     error -> {:error, error}
   end
@@ -153,8 +149,7 @@ defmodule Appwrite.Services.Health do
       |> maybe_put("name", name)
       |> maybe_put("threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/databases", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/databases", params)
   rescue
     error -> {:error, error}
   end
@@ -174,8 +169,7 @@ defmodule Appwrite.Services.Health do
   def get_queue_deletes(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/deletes", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/deletes", params)
   rescue
     error -> {:error, error}
   end
@@ -204,8 +198,7 @@ defmodule Appwrite.Services.Health do
       params = maybe_put(%{}, "threshold", threshold)
 
       try do
-        Client.call("GET", "/v1/health/queue/failed/#{name}", %{}, params)
-        |> handle_response()
+        json_call("GET", "/v1/health/queue/failed/#{name}", params)
       rescue
         error -> {:error, error}
       end
@@ -227,8 +220,7 @@ defmodule Appwrite.Services.Health do
   def get_queue_functions(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/functions", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/functions", params)
   rescue
     error -> {:error, error}
   end
@@ -248,8 +240,7 @@ defmodule Appwrite.Services.Health do
   def get_queue_logs(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/logs", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/logs", params)
   rescue
     error -> {:error, error}
   end
@@ -269,8 +260,7 @@ defmodule Appwrite.Services.Health do
   def get_queue_mails(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/mails", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/mails", params)
   rescue
     error -> {:error, error}
   end
@@ -290,8 +280,7 @@ defmodule Appwrite.Services.Health do
   def get_queue_messaging(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/messaging", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/messaging", params)
   rescue
     error -> {:error, error}
   end
@@ -311,8 +300,7 @@ defmodule Appwrite.Services.Health do
   def get_queue_migrations(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/migrations", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/migrations", params)
   rescue
     error -> {:error, error}
   end
@@ -332,8 +320,7 @@ defmodule Appwrite.Services.Health do
   def get_queue_certificates(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/certificates", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/certificates", params)
   rescue
     error -> {:error, error}
   end
@@ -353,8 +340,7 @@ defmodule Appwrite.Services.Health do
   def get_queue_webhooks(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/webhooks", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/webhooks", params)
   rescue
     error -> {:error, error}
   end
@@ -368,8 +354,7 @@ defmodule Appwrite.Services.Health do
   """
   @spec get_storage_local() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
   def get_storage_local do
-    Client.call("GET", "/v1/health/storage/local", %{}, %{})
-    |> handle_response()
+    json_call("GET", "/v1/health/storage/local", %{})
   rescue
     error -> {:error, error}
   end
@@ -383,8 +368,7 @@ defmodule Appwrite.Services.Health do
   """
   @spec get_storage() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
   def get_storage do
-    Client.call("GET", "/v1/health/storage", %{}, %{})
-    |> handle_response()
+    json_call("GET", "/v1/health/storage", %{})
   rescue
     error -> {:error, error}
   end
@@ -401,8 +385,7 @@ defmodule Appwrite.Services.Health do
   """
   @spec get_time() :: {:ok, HealthTime.t()} | {:error, AppwriteException.t()}
   def get_time do
-    Client.call("GET", "/v1/health/time", %{}, %{})
-    |> handle_response()
+    json_call("GET", "/v1/health/time", %{})
   rescue
     error -> {:error, error}
   end
@@ -416,8 +399,7 @@ defmodule Appwrite.Services.Health do
   """
   @spec get_queue() :: {:ok, HealthStatus.t()} | {:error, AppwriteException.t()}
   def get_queue do
-    Client.call("GET", "/v1/health/queue", %{}, %{})
-    |> handle_response()
+    json_call("GET", "/v1/health/queue", %{})
   rescue
     error -> {:error, error}
   end
@@ -437,8 +419,7 @@ defmodule Appwrite.Services.Health do
   def get_queue_audits(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/audits", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/audits", params)
   rescue
     error -> {:error, error}
   end
@@ -458,8 +439,7 @@ defmodule Appwrite.Services.Health do
   def get_queue_usage(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/usage", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/usage", params)
   rescue
     error -> {:error, error}
   end
@@ -479,16 +459,8 @@ defmodule Appwrite.Services.Health do
   def get_queue_usage_dump(threshold \\ nil) do
     params = maybe_put(%{}, "threshold", threshold)
 
-    Client.call("GET", "/v1/health/queue/usage-dump", %{}, params)
-    |> handle_response()
+    json_call("GET", "/v1/health/queue/usage-dump", params)
   rescue
     error -> {:error, error}
   end
-
-  # --- Private Helpers ---
-
-  defp maybe_put(map, _key, nil), do: map
-  defp maybe_put(map, key, value), do: Map.put(map, key, value)
-
-  defp handle_response(body), do: {:ok, body}
 end
